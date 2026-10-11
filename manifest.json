@@ -1,0 +1,17 @@
+{
+  "name": "Figma AI Copilot (bscl)",
+  "id": "figma-ai-copilot-bscl",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "editorType": [
+    "figma",
+    "figjam"
+  ],
+  "networkAccess": {
+    "allowedDomains": [
+      "*"
+    ],
+    "reasoning": "Permite conectar con modelos de IA locales y remotos (smart-ai-router, Gemini, Groq, OpenRouter)"
+  }
+}

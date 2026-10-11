@@ -1,0 +1,22 @@
+{
+  "name": "figma-ai-copilot",
+  "version": "1.0.0",
+  "description": "AI Copilot para Figma: Crea, edita y organiza diseños con lenguaje natural directamente en el lienzo",
+  "main": "code.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "figma",
+    "plugin",
+    "ai",
+    "copilot",
+    "design-automation",
+    "mcp"
+  ],
+  "author": "Brayan Stid Cortés Lombana (bscl)",
+  "license": "MIT",
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  }
+}
