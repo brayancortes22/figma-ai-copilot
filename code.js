@@ -303,6 +303,97 @@ async function opCreateButton(op, parent) {
 }
 
 /**
+ * Crea un Componente Maestro con Variantes interactivas (Default, Hover, Pressed)
+ * y configura prototipado nativo de Figma (While hovering, On click).
+ */
+async function opCreateInteractiveComponentSet(op, parent) {
+  const compDefault = figma.createComponent();
+  compDefault.name = 'State=Default';
+  compDefault.layoutMode = 'HORIZONTAL';
+  compDefault.primaryAxisAlignItems = 'CENTER';
+  compDefault.counterAxisAlignItems = 'CENTER';
+  compDefault.primaryAxisSizingMode = 'AUTO';
+  compDefault.counterAxisSizingMode = 'AUTO';
+  compDefault.paddingLeft = Number(op.paddingX ?? 18);
+  compDefault.paddingRight = Number(op.paddingX ?? 18);
+  compDefault.paddingTop = Number(op.paddingY ?? 10);
+  compDefault.paddingBottom = Number(op.paddingY ?? 10);
+  compDefault.cornerRadius = Number(op.cornerRadius ?? 8);
+  
+  const baseColor = op.baseColor || op.backgroundColor || '#005F73';
+  compDefault.fills = parseFills(baseColor);
+  applyStrokesAndEffects(compDefault, op);
+
+  const textDef = figma.createText();
+  textDef.name = 'Label';
+  const font = await ensureFontLoaded(op.fontFamily || 'Inter', 'Bold');
+  textDef.fontName = font;
+  textDef.characters = String(op.label ?? op.text ?? 'Botón Interactivo');
+  textDef.fontSize = Number(op.fontSize ?? 14);
+  textDef.fills = parseFills(op.textColor || '#FFFFFF');
+  compDefault.appendChild(textDef);
+
+  // Variante 2: Hover (color más claro o brillante)
+  const compHover = figma.createComponent();
+  compHover.name = 'State=Hover';
+  compHover.layoutMode = 'HORIZONTAL';
+  compHover.primaryAxisAlignItems = 'CENTER';
+  compHover.counterAxisAlignItems = 'CENTER';
+  compHover.primaryAxisSizingMode = 'AUTO';
+  compHover.counterAxisSizingMode = 'AUTO';
+  compHover.paddingLeft = Number(op.paddingX ?? 18);
+  compHover.paddingRight = Number(op.paddingX ?? 18);
+  compHover.paddingTop = Number(op.paddingY ?? 10);
+  compHover.paddingBottom = Number(op.paddingY ?? 10);
+  compHover.cornerRadius = Number(op.cornerRadius ?? 8);
+  
+  const hoverColor = op.hoverColor || '#0A9396';
+  compHover.fills = parseFills(hoverColor);
+  applyStrokesAndEffects(compHover, op);
+
+  const textHov = figma.createText();
+  textHov.name = 'Label';
+  textHov.fontName = font;
+  textHov.characters = textDef.characters;
+  textHov.fontSize = textDef.fontSize;
+  textHov.fills = parseFills(op.textColor || '#FFFFFF');
+  compHover.appendChild(textHov);
+
+  // Combinar como ComponentSet de Figma (Variantes)
+  const targetParent = parent || figma.currentPage;
+  targetParent.appendChild(compDefault);
+  targetParent.appendChild(compHover);
+
+  const componentSet = figma.combineAsVariants([compDefault, compHover], targetParent);
+  componentSet.name = op.name || 'Interactive Button';
+
+  // Añadir interacción de prototipado nativa en Figma (WHILE_HOVERING)
+  try {
+    compDefault.setReactions([
+      {
+        trigger: { type: 'WHILE_HOVERING' },
+        actions: [
+          {
+            type: 'NODE',
+            destinationId: compHover.id,
+            navigation: 'CHANGE_TO',
+            transition: {
+              type: 'SMART_ANIMATE',
+              easing: { type: 'EASE_OUT' },
+              duration: 0.2
+            }
+          }
+        ]
+      }
+    ]);
+  } catch (protoErr) {
+    console.warn('[Figma AI Copilot] No se pudo configurar la reacción de prototipado automática:', protoErr);
+  }
+
+  return componentSet;
+}
+
+/**
  * Crea una Badge / Etiqueta tipo píldora (ej: "Beta", "Public", "v1.0.0").
  */
 async function opCreateBadge(op, parent) {
@@ -581,6 +672,9 @@ async function executeSingleOperation(rawOp, parent = null) {
       return await opCreateFrame(op, parent);
     case 'CREATE_BUTTON':
       return await opCreateButton(op, parent);
+    case 'CREATE_COMPONENT_SET':
+    case 'CREATE_INTERACTIVE_BUTTON':
+      return await opCreateInteractiveComponentSet(op, parent);
     case 'CREATE_BADGE':
       return await opCreateBadge(op, parent);
     case 'CREATE_INPUT':
