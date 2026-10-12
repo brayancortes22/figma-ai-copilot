@@ -664,6 +664,52 @@ figma.ui.onmessage = async (msg) => {
         break;
       }
 
+      case 'EXPORT_SELECTION_IMAGE': {
+        const selection = figma.currentPage.selection;
+        if (!selection || selection.length === 0) {
+          figma.ui.postMessage({
+            type: 'SELECTION_IMAGE_ERROR',
+            error: 'No hay ninguna capa seleccionada en Figma para exportar como imagen.'
+          });
+          figma.notify('⚠️ Por favor selecciona una capa o imagen primero', { error: true });
+          break;
+        }
+
+        const targetNode = selection[0];
+        try {
+          // Exportar el nodo seleccionado a PNG
+          const bytes = await targetNode.exportAsync({
+            format: 'PNG',
+            constraint: { type: 'SCALE', value: Math.min(2, Math.max(0.5, 800 / Math.max(targetNode.width, targetNode.height))) }
+          });
+
+          // Convertir bytes (Uint8Array) a base64
+          let binary = '';
+          const len = bytes.byteLength;
+          for (let i = 0; i < len; i++) {
+            binary += String.fromCharCode(bytes[i]);
+          }
+          const base64 = figma.base64Encode ? figma.base64Encode(bytes) : null;
+
+          figma.ui.postMessage({
+            type: 'SELECTION_IMAGE_DATA',
+            base64: base64,
+            bytes: base64 ? null : Array.from(bytes),
+            mimeType: 'image/png',
+            nodeName: targetNode.name,
+            width: targetNode.width,
+            height: targetNode.height
+          });
+          figma.notify('📸 Imagen capturada para análisis');
+        } catch (err) {
+          figma.ui.postMessage({
+            type: 'SELECTION_IMAGE_ERROR',
+            error: `Error exportando imagen de la capa: ${err.message}`
+          });
+        }
+        break;
+      }
+
       case 'NOTIFY': {
         figma.notify(msg.message || '', {
           timeout: msg.timeout || 3000,
