@@ -822,8 +822,9 @@ body::before {
         <select class="form-select" id="providerSelect">
           <option value="auto" selected>🤖 Modo Inteligente Automático (Recomendado - Sin bloqueos)</option>
           <option value="free-cloud">🌐 Nube Gratuita Pública (Sin API Key - 100% Libre)</option>
-          <option value="gemini">✨ Google Gemini (Con tu propia API Key)</option>
+          <option value="cerebras">🧠 Cerebras Cloud (1M tokens/día Gratis - 2600 t/s)</option>
           <option value="groq">⚡ Groq Cloud (Ultra Rápido y Gratuito)</option>
+          <option value="gemini">✨ Google Gemini (Google AI Studio)</option>
           <option value="openrouter">🌐 OpenRouter (Modelos Gratuitos)</option>
           <option value="openai">🟢 OpenAI (GPT-4o / mini)</option>
           <option value="antigravity">🪐 Antigravity / Smart Router Local (:3000)</option>
@@ -839,10 +840,10 @@ body::before {
 
       <div class="form-group" id="groupApiKey">
         <label class="form-label" for="inputApiKey">
-          <span id="apiKeyLabel">Google Gemini API Key (Opcional)</span>
+          <span id="apiKeyLabel">API Key Opcional (Gemini, Cerebras o Groq)</span>
         </label>
         <div class="password-wrap">
-          <input type="password" class="form-input" id="inputApiKey" placeholder="Pega tu API Key de Gemini...">
+          <input type="password" class="form-input" id="inputApiKey" placeholder="Pega tu API Key...">
           <button type="button" class="password-toggle" id="btnToggleApiKey" title="Mostrar/Ocultar">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
@@ -851,7 +852,7 @@ body::before {
           </button>
         </div>
         <div id="apiKeyHint" style="margin-top: 4px; font-size: 10.5px; color: var(--text-muted); line-height: 1.4;">
-          💡 Si no tienes clave o se agota tu cuota, el plugin usará la <strong>Nube Gratuita</strong> automáticamente sin interrumpir tu diseño. Clave gratis en <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: #818CF8; text-decoration: none;">Google AI Studio ↗</a>
+          💡 <strong>Modo Automático:</strong> Si no tienes clave o se agota tu cuota, el plugin usa la <strong>Nube Gratuita</strong> automáticamente sin interrumpir tu diseño.
         </div>
       </div>
 
@@ -863,6 +864,15 @@ body::before {
           <optgroup label="Selección Automática">
             <option value="auto-smart" selected>🤖 Auto-Cascada (Usa el modelo óptimo con cuota libre)</option>
           </optgroup>
+          <optgroup label="Cerebras Cloud (1M tokens/día Gratis)">
+            <option value="llama-3.3-70b">🧠 Llama 3.3 70B (Cerebras - 2600 t/s)</option>
+            <option value="llama3.1-8b">🧠 Llama 3.1 8B (Cerebras - Instantáneo)</option>
+          </optgroup>
+          <optgroup label="Groq Cloud (Gratis & Ultra Rápido)">
+            <option value="llama-3.3-70b-versatile">⚡ Llama 3.3 70B (Groq - 500 t/s)</option>
+            <option value="llama-3.1-8b-instant">⚡ Llama 3.1 8B Instant (Groq)</option>
+            <option value="qwen/qwen3.8-27b">⚡ Qwen 3.8 27B (Groq)</option>
+          </optgroup>
           <optgroup label="Google Gemini (2026)">
             <option value="gemini-3.8-flash">⚡ Gemini 3.8 Flash (Última Generación)</option>
             <option value="gemini-3.6-flash">⚡ Gemini 3.6 Flash (Alta Velocidad)</option>
@@ -872,11 +882,6 @@ body::before {
           </optgroup>
           <optgroup label="Nube Gratuita Pública (Sin Clave)">
             <option value="free-cloud-auto">🌐 Nube Pública Multi-Modelo (Llama 3.3 / Qwen)</option>
-          </optgroup>
-          <optgroup label="Groq Cloud (Gratis)">
-            <option value="llama-3.3-70b-versatile">⚡ Llama 3.3 70B (Groq - 500 t/s)</option>
-            <option value="llama-3.1-8b-instant">⚡ Llama 3.1 8B Instant (Ultra Veloz)</option>
-            <option value="qwen/qwen3.8-27b">⚡ Qwen 3.8 27B (Groq)</option>
           </optgroup>
           <optgroup label="OpenRouter (Gratis :free)">
             <option value="meta-llama/llama-3.3-70b-instruct:free">🌐 Llama 3.3 70B Free</option>
@@ -890,7 +895,7 @@ body::before {
             <option value="custom">✏️ Personalizado (Escribir ID manual)...</option>
           </optgroup>
         </select>
-        <input type="text" class="form-input" id="inputModelName" style="display: none; margin-top: 6px;" placeholder="Ej: gemini-3.8-flash" value="auto-smart">
+        <input type="text" class="form-input" id="inputModelName" style="display: none; margin-top: 6px;" placeholder="Ej: llama-3.3-70b" value="auto-smart">
       </div>
 
       <div class="settings-footer">
@@ -1230,6 +1235,61 @@ ${userPrompt || "Recrea este dise\xF1o en Figma con componentes y Auto-Layout"}`
     throw new Error("La nube gratuita p\xFAblica est\xE1 experimentando alta demanda. Por favor reintenta en unos instantes.");
   }
 
+  // src/ui/scripts/openai-compatible-provider.js
+  var PROVIDER_ENDPOINTS = {
+    cerebras: {
+      url: "https://api.cerebras.ai/v1/chat/completions",
+      defaultModel: "llama-3.3-70b",
+      name: "Cerebras Cloud (1M tokens/d\xEDa gratis)"
+    },
+    groq: {
+      url: "https://api.groq.com/openai/v1/chat/completions",
+      defaultModel: "llama-3.3-70b-versatile",
+      name: "Groq Cloud (Ultra R\xE1pido)"
+    },
+    openrouter: {
+      url: "https://openrouter.ai/api/v1/chat/completions",
+      defaultModel: "meta-llama/llama-3.3-70b-instruct:free",
+      name: "OpenRouter Free Tier"
+    },
+    openai: {
+      url: "https://api.openai.com/v1/chat/completions",
+      defaultModel: "gpt-4o",
+      name: "OpenAI"
+    }
+  };
+  async function callOpenAICompatible(endpointUrl, apiKey, model, systemPrompt, userPrompt, extraHeaders = {}) {
+    if (!apiKey || apiKey.trim().length < 3) {
+      throw new Error("API_KEY_REQUIRED");
+    }
+    const headers = {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${apiKey.trim()}`,
+      ...extraHeaders
+    };
+    const res = await fetch(endpointUrl, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        model: model || "llama-3.3-70b",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt }
+        ],
+        temperature: 0.15
+      })
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      const errMsg = err.error?.message || err.message || `HTTP ${res.status}`;
+      throw new Error(errMsg);
+    }
+    const data = await res.json();
+    const content = data.choices?.[0]?.message?.content;
+    if (!content) throw new Error("Respuesta vac\xEDa del proveedor");
+    return content;
+  }
+
   // src/ui/scripts/dom-utils.js
   function escapeHtml(str) {
     if (!str) return "";
@@ -1296,20 +1356,20 @@ ${userPrompt || "Recrea este dise\xF1o en Figma con componentes y Auto-Layout"}`
             userPrompt,
             imageBase64,
             (nextModel) => {
-              const msg = `\u{1F504} Tr\xE1fico en Gemini. Conmutando a ${nextModel}...`;
+              const msg = `\u{1F504} Tr\xE1fico en Gemini. Probando ${nextModel}...`;
               if (onStatusNotice) onStatusNotice(msg);
               showToast(msg, "info");
             }
           );
           return result.text;
         } catch (geminiErr) {
-          console.warn("[Figma AI Copilot] Gemini sin cuota o alta demanda. Conmutando a Nube Gratuita:", geminiErr);
-          const notice = "\u{1F504} Cuota de Gemini agotada. Usando Nube Gratuita de respaldo sin bloqueo...";
+          console.warn("[Figma AI Copilot] Gemini sin cuota diaria. Conmutando a Nube Gratuita:", geminiErr);
+          const notice = "\u{1F504} Cuota de Gemini agotada. Usando Nube Gratuita sin bloqueo...";
           if (onStatusNotice) onStatusNotice(notice);
           showToast(notice, "info");
         }
       } else {
-        const notice = "\u{1F310} Usando Nube Gratuita P\xFAblica (Sin API Key)";
+        const notice = "\u{1F310} Dise\xF1ando con Nube Gratuita P\xFAblica (Sin API Key)";
         if (onStatusNotice) onStatusNotice(notice);
         showToast(notice, "info");
       }
@@ -1318,10 +1378,30 @@ ${userPrompt || "Recrea este dise\xF1o en Figma con componentes y Auto-Layout"}`
     if (provider === "free-cloud") {
       return await callFreeCloudDirect(systemPrompt, userPrompt, imageBase64);
     }
+    if (provider === "cerebras") {
+      if (!config.apiKey) throw new Error("Pega tu API Key gratuita de Cerebras en el engranaje \u2699\uFE0F (cloud.cerebras.ai)");
+      const endpoint = PROVIDER_ENDPOINTS.cerebras;
+      return await callOpenAICompatible(endpoint.url, config.apiKey, config.model || endpoint.defaultModel, systemPrompt, userPrompt);
+    }
+    if (provider === "groq") {
+      if (!config.apiKey) throw new Error("Pega tu API Key gratuita de Groq en el engranaje \u2699\uFE0F (console.groq.com)");
+      const endpoint = PROVIDER_ENDPOINTS.groq;
+      return await callOpenAICompatible(endpoint.url, config.apiKey, config.model || endpoint.defaultModel, systemPrompt, userPrompt);
+    }
+    if (provider === "openrouter") {
+      if (!config.apiKey) throw new Error("Pega tu API Key de OpenRouter en el engranaje \u2699\uFE0F (openrouter.ai)");
+      const endpoint = PROVIDER_ENDPOINTS.openrouter;
+      return await callOpenAICompatible(
+        endpoint.url,
+        config.apiKey,
+        config.model || endpoint.defaultModel,
+        systemPrompt,
+        userPrompt,
+        { "HTTP-Referer": "https://figma.com", "X-Title": "Figma AI Copilot" }
+      );
+    }
     if (provider === "gemini") {
-      if (!config.apiKey || config.apiKey.trim().length < 5) {
-        throw new Error('Por favor pega tu API Key en el engranaje \u2699\uFE0F o cambia a "Modo Inteligente Autom\xE1tico"');
-      }
+      if (!config.apiKey) throw new Error('Pega tu API Key en el engranaje \u2699\uFE0F o cambia a "Modo Inteligente Autom\xE1tico"');
       const result = await callGeminiCascade(
         config.apiKey,
         config.model,
@@ -1332,86 +1412,16 @@ ${userPrompt || "Recrea este dise\xF1o en Figma con componentes y Auto-Layout"}`
       );
       return result.text;
     }
-    if (provider === "groq") return await callGroqDirect(systemPrompt, userPrompt);
-    if (provider === "openai") return await callOpenAIDirect(systemPrompt, userPrompt, imageBase64);
-    if (provider === "openrouter") return await callOpenRouterDirect(systemPrompt, userPrompt);
-    if (provider === "antigravity" || provider === "smart-router") return await callSmartRouter(systemPrompt, userPrompt);
+    if (provider === "openai") {
+      if (!config.apiKey) throw new Error("Se requiere un API Key de OpenAI");
+      const endpoint = PROVIDER_ENDPOINTS.openai;
+      return await callOpenAICompatible(endpoint.url, config.apiKey, config.model || endpoint.defaultModel, systemPrompt, userPrompt);
+    }
+    if (provider === "antigravity" || provider === "smart-router") {
+      const baseUrl = config.localUrl ? config.localUrl.replace(/\/+$/, "") : "http://localhost:3000";
+      return await callOpenAICompatible(`${baseUrl}/v1/chat/completions`, "local-dummy-key", config.model || "qwen-3.8-27b", systemPrompt, userPrompt);
+    }
     throw new Error(`Proveedor de IA no reconocido: ${provider}`);
-  }
-  async function callSmartRouter(systemPrompt, userPrompt) {
-    const config = getConfig();
-    const baseUrl = config.localUrl ? config.localUrl.replace(/\/+$/, "") : "http://localhost:3000";
-    const res = await fetch(`${baseUrl}/v1/chat/completions`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: config.model || "qwen-3.8-27b",
-        messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }]
-      })
-    });
-    if (!res.ok) throw new Error(`Smart Router error (${res.status})`);
-    const data = await res.json();
-    return data.choices?.[0]?.message?.content || "";
-  }
-  async function callOpenAIDirect(systemPrompt, userPrompt, imageBase64) {
-    const config = getConfig();
-    if (!config.apiKey) throw new Error("Se requiere un API Key de OpenAI");
-    const userContent = imageBase64 ? [{ type: "text", text: userPrompt }, { type: "image_url", image_url: { url: imageBase64 } }] : userPrompt;
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${config.apiKey}` },
-      body: JSON.stringify({
-        model: config.model || "gpt-4o",
-        messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userContent }]
-      })
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.error?.message || `OpenAI error (${res.status})`);
-    }
-    const data = await res.json();
-    return data.choices?.[0]?.message?.content || "";
-  }
-  async function callGroqDirect(systemPrompt, userPrompt) {
-    const config = getConfig();
-    if (!config.apiKey) throw new Error("Se requiere un API Key de Groq");
-    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${config.apiKey}` },
-      body: JSON.stringify({
-        model: config.model || "llama-3.3-70b-versatile",
-        messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }]
-      })
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.error?.message || `Groq error (${res.status})`);
-    }
-    const data = await res.json();
-    return data.choices?.[0]?.message?.content || "";
-  }
-  async function callOpenRouterDirect(systemPrompt, userPrompt) {
-    const config = getConfig();
-    if (!config.apiKey) throw new Error("Se requiere un API Key de OpenRouter");
-    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${config.apiKey}`,
-        "HTTP-Referer": "https://figma.com",
-        "X-Title": "Figma AI Copilot"
-      },
-      body: JSON.stringify({
-        model: config.model || "meta-llama/llama-3.3-70b-instruct:free",
-        messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }]
-      })
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.error?.message || `OpenRouter error (${res.status})`);
-    }
-    const data = await res.json();
-    return data.choices?.[0]?.message?.content || "";
   }
 
   // src/ui/scripts/dsl-parser.js
@@ -1619,27 +1629,31 @@ ${selectionContext}`;
     const apiKeyHint = document.getElementById("apiKeyHint");
     if (groupUrl) groupUrl.style.display = prov === "antigravity" || prov === "smart-router" ? "flex" : "none";
     if (groupKey) groupKey.style.display = prov === "antigravity" || prov === "smart-router" || prov === "free-cloud" ? "none" : "flex";
-    if (keyLabel && inputKey) {
+    if (keyLabel && inputKey && apiKeyHint) {
       if (prov === "auto") {
-        keyLabel.textContent = "Google Gemini API Key (Opcional)";
-        inputKey.placeholder = "AIzaSy... (Opcional - si no tienes o se agota, usa nube gratis)";
-        if (apiKeyHint) apiKeyHint.style.display = "block";
+        keyLabel.textContent = "API Key Opcional (Gemini, Cerebras o Groq)";
+        inputKey.placeholder = "AIzaSy... o csk-... o gsk-... (Opcional)";
+        apiKeyHint.innerHTML = "\u{1F4A1} <strong>Modo Autom\xE1tico:</strong> Si no tienes clave o se agota tu cuota, el plugin usa la <strong>Nube Gratuita</strong> autom\xE1ticamente sin interrumpir tu dise\xF1o.";
+      } else if (prov === "cerebras") {
+        keyLabel.textContent = "Cerebras Cloud API Key (1M tokens/d\xEDa)";
+        inputKey.placeholder = "csk-...";
+        apiKeyHint.innerHTML = '\u26A1 Clave gratis de 1M tokens/d\xEDa en <a href="https://cloud.cerebras.ai" target="_blank" style="color: #818CF8; text-decoration: none;">cloud.cerebras.ai \u2197</a>';
+      } else if (prov === "groq") {
+        keyLabel.textContent = "Groq Cloud API Key (Ultra R\xE1pido)";
+        inputKey.placeholder = "gsk-...";
+        apiKeyHint.innerHTML = '\u26A1 Clave gratis en <a href="https://console.groq.com/keys" target="_blank" style="color: #818CF8; text-decoration: none;">console.groq.com \u2197</a>';
+      } else if (prov === "openrouter") {
+        keyLabel.textContent = "OpenRouter API Key (Modelos :free)";
+        inputKey.placeholder = "sk-or-v1-...";
+        apiKeyHint.innerHTML = '\u{1F310} Clave gratis en <a href="https://openrouter.ai/keys" target="_blank" style="color: #818CF8; text-decoration: none;">openrouter.ai \u2197</a>';
       } else if (prov === "gemini") {
         keyLabel.textContent = "Google Gemini API Key";
-        inputKey.placeholder = "AIzaSy... (Google AI Studio)";
-        if (apiKeyHint) apiKeyHint.style.display = "none";
+        inputKey.placeholder = "AIzaSy...";
+        apiKeyHint.innerHTML = '\u2728 Clave gratis en <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: #818CF8; text-decoration: none;">Google AI Studio \u2197</a>';
       } else if (prov === "openai") {
         keyLabel.textContent = "OpenAI API Key";
         inputKey.placeholder = "sk-proj-...";
-        if (apiKeyHint) apiKeyHint.style.display = "none";
-      } else if (prov === "groq") {
-        keyLabel.textContent = "Groq Cloud API Key";
-        inputKey.placeholder = "gsk_... (console.groq.com)";
-        if (apiKeyHint) apiKeyHint.style.display = "none";
-      } else if (prov === "openrouter") {
-        keyLabel.textContent = "OpenRouter API Key";
-        inputKey.placeholder = "sk-or-v1-... (openrouter.ai)";
-        if (apiKeyHint) apiKeyHint.style.display = "none";
+        apiKeyHint.innerHTML = '\u{1F7E2} Clave en <a href="https://platform.openai.com" target="_blank" style="color: #818CF8; text-decoration: none;">platform.openai.com \u2197</a>';
       }
     }
   }

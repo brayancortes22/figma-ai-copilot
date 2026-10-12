@@ -15,8 +15,9 @@ Un plugin de diseño asistido por Inteligencia Artificial para Figma. Diseñado 
    - Funciona de forma instantánea usando modelos cloud de alta velocidad (OpenAI, Llama 3.3, Mistral, Qwen).
 
 3. **✨ Soporte Multimodelo y Multi-Proveedor (2026)**:
-   - **Google Gemini (2026)**: `gemini-3.8-flash`, `gemini-3.6-flash`, `gemini-3.5-flash`, `gemini-2.5-flash`, `gemini-2.5-flash-lite`.
+   - **Cerebras Cloud**: ¡**1 Millón de tokens gratis al día** sin tarjeta de crédito a 2.600 t/s con `llama-3.3-70b`!
    - **Groq Cloud**: Inferencia ultra veloz a más de 500 tokens/segundo con `llama-3.3-70b-versatile` y `llama-3.1-8b-instant`.
+   - **Google Gemini (2026)**: `gemini-3.8-flash`, `gemini-3.6-flash`, `gemini-3.5-flash`, `gemini-2.5-flash`, `gemini-2.5-flash-lite`.
    - **OpenRouter**: Acceso a modelos comunitarios gratuitos (`:free`).
    - **OpenAI**: Soporte directo para `gpt-4o` y `gpt-4o-mini`.
    - **Antigravity / Smart Router**: Para desarrolladores que deseen conectar sus modelos locales en `localhost:3000`.
