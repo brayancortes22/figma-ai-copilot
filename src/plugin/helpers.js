@@ -153,9 +153,21 @@ export function serializeNode(node) {
 
 export function normalizeOperation(rawOp) {
   if (!rawOp || typeof rawOp !== 'object') return {};
-  const params = rawOp.params && typeof rawOp.params === 'object' ? rawOp.params : {};
-  const props = rawOp.properties && typeof rawOp.properties === 'object' ? rawOp.properties : {};
-  const merged = { ...rawOp, ...props, ...params };
+
+  const known = ['CREATE_FRAME', 'CREATE_BUTTON', 'CREATE_INPUT', 'CREATE_TEXT', 'CREATE_ICON', 'CREATE_BADGE', 'CREATE_RECTANGLE', 'CREATE_ELLIPSE', 'CREATE_INTERACTIVE_BUTTON', 'CREATE_COMPONENT_SET'];
+
+  let unwrapped = rawOp;
+  for (const k of Object.keys(rawOp)) {
+    const upper = k.toUpperCase().trim();
+    if (known.includes(upper) && typeof rawOp[k] === 'object' && rawOp[k] !== null) {
+      unwrapped = { action: upper, ...rawOp[k] };
+      break;
+    }
+  }
+
+  const params = unwrapped.params && typeof unwrapped.params === 'object' ? unwrapped.params : {};
+  const props = unwrapped.properties && typeof unwrapped.properties === 'object' ? unwrapped.properties : {};
+  const merged = { ...unwrapped, ...props, ...params };
 
   if (merged.size && typeof merged.size === 'object') {
     if (merged.size.width) merged.width = merged.size.width;

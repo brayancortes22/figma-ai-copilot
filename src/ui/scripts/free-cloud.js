@@ -4,6 +4,7 @@
  */
 
 import { generateOfflineSmartDesign } from './smart-fallback.js';
+import { extractDSLFromResponse } from './dsl-parser.js';
 
 export async function callFreeCloudDirect(systemPrompt, userPrompt, imageBase64 = null) {
   const userText = imageBase64
@@ -29,8 +30,8 @@ export async function callFreeCloudDirect(systemPrompt, userPrompt, imageBase64 
 
     if (res.ok) {
       const text = await res.text();
-      if (text && text.includes('operations')) return text;
-      if (text && text.includes('{') && text.includes('}')) return text;
+      const ops = extractDSLFromResponse(text);
+      if (ops && ops.length > 0) return text;
     }
   } catch (err) {
     console.warn('[Figma AI Copilot] Falló endpoint 1 de nube gratuita:', err);
@@ -53,8 +54,8 @@ export async function callFreeCloudDirect(systemPrompt, userPrompt, imageBase64 
 
     if (res2.ok) {
       const text2 = await res2.text();
-      if (text2 && text2.includes('operations')) return text2;
-      if (text2 && text2.includes('{') && text2.includes('}')) return text2;
+      const ops2 = extractDSLFromResponse(text2);
+      if (ops2 && ops2.length > 0) return text2;
     }
   } catch (err2) {
     console.warn('[Figma AI Copilot] Falló endpoint 2 de nube gratuita:', err2);
