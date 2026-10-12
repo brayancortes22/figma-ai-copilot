@@ -108,7 +108,9 @@ export async function handleSendPrompt(customText) {
 
   try {
     const sysPrompt = buildSystemPrompt(getSelection(), Boolean(image));
-    const rawResponse = await callAIService(sysPrompt, text, image);
+    const rawResponse = await callAIService(sysPrompt, text, image, (notice) => {
+      setStatus('busy', 'Conmutando IA...');
+    });
     removeTypingIndicator();
 
     const dslOperations = extractDSLFromResponse(rawResponse);

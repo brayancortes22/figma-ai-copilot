@@ -1,84 +1,78 @@
 /**
- * Figma AI Copilot - Conexión Multimodal y Gateway de Proveedores de IA
+ * Figma AI Copilot - Conexión Multimodal y Gateway de Proveedores de IA con Cascada Automática
  * Autor: Brayan Stid Cortés Lombana (bscl)
  */
 
 import { getConfig } from './state.js';
+import { callGeminiCascade } from './gemini-provider.js';
+import { callFreeCloudDirect } from './free-cloud.js';
+import { showToast } from './dom-utils.js';
 
-export async function callAIService(systemPrompt, userPrompt, imageBase64 = null) {
+export async function callAIService(systemPrompt, userPrompt, imageBase64 = null, onStatusNotice = null) {
   const config = getConfig();
-  switch (config.provider) {
-    case 'gemini':
-      return await callGeminiDirect(systemPrompt, userPrompt, imageBase64);
-    case 'antigravity':
-    case 'smart-router':
-      return await callSmartRouter(systemPrompt, userPrompt);
-    case 'openai':
-      return await callOpenAIDirect(systemPrompt, userPrompt, imageBase64);
-    case 'groq':
-      return await callGroqDirect(systemPrompt, userPrompt);
-    case 'openrouter':
-      return await callOpenRouterDirect(systemPrompt, userPrompt);
-    default:
-      throw new Error(`Proveedor de IA no reconocido: ${config.provider}`);
-  }
-}
+  const provider = config.provider || 'auto';
 
-async function callGeminiDirect(systemPrompt, userPrompt, imageBase64) {
-  const config = getConfig();
-  if (!config.apiKey) {
-    throw new Error('Abre el engranaje ⚙️ y pega tu Gemini API Key de Google AI Studio');
-  }
-
-  const candidates = [
-    config.model,
-    'gemini-3.8-flash',
-    'gemini-3.1-pro-preview',
-    'gemini-2.5-pro',
-    'gemini-2.5-flash',
-    'gemini-flash-latest',
-    'gemini-pro-latest'
-  ].filter(Boolean);
-  const modelsToTry = [...new Set(candidates)];
-
-  const parts = [{ text: `${systemPrompt}\n\nInstrucción del usuario:\n${userPrompt || 'Recrea este diseño en Figma'}` }];
-  if (imageBase64) {
-    const cleanBase64 = imageBase64.replace(/^data:image\/[a-z]+;base64,/, '');
-    parts.push({
-      inlineData: { mimeType: 'image/png', data: cleanBase64 }
-    });
-  }
-
-  let lastError = null;
-  for (const model of modelsToTry) {
-    try {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(config.apiKey)}`;
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ role: 'user', parts }],
-          generationConfig: { temperature: 0.15, maxOutputTokens: 8192 }
-        })
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (text) return text;
-      } else {
-        const err = await res.json().catch(() => ({}));
-        lastError = new Error(err.error?.message || `Error Gemini (${res.status})`);
-        if ([404, 429, 503].includes(res.status) || err.error?.status === 'RESOURCE_EXHAUSTED') continue;
-        throw lastError;
+  // 1. MODO AUTO INTELIGENTE (Nunca se bloquea por cuota o tráfico)
+  if (provider === 'auto') {
+    if (config.apiKey && config.apiKey.trim().length > 5) {
+      try {
+        const result = await callGeminiCascade(
+          config.apiKey.trim(),
+          config.model,
+          systemPrompt,
+          userPrompt,
+          imageBase64,
+          (nextModel) => {
+            const msg = `🔄 Tráfico en Gemini. Conmutando a ${nextModel}...`;
+            if (onStatusNotice) onStatusNotice(msg);
+            showToast(msg, 'info');
+          }
+        );
+        return result.text;
+      } catch (geminiErr) {
+        console.warn('[Figma AI Copilot] Gemini sin cuota o alta demanda. Conmutando a Nube Gratuita:', geminiErr);
+        const notice = '🔄 Cuota de Gemini agotada. Usando Nube Gratuita de respaldo sin bloqueo...';
+        if (onStatusNotice) onStatusNotice(notice);
+        showToast(notice, 'info');
       }
-    } catch (err) {
-      lastError = err;
-      if (err.message?.includes('exceeded') || err.message?.includes('quota') || err.message?.includes('404')) continue;
-      throw err;
+    } else {
+      const notice = '🌐 Usando Nube Gratuita Pública (Sin API Key)';
+      if (onStatusNotice) onStatusNotice(notice);
+      showToast(notice, 'info');
     }
+
+    // Salto transparente a la Nube Gratuita Pública
+    return await callFreeCloudDirect(systemPrompt, userPrompt, imageBase64);
   }
-  throw lastError || new Error('No se pudo conectar con ningún modelo de Gemini disponible');
+
+  // 2. MODO NUBE GRATUITA PÚBLICA DIRECTO
+  if (provider === 'free-cloud') {
+    return await callFreeCloudDirect(systemPrompt, userPrompt, imageBase64);
+  }
+
+  // 3. MODO GEMINI DIRECTO
+  if (provider === 'gemini') {
+    if (!config.apiKey || config.apiKey.trim().length < 5) {
+      throw new Error('Por favor pega tu API Key en el engranaje ⚙️ o cambia a "Modo Inteligente Automático"');
+    }
+    const result = await callGeminiCascade(
+      config.apiKey,
+      config.model,
+      systemPrompt,
+      userPrompt,
+      imageBase64,
+      (nextModel) => showToast(`🔄 Probando modelo de respaldo ${nextModel}...`, 'info')
+    );
+    return result.text;
+  }
+
+  // 4. OTROS PROVEEDORES
+  if (provider === 'groq') return await callGroqDirect(systemPrompt, userPrompt);
+  if (provider === 'openai') return await callOpenAIDirect(systemPrompt, userPrompt, imageBase64);
+  if (provider === 'openrouter') return await callOpenRouterDirect(systemPrompt, userPrompt);
+  if (provider === 'antigravity' || provider === 'smart-router') return await callSmartRouter(systemPrompt, userPrompt);
+
+  throw new Error(`Proveedor de IA no reconocido: ${provider}`);
 }
 
 async function callSmartRouter(systemPrompt, userPrompt) {
@@ -89,10 +83,7 @@ async function callSmartRouter(systemPrompt, userPrompt) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       model: config.model || 'qwen-3.8-27b',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt }
-      ]
+      messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: userPrompt }]
     })
   });
   if (!res.ok) throw new Error(`Smart Router error (${res.status})`);
@@ -112,10 +103,7 @@ async function callOpenAIDirect(systemPrompt, userPrompt, imageBase64) {
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${config.apiKey}` },
     body: JSON.stringify({
       model: config.model || 'gpt-4o',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userContent }
-      ]
+      messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: userContent }]
     })
   });
   if (!res.ok) {
@@ -134,10 +122,7 @@ async function callGroqDirect(systemPrompt, userPrompt) {
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${config.apiKey}` },
     body: JSON.stringify({
       model: config.model || 'llama-3.3-70b-versatile',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt }
-      ]
+      messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: userPrompt }]
     })
   });
   if (!res.ok) {
@@ -161,10 +146,7 @@ async function callOpenRouterDirect(systemPrompt, userPrompt) {
     },
     body: JSON.stringify({
       model: config.model || 'meta-llama/llama-3.3-70b-instruct:free',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt }
-      ]
+      messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: userPrompt }]
     })
   });
   if (!res.ok) {

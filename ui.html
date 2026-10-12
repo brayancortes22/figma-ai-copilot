@@ -820,11 +820,13 @@ body::before {
           <span>Proveedor de Inteligencia</span>
         </label>
         <select class="form-select" id="providerSelect">
-          <option value="gemini" selected>✨ Google Gemini (Recomendado)</option>
-          <option value="antigravity">🪐 Antigravity / Smart Router (:3000)</option>
+          <option value="auto" selected>🤖 Modo Inteligente Automático (Recomendado - Sin bloqueos)</option>
+          <option value="free-cloud">🌐 Nube Gratuita Pública (Sin API Key - 100% Libre)</option>
+          <option value="gemini">✨ Google Gemini (Con tu propia API Key)</option>
+          <option value="groq">⚡ Groq Cloud (Ultra Rápido y Gratuito)</option>
+          <option value="openrouter">🌐 OpenRouter (Modelos Gratuitos)</option>
           <option value="openai">🟢 OpenAI (GPT-4o / mini)</option>
-          <option value="groq">⚡ Groq Cloud (Ultra Rápido)</option>
-          <option value="openrouter">🌐 OpenRouter API</option>
+          <option value="antigravity">🪐 Antigravity / Smart Router Local (:3000)</option>
         </select>
       </div>
 
@@ -837,7 +839,7 @@ body::before {
 
       <div class="form-group" id="groupApiKey">
         <label class="form-label" for="inputApiKey">
-          <span id="apiKeyLabel">Google Gemini API Key</span>
+          <span id="apiKeyLabel">Google Gemini API Key (Opcional)</span>
         </label>
         <div class="password-wrap">
           <input type="password" class="form-input" id="inputApiKey" placeholder="Pega tu API Key de Gemini...">
@@ -848,8 +850,8 @@ body::before {
             </svg>
           </button>
         </div>
-        <div style="margin-top: 4px; font-size: 10px; color: var(--text-muted);">
-          Obtén tu clave gratuita en <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: #818CF8; text-decoration: none;">Google AI Studio ↗</a>
+        <div id="apiKeyHint" style="margin-top: 4px; font-size: 10.5px; color: var(--text-muted); line-height: 1.4;">
+          💡 Si no tienes clave o se agota tu cuota, el plugin usará la <strong>Nube Gratuita</strong> automáticamente sin interrumpir tu diseño. Clave gratis en <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: #818CF8; text-decoration: none;">Google AI Studio ↗</a>
         </div>
       </div>
 
@@ -858,23 +860,37 @@ body::before {
           <span>Modelo de IA</span>
         </label>
         <select class="form-select" id="selectModelPreset">
-          <optgroup label="Google Gemini">
-            <option value="gemini-3.8-flash" selected>⚡ Gemini 3.8 Flash (Predeterminado)</option>
-            <option value="gemini-3.1-pro-preview">🧠 Gemini 3.1 Pro Preview (Máxima Precisión)</option>
-            <option value="gemini-2.5-pro">💎 Gemini 2.5 Pro</option>
-            <option value="gemini-2.5-flash">🚀 Gemini 2.5 Flash</option>
+          <optgroup label="Selección Automática">
+            <option value="auto-smart" selected>🤖 Auto-Cascada (Usa el modelo óptimo con cuota libre)</option>
+          </optgroup>
+          <optgroup label="Google Gemini (2026)">
+            <option value="gemini-3.8-flash">⚡ Gemini 3.8 Flash (Última Generación)</option>
+            <option value="gemini-3.6-flash">⚡ Gemini 3.6 Flash (Alta Velocidad)</option>
+            <option value="gemini-3.5-flash">🚀 Gemini 3.5 Flash (Foundational)</option>
+            <option value="gemini-2.5-flash">💎 Gemini 2.5 Flash (Cuota Estable)</option>
+            <option value="gemini-2.5-flash-lite">🍃 Gemini 2.5 Flash-Lite (Bajo Tráfico)</option>
+          </optgroup>
+          <optgroup label="Nube Gratuita Pública (Sin Clave)">
+            <option value="free-cloud-auto">🌐 Nube Pública Multi-Modelo (Llama 3.3 / Qwen)</option>
+          </optgroup>
+          <optgroup label="Groq Cloud (Gratis)">
+            <option value="llama-3.3-70b-versatile">⚡ Llama 3.3 70B (Groq - 500 t/s)</option>
+            <option value="llama-3.1-8b-instant">⚡ Llama 3.1 8B Instant (Ultra Veloz)</option>
+            <option value="qwen/qwen3.8-27b">⚡ Qwen 3.8 27B (Groq)</option>
+          </optgroup>
+          <optgroup label="OpenRouter (Gratis :free)">
+            <option value="meta-llama/llama-3.3-70b-instruct:free">🌐 Llama 3.3 70B Free</option>
+            <option value="deepseek/deepseek-r1:free">🌐 DeepSeek R1 Free</option>
           </optgroup>
           <optgroup label="OpenAI">
             <option value="gpt-4o">🟢 GPT-4o</option>
             <option value="gpt-4o-mini">🟢 GPT-4o Mini</option>
           </optgroup>
-          <optgroup label="Groq / OpenRouter / Otros">
-            <option value="qwen/qwen3.8-27b">⚡ Qwen 3.8 27B (Groq)</option>
-            <option value="meta-llama/llama-3.3-70b-instruct:free">🌐 Llama 3.3 70B (OpenRouter Free)</option>
+          <optgroup label="Personalizado">
             <option value="custom">✏️ Personalizado (Escribir ID manual)...</option>
           </optgroup>
         </select>
-        <input type="text" class="form-input" id="inputModelName" style="display: none; margin-top: 6px;" placeholder="Ej: gemini-3.8-flash" value="gemini-3.8-flash">
+        <input type="text" class="form-input" id="inputModelName" style="display: none; margin-top: 6px;" placeholder="Ej: gemini-3.8-flash" value="auto-smart">
       </div>
 
       <div class="settings-footer">
@@ -1006,10 +1022,11 @@ body::before {
   // src/ui/scripts/state.js
   var STORAGE_KEY = "figma_ai_copilot_config_v1";
   var defaultConfig = {
-    provider: "gemini",
+    provider: "auto",
+    // 'auto' | 'free-cloud' | 'gemini' | 'groq' | 'openrouter' | 'openai' | 'antigravity'
     localUrl: "http://localhost:3000",
     apiKey: "",
-    model: "gemini-3.8-flash"
+    model: "auto-smart"
   };
   var appConfig = loadInitialConfig();
   var currentSelection = [];
@@ -1037,9 +1054,14 @@ body::before {
     }
   }
   function applyStorageValue(key, value) {
-    if (key === STORAGE_KEY && value && typeof value === "object") {
-      appConfig = { ...defaultConfig, ...value };
-      return true;
+    if (key === STORAGE_KEY && value) {
+      try {
+        const parsed = typeof value === "string" ? JSON.parse(value) : value;
+        appConfig = { ...defaultConfig, ...parsed };
+        return true;
+      } catch (e) {
+        console.warn("[Figma AI Copilot] Error parseando storage value:", e);
+      }
     }
     return false;
   }
@@ -1093,44 +1115,26 @@ body::before {
     return isGenerating;
   }
 
-  // src/ui/scripts/ai-service.js
-  async function callAIService(systemPrompt, userPrompt, imageBase64 = null) {
-    const config = getConfig();
-    switch (config.provider) {
-      case "gemini":
-        return await callGeminiDirect(systemPrompt, userPrompt, imageBase64);
-      case "antigravity":
-      case "smart-router":
-        return await callSmartRouter(systemPrompt, userPrompt);
-      case "openai":
-        return await callOpenAIDirect(systemPrompt, userPrompt, imageBase64);
-      case "groq":
-        return await callGroqDirect(systemPrompt, userPrompt);
-      case "openrouter":
-        return await callOpenRouterDirect(systemPrompt, userPrompt);
-      default:
-        throw new Error(`Proveedor de IA no reconocido: ${config.provider}`);
+  // src/ui/scripts/gemini-provider.js
+  var GEMINI_2026_MODELS = [
+    "gemini-3.8-flash",
+    "gemini-3.6-flash",
+    "gemini-3.5-flash",
+    "gemini-2.5-flash",
+    "gemini-2.5-flash-lite",
+    "gemini-flash-latest"
+  ];
+  async function callGeminiCascade(apiKey, selectedModel, systemPrompt, userPrompt, imageBase64 = null, onModelSwitch = null) {
+    if (!apiKey || apiKey.trim().length < 5) {
+      throw new Error("API_KEY_REQUIRED");
     }
-  }
-  async function callGeminiDirect(systemPrompt, userPrompt, imageBase64) {
-    const config = getConfig();
-    if (!config.apiKey) {
-      throw new Error("Abre el engranaje \u2699\uFE0F y pega tu Gemini API Key de Google AI Studio");
-    }
-    const candidates = [
-      config.model,
-      "gemini-3.8-flash",
-      "gemini-3.1-pro-preview",
-      "gemini-2.5-pro",
-      "gemini-2.5-flash",
-      "gemini-flash-latest",
-      "gemini-pro-latest"
-    ].filter(Boolean);
+    const preferred = selectedModel && selectedModel !== "auto-smart" ? selectedModel : "gemini-3.8-flash";
+    const candidates = [preferred, ...GEMINI_2026_MODELS].filter(Boolean);
     const modelsToTry = [...new Set(candidates)];
     const parts = [{ text: `${systemPrompt}
 
 Instrucci\xF3n del usuario:
-${userPrompt || "Recrea este dise\xF1o en Figma"}` }];
+${userPrompt || "Recrea este dise\xF1o en Figma con componentes y Auto-Layout"}` }];
     if (imageBase64) {
       const cleanBase64 = imageBase64.replace(/^data:image\/[a-z]+;base64,/, "");
       parts.push({
@@ -1138,9 +1142,10 @@ ${userPrompt || "Recrea este dise\xF1o en Figma"}` }];
       });
     }
     let lastError = null;
-    for (const model of modelsToTry) {
+    for (let i = 0; i < modelsToTry.length; i++) {
+      const model = modelsToTry[i];
       try {
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(config.apiKey)}`;
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey.trim())}`;
         const res = await fetch(url, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -1152,20 +1157,186 @@ ${userPrompt || "Recrea este dise\xF1o en Figma"}` }];
         if (res.ok) {
           const data = await res.json();
           const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (text) return text;
+          if (text) return { text, modelUsed: model };
         } else {
           const err = await res.json().catch(() => ({}));
-          lastError = new Error(err.error?.message || `Error Gemini (${res.status})`);
-          if ([404, 429, 503].includes(res.status) || err.error?.status === "RESOURCE_EXHAUSTED") continue;
+          const errMsg = err.error?.message || `HTTP ${res.status}`;
+          lastError = new Error(errMsg);
+          if ([404, 429, 503].includes(res.status) || err.error?.status === "RESOURCE_EXHAUSTED" || errMsg.includes("Quota exceeded")) {
+            if (i < modelsToTry.length - 1 && onModelSwitch) {
+              onModelSwitch(modelsToTry[i + 1]);
+            }
+            continue;
+          }
           throw lastError;
         }
       } catch (err) {
         lastError = err;
-        if (err.message?.includes("exceeded") || err.message?.includes("quota") || err.message?.includes("404")) continue;
+        if (err.message?.includes("exceeded") || err.message?.includes("quota") || err.message?.includes("demand") || err.message?.includes("404")) {
+          if (i < modelsToTry.length - 1 && onModelSwitch) {
+            onModelSwitch(modelsToTry[i + 1]);
+          }
+          continue;
+        }
         throw err;
       }
     }
-    throw lastError || new Error("No se pudo conectar con ning\xFAn modelo de Gemini disponible");
+    throw lastError || new Error("QUOTA_EXHAUSTED_ALL_MODELS");
+  }
+
+  // src/ui/scripts/free-cloud.js
+  async function callFreeCloudDirect(systemPrompt, userPrompt, imageBase64 = null) {
+    const userText = imageBase64 ? `${userPrompt || "Recrea este dise\xF1o en Figma con componentes reales"} (Dise\xF1o con referencia visual adjunta)` : userPrompt || "Dise\xF1a en Figma";
+    try {
+      const res = await fetch("https://text.pollinations.ai/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userText }
+          ],
+          model: "openai",
+          seed: Math.floor(Math.random() * 1e5)
+        })
+      });
+      if (res.ok) {
+        const text = await res.text();
+        if (text && text.trim().length > 10) return text;
+      }
+    } catch (err) {
+      console.warn("[Figma AI Copilot] Error en endpoint 1 de nube gratuita:", err);
+    }
+    try {
+      const res2 = await fetch("https://text.pollinations.ai/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userText }
+          ],
+          model: "mistral",
+          seed: Math.floor(Math.random() * 1e5)
+        })
+      });
+      if (res2.ok) {
+        const text2 = await res2.text();
+        if (text2 && text2.trim().length > 10) return text2;
+      }
+    } catch (err2) {
+      console.warn("[Figma AI Copilot] Error en endpoint 2 de nube gratuita:", err2);
+    }
+    throw new Error("La nube gratuita p\xFAblica est\xE1 experimentando alta demanda. Por favor reintenta en unos instantes.");
+  }
+
+  // src/ui/scripts/dom-utils.js
+  function escapeHtml(str) {
+    if (!str) return "";
+    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+  }
+  function formatTimestamp() {
+    return (/* @__PURE__ */ new Date()).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }
+  function formatMarkdownBasic(str) {
+    let escaped = escapeHtml(str);
+    escaped = escaped.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+    escaped = escaped.replace(/`([^`]+)`/g, "<code>$1</code>");
+    return escaped.split("\n\n").map((p) => `<p>${p.replace(/\n/g, "<br>")}</p>`).join("");
+  }
+  function showToast(message, type = "info") {
+    const container = document.getElementById("toastContainer");
+    if (!container) return;
+    const toast = document.createElement("div");
+    toast.className = `toast-message ${type}`;
+    toast.innerHTML = `
+    <span>${escapeHtml(message)}</span>
+    <span style="cursor: pointer; opacity: 0.7; margin-left: 8px;">\u2715</span>
+  `;
+    toast.querySelector("span:last-child").addEventListener("click", () => toast.remove());
+    container.appendChild(toast);
+    setTimeout(() => {
+      if (toast.parentNode) {
+        toast.style.opacity = "0";
+        toast.style.transition = "opacity 0.2s ease";
+        setTimeout(() => toast.remove(), 200);
+      }
+    }, 3400);
+  }
+  function setStatus(statusType, label = "Listo") {
+    const badge = document.getElementById("statusBadge");
+    const text = document.getElementById("statusText");
+    if (!badge || !text) return;
+    if (statusType === "online") {
+      text.textContent = `\u{1F7E2} ${label}`;
+      badge.style.color = "#34D399";
+      badge.style.borderColor = "rgba(16, 185, 129, 0.25)";
+    } else if (statusType === "busy") {
+      text.textContent = `\u26A1 ${label}`;
+      badge.style.color = "#818CF8";
+      badge.style.borderColor = "rgba(99, 102, 241, 0.35)";
+    } else if (statusType === "error") {
+      text.textContent = `\u{1F534} ${label}`;
+      badge.style.color = "#F87171";
+      badge.style.borderColor = "rgba(239, 68, 68, 0.3)";
+    }
+  }
+
+  // src/ui/scripts/ai-service.js
+  async function callAIService(systemPrompt, userPrompt, imageBase64 = null, onStatusNotice = null) {
+    const config = getConfig();
+    const provider = config.provider || "auto";
+    if (provider === "auto") {
+      if (config.apiKey && config.apiKey.trim().length > 5) {
+        try {
+          const result = await callGeminiCascade(
+            config.apiKey.trim(),
+            config.model,
+            systemPrompt,
+            userPrompt,
+            imageBase64,
+            (nextModel) => {
+              const msg = `\u{1F504} Tr\xE1fico en Gemini. Conmutando a ${nextModel}...`;
+              if (onStatusNotice) onStatusNotice(msg);
+              showToast(msg, "info");
+            }
+          );
+          return result.text;
+        } catch (geminiErr) {
+          console.warn("[Figma AI Copilot] Gemini sin cuota o alta demanda. Conmutando a Nube Gratuita:", geminiErr);
+          const notice = "\u{1F504} Cuota de Gemini agotada. Usando Nube Gratuita de respaldo sin bloqueo...";
+          if (onStatusNotice) onStatusNotice(notice);
+          showToast(notice, "info");
+        }
+      } else {
+        const notice = "\u{1F310} Usando Nube Gratuita P\xFAblica (Sin API Key)";
+        if (onStatusNotice) onStatusNotice(notice);
+        showToast(notice, "info");
+      }
+      return await callFreeCloudDirect(systemPrompt, userPrompt, imageBase64);
+    }
+    if (provider === "free-cloud") {
+      return await callFreeCloudDirect(systemPrompt, userPrompt, imageBase64);
+    }
+    if (provider === "gemini") {
+      if (!config.apiKey || config.apiKey.trim().length < 5) {
+        throw new Error('Por favor pega tu API Key en el engranaje \u2699\uFE0F o cambia a "Modo Inteligente Autom\xE1tico"');
+      }
+      const result = await callGeminiCascade(
+        config.apiKey,
+        config.model,
+        systemPrompt,
+        userPrompt,
+        imageBase64,
+        (nextModel) => showToast(`\u{1F504} Probando modelo de respaldo ${nextModel}...`, "info")
+      );
+      return result.text;
+    }
+    if (provider === "groq") return await callGroqDirect(systemPrompt, userPrompt);
+    if (provider === "openai") return await callOpenAIDirect(systemPrompt, userPrompt, imageBase64);
+    if (provider === "openrouter") return await callOpenRouterDirect(systemPrompt, userPrompt);
+    if (provider === "antigravity" || provider === "smart-router") return await callSmartRouter(systemPrompt, userPrompt);
+    throw new Error(`Proveedor de IA no reconocido: ${provider}`);
   }
   async function callSmartRouter(systemPrompt, userPrompt) {
     const config = getConfig();
@@ -1175,10 +1346,7 @@ ${userPrompt || "Recrea este dise\xF1o en Figma"}` }];
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         model: config.model || "qwen-3.8-27b",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt }
-        ]
+        messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }]
       })
     });
     if (!res.ok) throw new Error(`Smart Router error (${res.status})`);
@@ -1194,10 +1362,7 @@ ${userPrompt || "Recrea este dise\xF1o en Figma"}` }];
       headers: { "Content-Type": "application/json", "Authorization": `Bearer ${config.apiKey}` },
       body: JSON.stringify({
         model: config.model || "gpt-4o",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userContent }
-        ]
+        messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userContent }]
       })
     });
     if (!res.ok) {
@@ -1215,10 +1380,7 @@ ${userPrompt || "Recrea este dise\xF1o en Figma"}` }];
       headers: { "Content-Type": "application/json", "Authorization": `Bearer ${config.apiKey}` },
       body: JSON.stringify({
         model: config.model || "llama-3.3-70b-versatile",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt }
-        ]
+        messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }]
       })
     });
     if (!res.ok) {
@@ -1241,10 +1403,7 @@ ${userPrompt || "Recrea este dise\xF1o en Figma"}` }];
       },
       body: JSON.stringify({
         model: config.model || "meta-llama/llama-3.3-70b-instruct:free",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt }
-        ]
+        messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }]
       })
     });
     if (!res.ok) {
@@ -1325,58 +1484,6 @@ ${selectionContext}`;
       }
     }
     return null;
-  }
-
-  // src/ui/scripts/dom-utils.js
-  function escapeHtml(str) {
-    if (!str) return "";
-    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-  }
-  function formatTimestamp() {
-    return (/* @__PURE__ */ new Date()).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  }
-  function formatMarkdownBasic(str) {
-    let escaped = escapeHtml(str);
-    escaped = escaped.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
-    escaped = escaped.replace(/`([^`]+)`/g, "<code>$1</code>");
-    return escaped.split("\n\n").map((p) => `<p>${p.replace(/\n/g, "<br>")}</p>`).join("");
-  }
-  function showToast(message, type = "info") {
-    const container = document.getElementById("toastContainer");
-    if (!container) return;
-    const toast = document.createElement("div");
-    toast.className = `toast-message ${type}`;
-    toast.innerHTML = `
-    <span>${escapeHtml(message)}</span>
-    <span style="cursor: pointer; opacity: 0.7; margin-left: 8px;">\u2715</span>
-  `;
-    toast.querySelector("span:last-child").addEventListener("click", () => toast.remove());
-    container.appendChild(toast);
-    setTimeout(() => {
-      if (toast.parentNode) {
-        toast.style.opacity = "0";
-        toast.style.transition = "opacity 0.2s ease";
-        setTimeout(() => toast.remove(), 200);
-      }
-    }, 3400);
-  }
-  function setStatus(statusType, label = "Listo") {
-    const badge = document.getElementById("statusBadge");
-    const text = document.getElementById("statusText");
-    if (!badge || !text) return;
-    if (statusType === "online") {
-      text.textContent = `\u{1F7E2} ${label}`;
-      badge.style.color = "#34D399";
-      badge.style.borderColor = "rgba(16, 185, 129, 0.25)";
-    } else if (statusType === "busy") {
-      text.textContent = `\u26A1 ${label}`;
-      badge.style.color = "#818CF8";
-      badge.style.borderColor = "rgba(99, 102, 241, 0.35)";
-    } else if (statusType === "error") {
-      text.textContent = `\u{1F534} ${label}`;
-      badge.style.color = "#F87171";
-      badge.style.borderColor = "rgba(239, 68, 68, 0.3)";
-    }
   }
 
   // src/ui/scripts/chat-view.js
@@ -1485,9 +1592,9 @@ ${selectionContext}`;
     const apiKey = document.getElementById("inputApiKey");
     const preset = document.getElementById("selectModelPreset");
     const customModel = document.getElementById("inputModelName");
-    if (provider) provider.value = cfg.provider;
-    if (localUrl) localUrl.value = cfg.localUrl;
-    if (apiKey) apiKey.value = cfg.apiKey;
+    if (provider) provider.value = cfg.provider || "auto";
+    if (localUrl) localUrl.value = cfg.localUrl || "http://localhost:3000";
+    if (apiKey) apiKey.value = cfg.apiKey || "";
     if (preset) {
       const opt = preset.querySelector(`option[value="${cfg.model}"]`);
       if (opt) {
@@ -1496,7 +1603,7 @@ ${selectionContext}`;
       } else {
         preset.value = "custom";
         if (customModel) {
-          customModel.value = cfg.model || "gemini-3.8-flash";
+          customModel.value = cfg.model || "auto-smart";
           customModel.style.display = "block";
         }
       }
@@ -1509,21 +1616,30 @@ ${selectionContext}`;
     const groupKey = document.getElementById("groupApiKey");
     const keyLabel = document.getElementById("apiKeyLabel");
     const inputKey = document.getElementById("inputApiKey");
+    const apiKeyHint = document.getElementById("apiKeyHint");
     if (groupUrl) groupUrl.style.display = prov === "antigravity" || prov === "smart-router" ? "flex" : "none";
-    if (groupKey) groupKey.style.display = prov === "antigravity" || prov === "smart-router" ? "none" : "flex";
+    if (groupKey) groupKey.style.display = prov === "antigravity" || prov === "smart-router" || prov === "free-cloud" ? "none" : "flex";
     if (keyLabel && inputKey) {
-      if (prov === "gemini") {
+      if (prov === "auto") {
+        keyLabel.textContent = "Google Gemini API Key (Opcional)";
+        inputKey.placeholder = "AIzaSy... (Opcional - si no tienes o se agota, usa nube gratis)";
+        if (apiKeyHint) apiKeyHint.style.display = "block";
+      } else if (prov === "gemini") {
         keyLabel.textContent = "Google Gemini API Key";
         inputKey.placeholder = "AIzaSy... (Google AI Studio)";
+        if (apiKeyHint) apiKeyHint.style.display = "none";
       } else if (prov === "openai") {
         keyLabel.textContent = "OpenAI API Key";
         inputKey.placeholder = "sk-proj-...";
+        if (apiKeyHint) apiKeyHint.style.display = "none";
       } else if (prov === "groq") {
         keyLabel.textContent = "Groq Cloud API Key";
-        inputKey.placeholder = "gsk_...";
+        inputKey.placeholder = "gsk_... (console.groq.com)";
+        if (apiKeyHint) apiKeyHint.style.display = "none";
       } else if (prov === "openrouter") {
         keyLabel.textContent = "OpenRouter API Key";
-        inputKey.placeholder = "sk-or-v1-...";
+        inputKey.placeholder = "sk-or-v1-... (openrouter.ai)";
+        if (apiKeyHint) apiKeyHint.style.display = "none";
       }
     }
   }
@@ -1548,13 +1664,13 @@ ${selectionContext}`;
       }
     });
     document.getElementById("btnSaveSettings")?.addEventListener("click", () => {
-      const provider = document.getElementById("providerSelect")?.value;
+      const provider = document.getElementById("providerSelect")?.value || "auto";
       const localUrl = document.getElementById("inputLocalUrl")?.value.trim();
       const apiKey = document.getElementById("inputApiKey")?.value.trim();
       const preset = document.getElementById("selectModelPreset")?.value;
       const custom = document.getElementById("inputModelName")?.value.trim();
       const model = preset === "custom" ? custom : preset;
-      saveConfig({ provider, localUrl: localUrl || "http://localhost:3000", apiKey, model: model || "gemini-3.8-flash" });
+      saveConfig({ provider, localUrl: localUrl || "http://localhost:3000", apiKey, model: model || "auto-smart" });
       document.getElementById("settingsDrawer")?.classList.remove("open");
       showToast("Ajustes guardados correctamente", "success");
     });
@@ -1643,7 +1759,9 @@ ${selectionContext}`;
     showTypingIndicator();
     try {
       const sysPrompt = buildSystemPrompt(getSelection(), Boolean(image));
-      const rawResponse = await callAIService(sysPrompt, text, image);
+      const rawResponse = await callAIService(sysPrompt, text, image, (notice) => {
+        setStatus("busy", "Conmutando IA...");
+      });
       removeTypingIndicator();
       const dslOperations = extractDSLFromResponse(rawResponse);
       appendAIMessage(rawResponse, dslOperations, executeDSL);

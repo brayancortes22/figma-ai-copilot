@@ -14,9 +14,9 @@ export function syncSettingsUI() {
   const preset = document.getElementById('selectModelPreset');
   const customModel = document.getElementById('inputModelName');
 
-  if (provider) provider.value = cfg.provider;
-  if (localUrl) localUrl.value = cfg.localUrl;
-  if (apiKey) apiKey.value = cfg.apiKey;
+  if (provider) provider.value = cfg.provider || 'auto';
+  if (localUrl) localUrl.value = cfg.localUrl || 'http://localhost:3000';
+  if (apiKey) apiKey.value = cfg.apiKey || '';
 
   if (preset) {
     const opt = preset.querySelector(`option[value="${cfg.model}"]`);
@@ -26,7 +26,7 @@ export function syncSettingsUI() {
     } else {
       preset.value = 'custom';
       if (customModel) {
-        customModel.value = cfg.model || 'gemini-3.8-flash';
+        customModel.value = cfg.model || 'auto-smart';
         customModel.style.display = 'block';
       }
     }
@@ -40,23 +40,32 @@ export function updateProviderFormVisibility() {
   const groupKey = document.getElementById('groupApiKey');
   const keyLabel = document.getElementById('apiKeyLabel');
   const inputKey = document.getElementById('inputApiKey');
+  const apiKeyHint = document.getElementById('apiKeyHint');
 
   if (groupUrl) groupUrl.style.display = (prov === 'antigravity' || prov === 'smart-router') ? 'flex' : 'none';
-  if (groupKey) groupKey.style.display = (prov === 'antigravity' || prov === 'smart-router') ? 'none' : 'flex';
+  if (groupKey) groupKey.style.display = (prov === 'antigravity' || prov === 'smart-router' || prov === 'free-cloud') ? 'none' : 'flex';
 
   if (keyLabel && inputKey) {
-    if (prov === 'gemini') {
+    if (prov === 'auto') {
+      keyLabel.textContent = 'Google Gemini API Key (Opcional)';
+      inputKey.placeholder = 'AIzaSy... (Opcional - si no tienes o se agota, usa nube gratis)';
+      if (apiKeyHint) apiKeyHint.style.display = 'block';
+    } else if (prov === 'gemini') {
       keyLabel.textContent = 'Google Gemini API Key';
       inputKey.placeholder = 'AIzaSy... (Google AI Studio)';
+      if (apiKeyHint) apiKeyHint.style.display = 'none';
     } else if (prov === 'openai') {
       keyLabel.textContent = 'OpenAI API Key';
       inputKey.placeholder = 'sk-proj-...';
+      if (apiKeyHint) apiKeyHint.style.display = 'none';
     } else if (prov === 'groq') {
       keyLabel.textContent = 'Groq Cloud API Key';
-      inputKey.placeholder = 'gsk_...';
+      inputKey.placeholder = 'gsk_... (console.groq.com)';
+      if (apiKeyHint) apiKeyHint.style.display = 'none';
     } else if (prov === 'openrouter') {
       keyLabel.textContent = 'OpenRouter API Key';
-      inputKey.placeholder = 'sk-or-v1-...';
+      inputKey.placeholder = 'sk-or-v1-... (openrouter.ai)';
+      if (apiKeyHint) apiKeyHint.style.display = 'none';
     }
   }
 }
@@ -86,14 +95,14 @@ export function setupSettingsListeners() {
   });
 
   document.getElementById('btnSaveSettings')?.addEventListener('click', () => {
-    const provider = document.getElementById('providerSelect')?.value;
+    const provider = document.getElementById('providerSelect')?.value || 'auto';
     const localUrl = document.getElementById('inputLocalUrl')?.value.trim();
     const apiKey = document.getElementById('inputApiKey')?.value.trim();
     const preset = document.getElementById('selectModelPreset')?.value;
     const custom = document.getElementById('inputModelName')?.value.trim();
     const model = preset === 'custom' ? custom : preset;
 
-    saveConfig({ provider, localUrl: localUrl || 'http://localhost:3000', apiKey, model: model || 'gemini-3.8-flash' });
+    saveConfig({ provider, localUrl: localUrl || 'http://localhost:3000', apiKey, model: model || 'auto-smart' });
     document.getElementById('settingsDrawer')?.classList.remove('open');
     showToast('Ajustes guardados correctamente', 'success');
   });
