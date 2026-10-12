@@ -118,7 +118,11 @@
     return [{ type: "SOLID", color, opacity }];
   }
   function applyStrokesAndEffects(node, op) {
-    var _a, _b, _c, _d, _e, _f, _g, _h;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n;
+    if (op.opacity != null && "opacity" in node) {
+      const rawOp = Number(op.opacity);
+      node.opacity = rawOp > 1 ? rawOp / 100 : Math.max(0, Math.min(1, rawOp));
+    }
     if (op.strokes || op.borderColor) {
       node.strokes = parseFills(op.strokes || op.borderColor);
       node.strokeWeight = Number((_b = (_a = op.strokeWeight) != null ? _a : op.borderWidth) != null ? _b : 1);
@@ -131,17 +135,40 @@
     }
     if (op.effects && Array.isArray(op.effects)) {
       node.effects = op.effects;
-    } else if (op.dropShadow || op.shadow) {
-      const s = typeof op.dropShadow === "object" ? op.dropShadow : {};
-      node.effects = [{
-        type: "DROP_SHADOW",
-        color: s.color ? __spreadProps(__spreadValues({}, parseColor(s.color)), { a: (_c = s.opacity) != null ? _c : 0.15 }) : { r: 0, g: 0, b: 0, a: 0.18 },
-        offset: { x: Number((_d = s.x) != null ? _d : 0), y: Number((_e = s.y) != null ? _e : 4) },
-        radius: Number((_g = (_f = s.blur) != null ? _f : s.radius) != null ? _g : 12),
-        spread: Number((_h = s.spread) != null ? _h : 0),
-        visible: true,
-        blendMode: "NORMAL"
-      }];
+    } else {
+      const effs = [];
+      if (op.dropShadow || op.shadow) {
+        const s = typeof op.dropShadow === "object" ? op.dropShadow : {};
+        effs.push({
+          type: "DROP_SHADOW",
+          color: s.color ? __spreadProps(__spreadValues({}, parseColor(s.color)), { a: (_c = s.opacity) != null ? _c : 0.15 }) : { r: 0, g: 0, b: 0, a: 0.18 },
+          offset: { x: Number((_d = s.x) != null ? _d : 0), y: Number((_e = s.y) != null ? _e : 4) },
+          radius: Number((_g = (_f = s.blur) != null ? _f : s.radius) != null ? _g : 12),
+          spread: Number((_h = s.spread) != null ? _h : 0),
+          visible: true,
+          blendMode: "NORMAL"
+        });
+      }
+      if (op.innerShadow) {
+        const is = typeof op.innerShadow === "object" ? op.innerShadow : {};
+        effs.push({
+          type: "INNER_SHADOW",
+          color: is.color ? __spreadProps(__spreadValues({}, parseColor(is.color)), { a: (_i = is.opacity) != null ? _i : 0.2 }) : { r: 0, g: 0, b: 0, a: 0.25 },
+          offset: { x: Number((_j = is.x) != null ? _j : 0), y: Number((_k = is.y) != null ? _k : 2) },
+          radius: Number((_m = (_l = is.blur) != null ? _l : is.radius) != null ? _m : 4),
+          spread: Number((_n = is.spread) != null ? _n : 0),
+          visible: true,
+          blendMode: "NORMAL"
+        });
+      }
+      if (op.backgroundBlur || op.glass) {
+        const r = typeof op.backgroundBlur === "number" ? op.backgroundBlur : 16;
+        effs.push({ type: "BACKGROUND_BLUR", radius: r, visible: true });
+      } else if (op.layerBlur) {
+        const r = typeof op.layerBlur === "number" ? op.layerBlur : 12;
+        effs.push({ type: "LAYER_BLUR", radius: r, visible: true });
+      }
+      if (effs.length > 0) node.effects = effs;
     }
   }
   function serializeNode(node) {
@@ -202,6 +229,152 @@
     }
   });
 
+  // src/plugin/presets.js
+  function resolveDevicePreset(op) {
+    if (!op) return null;
+    const raw = String(op.preset || op.device || op.devicePreset || "").toUpperCase().trim();
+    if (!raw) return null;
+    const normalized = raw.replace(/[^A-Z0-9]/g, "_").replace(/__+/g, "_");
+    for (const [key, preset] of Object.entries(DEVICE_PRESETS)) {
+      if (normalized === key || normalized.includes(key) || key.includes(normalized)) {
+        return preset;
+      }
+    }
+    if (normalized.includes("IPHONE_17")) return DEVICE_PRESETS.IPHONE_17;
+    if (normalized.includes("IPHONE_16_PRO_MAX") || normalized.includes("PRO_MAX")) return DEVICE_PRESETS.IPHONE_16_17_PRO_MAX;
+    if (normalized.includes("IPHONE_16") || normalized.includes("IPHONE") || normalized.includes("MOBILE")) return DEVICE_PRESETS.IPHONE_16;
+    if (normalized.includes("ANDROID")) return DEVICE_PRESETS.ANDROID_COMPACT;
+    if (normalized.includes("IPAD") || normalized.includes("TABLET")) return DEVICE_PRESETS.IPAD_PRO_11;
+    if (normalized.includes("DESKTOP") || normalized.includes("WEB") || normalized.includes("LAPTOP")) return DEVICE_PRESETS.DESKTOP;
+    return null;
+  }
+  var DEVICE_PRESETS;
+  var init_presets = __esm({
+    "src/plugin/presets.js"() {
+      DEVICE_PRESETS = {
+        // iPhone
+        "IPHONE_17": { width: 402, height: 874, name: "iPhone 17" },
+        "IPHONE_16_17_PRO": { width: 402, height: 874, name: "iPhone 16 & 17 Pro" },
+        "IPHONE_16": { width: 393, height: 852, name: "iPhone 16" },
+        "IPHONE_16_17_PRO_MAX": { width: 440, height: 956, name: "iPhone 16 & 17 Pro Max" },
+        "IPHONE_16_PLUS": { width: 430, height: 932, name: "iPhone 16 Plus" },
+        "IPHONE_AIR": { width: 420, height: 912, name: "iPhone Air" },
+        "IPHONE_14_15_PRO": { width: 393, height: 852, name: "iPhone 14 & 15 Pro" },
+        "IPHONE_14_15_PRO_MAX": { width: 430, height: 932, name: "iPhone 14 & 15 Pro Max" },
+        "IPHONE_13_14": { width: 390, height: 844, name: "iPhone 13 & 14" },
+        "IPHONE_14_PLUS": { width: 428, height: 926, name: "iPhone 14 Plus" },
+        // Android
+        "ANDROID_COMPACT": { width: 412, height: 917, name: "Android Compact" },
+        "ANDROID_MEDIUM": { width: 700, height: 840, name: "Android Medium" },
+        "ANDROID_EXPANDED": { width: 1280, height: 800, name: "Android Expanded" },
+        // Tablets & Desktop
+        "IPAD_MINI": { width: 744, height: 1133, name: "iPad mini 8.3" },
+        "IPAD_PRO_11": { width: 834, height: 1194, name: 'iPad Pro 11"' },
+        "IPAD_PRO_12_9": { width: 1024, height: 1366, name: 'iPad Pro 12.9"' },
+        "SURFACE_PRO_8": { width: 1440, height: 960, name: "Surface Pro 8" },
+        "DESKTOP": { width: 1440, height: 900, name: "Desktop" }
+      };
+    }
+  });
+
+  // src/plugin/operations/prototype.js
+  function applyScrollBehavior(node, op) {
+    if (!node || !("overflowDirection" in node)) return;
+    const rawOverflow = String(op.overflow || op.overflowDirection || op.scrollOverflow || "").toUpperCase().trim();
+    if (rawOverflow.includes("HORIZ")) {
+      node.overflowDirection = "HORIZONTAL_SCROLLING";
+    } else if (rawOverflow.includes("VERT")) {
+      node.overflowDirection = "VERTICAL_SCROLLING";
+    } else if (rawOverflow.includes("BOTH")) {
+      node.overflowDirection = "BOTH_SCROLLING";
+    } else if (rawOverflow.includes("NONE") || rawOverflow.includes("NO")) {
+      node.overflowDirection = "NONE";
+    }
+    if (op.fixed || op.isFixed || op.position === "fixed" || op.position === "FIXED") {
+      if ("layoutPositioning" in node) {
+        node.layoutPositioning = "ABSOLUTE";
+      }
+    }
+  }
+  function parseTrigger(rawTrigger) {
+    const t = String(rawTrigger || "ON_CLICK").toUpperCase().trim();
+    if (t.includes("HOVER")) return { type: "HOVER" };
+    if (t.includes("PRESS")) return { type: "PRESS" };
+    if (t.includes("DRAG")) return { type: "DRAG" };
+    if (t.includes("ENTER")) return { type: "MOUSE_ENTER" };
+    if (t.includes("LEAVE")) return { type: "MOUSE_LEAVE" };
+    if (t.includes("DELAY") || t.includes("TIMEOUT")) return { type: "AFTER_TIMEOUT", timeout: 0.8 };
+    return { type: "ON_CLICK" };
+  }
+  function parseTransition(rawTrans) {
+    const trans = String(rawTrans || "SMART_ANIMATE").toUpperCase().trim();
+    if (trans.includes("DISSOLVE")) {
+      return { type: "DISSOLVE", easing: { type: "EASE_OUT" }, duration: 0.25 };
+    }
+    if (trans.includes("INSTANT")) {
+      return { type: "INSTANT" };
+    }
+    if (trans.includes("SLIDE")) {
+      return { type: "SLIDE_IN", direction: "LEFT", easing: { type: "EASE_OUT" }, duration: 0.3 };
+    }
+    return { type: "SMART_ANIMATE", easing: { type: "EASE_OUT" }, duration: 0.3 };
+  }
+  function resolveDestinationNode(targetRef, nodeLookup) {
+    if (!targetRef) return null;
+    if (typeof targetRef === "object" && targetRef.id) return targetRef;
+    const query = String(targetRef).toLowerCase().trim();
+    if (nodeLookup) {
+      for (const [key, n] of nodeLookup.entries()) {
+        if (key.toLowerCase() === query || n.name && n.name.toLowerCase() === query) {
+          return n;
+        }
+      }
+    }
+    const canvasMatch = figma.currentPage.findOne((n) => n.id === targetRef || n.name.toLowerCase() === query);
+    return canvasMatch || null;
+  }
+  function applyNodeInteraction(sourceNode, interaction, nodeLookup) {
+    if (!sourceNode || !interaction || !("setReactions" in sourceNode)) return;
+    try {
+      const trigger = parseTrigger(interaction.trigger);
+      const actType = String(interaction.action || interaction.navigation || "NAVIGATE").toUpperCase().trim();
+      if (actType === "BACK") {
+        sourceNode.setReactions([{ trigger, actions: [{ type: "BACK" }] }]);
+        return;
+      }
+      if (actType === "CLOSE") {
+        sourceNode.setReactions([{ trigger, actions: [{ type: "CLOSE" }] }]);
+        return;
+      }
+      if (actType === "URL" && interaction.url) {
+        sourceNode.setReactions([{ trigger, actions: [{ type: "URL", url: interaction.url }] }]);
+        return;
+      }
+      const dest = resolveDestinationNode(interaction.destination || interaction.destinationId || interaction.target, nodeLookup);
+      if (!dest) {
+        console.warn("[Figma AI Copilot] Destino de interacci\xF3n no encontrado:", interaction.destination);
+        return;
+      }
+      const transition = parseTransition(interaction.transition);
+      const nav = actType.includes("OVERLAY") ? "OVERLAY" : actType.includes("CHANGE") ? "CHANGE_TO" : "NAVIGATE";
+      sourceNode.setReactions([{
+        trigger,
+        actions: [{
+          type: "NODE",
+          destinationId: dest.id,
+          navigation: nav,
+          transition
+        }]
+      }]);
+    } catch (err) {
+      console.warn("[Figma AI Copilot] Error aplicando interacci\xF3n:", err);
+    }
+  }
+  var init_prototype = __esm({
+    "src/plugin/operations/prototype.js"() {
+    }
+  });
+
   // src/plugin/operations/layout.js
   function registerChildExecutor(executor) {
     childExecutor = executor;
@@ -210,11 +383,15 @@
     return __async(this, null, function* () {
       var _a, _b, _c, _d, _e, _f, _g, _h;
       const frame = figma.createFrame();
-      frame.name = op.name || "Frame";
-      frame.resize(Math.max(1, op.width || 320), Math.max(1, op.height || 200));
+      const preset = resolveDevicePreset(op);
+      const width = Math.max(1, op.width || (preset == null ? void 0 : preset.width) || 320);
+      const height = Math.max(1, op.height || (preset == null ? void 0 : preset.height) || 200);
+      frame.name = op.name || (preset == null ? void 0 : preset.name) || "Frame";
+      frame.resize(width, height);
       if (op.cornerRadius != null) frame.cornerRadius = Number(op.cornerRadius);
       if (op.fills !== void 0) frame.fills = parseFills(op.fills);
       applyStrokesAndEffects(frame, op);
+      applyScrollBehavior(frame, op);
       const mode = String(op.layoutMode || "").toUpperCase();
       if (mode === "HORIZONTAL" || mode === "VERTICAL") {
         frame.layoutMode = mode;
@@ -227,6 +404,12 @@
         frame.paddingLeft = (_h = (_g = op.paddingLeft) != null ? _g : pad == null ? void 0 : pad.left) != null ? _h : defaultPad;
         if (op.primaryAxisAlignItems) frame.primaryAxisAlignItems = op.primaryAxisAlignItems.toUpperCase();
         if (op.counterAxisAlignItems) frame.counterAxisAlignItems = op.counterAxisAlignItems.toUpperCase();
+        if (op.layoutWrap === "WRAP" || op.wrap) {
+          try {
+            frame.layoutWrap = "WRAP";
+          } catch (e) {
+          }
+        }
       } else {
         frame.layoutMode = "NONE";
       }
@@ -282,6 +465,12 @@
       frame.paddingLeft = (_h = (_g = op.paddingLeft) != null ? _g : pad == null ? void 0 : pad.left) != null ? _h : defaultPad;
       if (op.primaryAxisAlignItems) frame.primaryAxisAlignItems = op.primaryAxisAlignItems.toUpperCase();
       if (op.counterAxisAlignItems) frame.counterAxisAlignItems = op.counterAxisAlignItems.toUpperCase();
+      if (op.layoutWrap === "WRAP" || op.wrap) {
+        try {
+          frame.layoutWrap = "WRAP";
+        } catch (e) {
+        }
+      }
       return frame;
     });
   }
@@ -289,6 +478,8 @@
   var init_layout = __esm({
     "src/plugin/operations/layout.js"() {
       init_helpers();
+      init_presets();
+      init_prototype();
       childExecutor = null;
     }
   });
@@ -707,51 +898,88 @@
     return __async(this, null, function* () {
       const op = normalizeOperation(rawOp);
       const action = op.action;
+      let node = null;
       switch (action) {
         case "CREATE_FRAME":
-          return yield opCreateFrame(op, parent);
+          node = yield opCreateFrame(op, parent);
+          break;
         case "CREATE_BUTTON":
-          return yield opCreateButton(op, parent);
+          node = yield opCreateButton(op, parent);
+          break;
         case "CREATE_ICON":
-          return yield opCreateIcon(op, parent);
+          node = yield opCreateIcon(op, parent);
+          break;
         case "CREATE_COMPONENT_SET":
         case "CREATE_INTERACTIVE_BUTTON":
-          return yield opCreateInteractiveComponentSet(op, parent);
+          node = yield opCreateInteractiveComponentSet(op, parent);
+          break;
         case "CREATE_BADGE":
-          return yield opCreateBadge(op, parent);
+          node = yield opCreateBadge(op, parent);
+          break;
         case "CREATE_INPUT":
-          return yield opCreateInput(op, parent);
+          node = yield opCreateInput(op, parent);
+          break;
         case "CREATE_TEXT":
-          return yield opCreateText(op, parent);
+          node = yield opCreateText(op, parent);
+          break;
         case "CREATE_RECTANGLE":
-          return yield opCreateRectangle(op, parent);
+          node = yield opCreateRectangle(op, parent);
+          break;
         case "CREATE_ELLIPSE":
-          return yield opCreateEllipse(op, parent);
+          node = yield opCreateEllipse(op, parent);
+          break;
         case "EDIT_NODE":
         case "MODIFY_NODE":
-          return yield opEditNode(op);
+          node = yield opEditNode(op);
+          break;
         case "APPLY_AUTOLAYOUT":
         case "SET_AUTO_LAYOUT":
-          return yield opApplyAutoLayout(op);
+          node = yield opApplyAutoLayout(op);
+          break;
         case "ALIGN_SELECTION":
-          return yield opAlignSelection(op);
+          node = yield opAlignSelection(op);
+          break;
         case "RENAME_NODES":
-          return yield opRenameNodes(op);
+          node = yield opRenameNodes(op);
+          break;
+        case "CREATE_INTERACTION":
+          pendingInteractions.push({ source: op.source || op.from, interaction: op });
+          return null;
         default:
-          console.warn(`[Figma AI Copilot] Acci\xF3n desconocida o gen\xE9rica: "${action}". Intentando como FRAME.`);
-          return yield opCreateFrame(op, parent);
+          node = yield opCreateFrame(op, parent);
+          break;
       }
+      if (node && "id" in node) {
+        if (op.name) activeNodeLookup.set(op.name, node);
+        if (op.id) activeNodeLookup.set(op.id, node);
+        activeNodeLookup.set(node.id, node);
+        if (op.interaction) {
+          pendingInteractions.push({ source: node, interaction: op.interaction });
+        }
+      }
+      return node;
     });
   }
   function executeDsl(payload) {
     return __async(this, null, function* () {
       const operations = Array.isArray(payload) ? payload : Array.isArray(payload == null ? void 0 : payload.operations) ? payload.operations : [payload];
+      activeNodeLookup.clear();
+      pendingInteractions = [];
       const affectedNodes = [];
       for (const op of operations) {
         if (!op || typeof op !== "object") continue;
         const node = yield executeSingleOperation(op);
         if (node && "id" in node) {
           affectedNodes.push(node);
+        }
+      }
+      for (const item of pendingInteractions) {
+        let src = item.source;
+        if (typeof src === "string") {
+          src = activeNodeLookup.get(src) || figma.currentPage.findOne((n) => n.name === src || n.id === src);
+        }
+        if (src) {
+          applyNodeInteraction(src, item.interaction, activeNodeLookup);
         }
       }
       if (affectedNodes.length > 0) {
@@ -761,6 +989,7 @@
       return affectedNodes;
     });
   }
+  var activeNodeLookup, pendingInteractions;
   var init_dispatcher = __esm({
     "src/plugin/dispatcher.js"() {
       init_helpers();
@@ -768,6 +997,9 @@
       init_components();
       init_primitives();
       init_selection();
+      init_prototype();
+      activeNodeLookup = /* @__PURE__ */ new Map();
+      pendingInteractions = [];
       registerChildExecutor(executeSingleOperation);
     }
   });

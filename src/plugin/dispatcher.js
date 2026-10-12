@@ -1,5 +1,5 @@
 /**
- * Figma AI Copilot - Dispatcher de Operaciones DSL
+ * Figma AI Copilot - Dispatcher de Operaciones DSL y Prototipado
  * Autor: Brayan Stid Cortés Lombana (bscl)
  */
 
@@ -18,45 +18,78 @@ import {
   opCreateIcon
 } from './operations/primitives.js';
 import { opAlignSelection, opRenameNodes, opEditNode } from './operations/selection.js';
+import { applyNodeInteraction } from './operations/prototype.js';
+
+const activeNodeLookup = new Map();
+let pendingInteractions = [];
 
 export async function executeSingleOperation(rawOp, parent = null) {
   const op = normalizeOperation(rawOp);
   const action = op.action;
+  let node = null;
 
   switch (action) {
     case 'CREATE_FRAME':
-      return await opCreateFrame(op, parent);
+      node = await opCreateFrame(op, parent);
+      break;
     case 'CREATE_BUTTON':
-      return await opCreateButton(op, parent);
+      node = await opCreateButton(op, parent);
+      break;
     case 'CREATE_ICON':
-      return await opCreateIcon(op, parent);
+      node = await opCreateIcon(op, parent);
+      break;
     case 'CREATE_COMPONENT_SET':
     case 'CREATE_INTERACTIVE_BUTTON':
-      return await opCreateInteractiveComponentSet(op, parent);
+      node = await opCreateInteractiveComponentSet(op, parent);
+      break;
     case 'CREATE_BADGE':
-      return await opCreateBadge(op, parent);
+      node = await opCreateBadge(op, parent);
+      break;
     case 'CREATE_INPUT':
-      return await opCreateInput(op, parent);
+      node = await opCreateInput(op, parent);
+      break;
     case 'CREATE_TEXT':
-      return await opCreateText(op, parent);
+      node = await opCreateText(op, parent);
+      break;
     case 'CREATE_RECTANGLE':
-      return await opCreateRectangle(op, parent);
+      node = await opCreateRectangle(op, parent);
+      break;
     case 'CREATE_ELLIPSE':
-      return await opCreateEllipse(op, parent);
+      node = await opCreateEllipse(op, parent);
+      break;
     case 'EDIT_NODE':
     case 'MODIFY_NODE':
-      return await opEditNode(op);
+      node = await opEditNode(op);
+      break;
     case 'APPLY_AUTOLAYOUT':
     case 'SET_AUTO_LAYOUT':
-      return await opApplyAutoLayout(op);
+      node = await opApplyAutoLayout(op);
+      break;
     case 'ALIGN_SELECTION':
-      return await opAlignSelection(op);
+      node = await opAlignSelection(op);
+      break;
     case 'RENAME_NODES':
-      return await opRenameNodes(op);
+      node = await opRenameNodes(op);
+      break;
+    case 'CREATE_INTERACTION':
+      pendingInteractions.push({ source: op.source || op.from, interaction: op });
+      return null;
     default:
-      console.warn(`[Figma AI Copilot] Acción desconocida o genérica: "${action}". Intentando como FRAME.`);
-      return await opCreateFrame(op, parent);
+      node = await opCreateFrame(op, parent);
+      break;
   }
+
+  if (node && 'id' in node) {
+    if (op.name) activeNodeLookup.set(op.name, node);
+    if (op.id) activeNodeLookup.set(op.id, node);
+    activeNodeLookup.set(node.id, node);
+
+    if (op.interaction) {
+      pendingInteractions.push({ source: node, interaction: op.interaction });
+    }
+  }
+
+  return node;
 }
 
 // Vincular ejecución recursiva de hijos
@@ -69,6 +102,8 @@ export async function executeDsl(payload) {
     ? payload.operations
     : [payload];
 
+  activeNodeLookup.clear();
+  pendingInteractions = [];
   const affectedNodes = [];
 
   for (const op of operations) {
@@ -76,6 +111,17 @@ export async function executeDsl(payload) {
     const node = await executeSingleOperation(op);
     if (node && 'id' in node) {
       affectedNodes.push(node);
+    }
+  }
+
+  // Resolver interacciones de prototipado diferidas entre pantallas
+  for (const item of pendingInteractions) {
+    let src = item.source;
+    if (typeof src === 'string') {
+      src = activeNodeLookup.get(src) || figma.currentPage.findOne(n => n.name === src || n.id === src);
+    }
+    if (src) {
+      applyNodeInteraction(src, item.interaction, activeNodeLookup);
     }
   }
 

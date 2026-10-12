@@ -874,11 +874,11 @@ body::before {
             <option value="qwen/qwen3.8-27b">⚡ Qwen 3.8 27B (Groq)</option>
           </optgroup>
           <optgroup label="Google Gemini (2026)">
-            <option value="gemini-3.8-flash">⚡ Gemini 3.8 Flash (Última Generación)</option>
-            <option value="gemini-3.6-flash">⚡ Gemini 3.6 Flash (Alta Velocidad)</option>
-            <option value="gemini-3.5-flash">🚀 Gemini 3.5 Flash (Foundational)</option>
-            <option value="gemini-2.5-flash">💎 Gemini 2.5 Flash (Cuota Estable)</option>
-            <option value="gemini-2.5-flash-lite">🍃 Gemini 2.5 Flash-Lite (Bajo Tráfico)</option>
+            <option value="gemini-3.6-flash">⚡ Gemini 3.6 Flash (Recomendado - Cuota Alta)</option>
+            <option value="gemini-3.5-flash">🚀 Gemini 3.5 Flash (Estable)</option>
+            <option value="gemini-3.5-flash-lite">🍃 Gemini 3.5 Flash-Lite (Ultrarrápido)</option>
+            <option value="gemini-flash-lite-latest">✨ Gemini Flash-Lite Latest</option>
+            <option value="gemini-3.8-flash">🔥 Gemini 3.8 Flash (Top Tier - 20 req/día)</option>
           </optgroup>
           <optgroup label="Nube Gratuita Pública (Sin Clave)">
             <option value="free-cloud-auto">🌐 Nube Pública Multi-Modelo (Llama 3.3 / Qwen)</option>
@@ -1122,18 +1122,17 @@ body::before {
 
   // src/ui/scripts/gemini-provider.js
   var GEMINI_2026_MODELS = [
-    "gemini-3.8-flash",
     "gemini-3.6-flash",
     "gemini-3.5-flash",
-    "gemini-2.5-flash",
-    "gemini-2.5-flash-lite",
-    "gemini-flash-latest"
+    "gemini-3.5-flash-lite",
+    "gemini-flash-lite-latest",
+    "gemini-3.8-flash"
   ];
   async function callGeminiCascade(apiKey, selectedModel, systemPrompt, userPrompt, imageBase64 = null, onModelSwitch = null) {
     if (!apiKey || apiKey.trim().length < 5) {
       throw new Error("API_KEY_REQUIRED");
     }
-    const preferred = selectedModel && selectedModel !== "auto-smart" ? selectedModel : "gemini-3.8-flash";
+    const preferred = selectedModel && selectedModel !== "auto-smart" ? selectedModel : "gemini-3.6-flash";
     const candidates = [preferred, ...GEMINI_2026_MODELS].filter(Boolean);
     const modelsToTry = [...new Set(candidates)];
     const parts = [{ text: `${systemPrompt}
@@ -1191,7 +1190,7 @@ ${userPrompt || "Dise\xF1a en Figma con componentes reales y Auto-Layout"}` }];
   function generateOfflineSmartDesign(prompt) {
     const p = (prompt || "").toLowerCase();
     if (p.includes("reposter") || p.includes("pastel") || p.includes("bakery") || p.includes("dulce")) {
-      return `He dise\xF1ado un flujo completo de alta fidelidad para la reposter\xEDa artesanal gourmet "Maison Sucr\xE9e", que incluye la pantalla de inicio de sesi\xF3n (Login) y el cat\xE1logo principal con est\xE9tica gourmet y botones de compra.
+      return `He dise\xF1ado un prototipo m\xF3vil completo e interactivo para "Maison Sucr\xE9e": pantalla de Login con inputs y navegaci\xF3n inteligente al Cat\xE1logo, cards con Auto-Layout, precios destacados y botones con variantes hover.
 
 \`\`\`json
 {
@@ -1199,8 +1198,7 @@ ${userPrompt || "Dise\xF1a en Figma con componentes reales y Auto-Layout"}` }];
     {
       "action": "CREATE_FRAME",
       "name": "1. Login - Maison Sucr\xE9e",
-      "width": 393,
-      "height": 852,
+      "preset": "iPhone 16",
       "fills": ["#FFFDF9"],
       "layoutMode": "VERTICAL",
       "itemSpacing": 20,
@@ -1211,17 +1209,32 @@ ${userPrompt || "Dise\xF1a en Figma con componentes reales y Auto-Layout"}` }];
         { "action": "CREATE_ICON", "icon": "heart", "size": 36, "color": "#D4A373" },
         { "action": "CREATE_TEXT", "characters": "Maison Sucr\xE9e", "fontSize": 28, "fontWeight": "BOLD", "fills": ["#5A3E2B"] },
         { "action": "CREATE_TEXT", "characters": "Reposter\xEDa Artesanal Gourmet", "fontSize": 14, "fills": ["#8C6D58"] },
-        { "action": "CREATE_INPUT", "name": "Email Input", "placeholder": "correo@ejemplo.com", "width": 345, "height": 48 },
+        { "action": "CREATE_INPUT", "name": "Email Input", "placeholder": "chef@maisonsucree.com", "width": 345, "height": 48 },
         { "action": "CREATE_INPUT", "name": "Password Input", "placeholder": "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022", "width": 345, "height": 48 },
-        { "action": "CREATE_BUTTON", "label": "Iniciar Sesi\xF3n Gourmet", "variant": "PRIMARY", "fills": ["#D4A373"], "textColor": "#FFFFFF", "width": 345, "height": 48, "cornerRadius": 12 },
+        {
+          "action": "CREATE_BUTTON",
+          "name": "Boton Iniciar Sesion",
+          "label": "Entrar al Cat\xE1logo \u{1F950}",
+          "variant": "PRIMARY",
+          "fills": ["#D4A373"],
+          "textColor": "#FFFFFF",
+          "width": 345,
+          "height": 48,
+          "cornerRadius": 12,
+          "interaction": {
+            "trigger": "ON_CLICK",
+            "destination": "2. Cat\xE1logo - Maison Sucr\xE9e",
+            "transition": "SMART_ANIMATE"
+          }
+        },
         { "action": "CREATE_TEXT", "characters": "\xBFOlvidaste tu contrase\xF1a?", "fontSize": 12, "fills": ["#A98467"] }
       ]
     },
     {
       "action": "CREATE_FRAME",
       "name": "2. Cat\xE1logo - Maison Sucr\xE9e",
-      "width": 393,
-      "height": 852,
+      "preset": "iPhone 16",
+      "overflow": "VERTICAL",
       "fills": ["#FAF7F2"],
       "layoutMode": "VERTICAL",
       "itemSpacing": 16,
@@ -1237,8 +1250,21 @@ ${userPrompt || "Dise\xF1a en Figma con componentes reales y Auto-Layout"}` }];
           "height": 44,
           "fills": ["#00000000"],
           "children": [
-            { "action": "CREATE_TEXT", "characters": "Nuestros Pasteles \u{1F950}", "fontSize": 22, "fontWeight": "BOLD", "fills": ["#432818"] },
-            { "action": "CREATE_ICON", "icon": "bag", "size": 24, "color": "#D4A373" }
+            {
+              "action": "CREATE_BUTTON",
+              "label": "Login",
+              "variant": "OUTLINE",
+              "icon": "arrow-left",
+              "textColor": "#5A3E2B",
+              "cornerRadius": 8,
+              "interaction": {
+                "trigger": "ON_CLICK",
+                "destination": "1. Login - Maison Sucr\xE9e",
+                "transition": "SMART_ANIMATE"
+              }
+            },
+            { "action": "CREATE_TEXT", "characters": "Nuestros Pasteles", "fontSize": 20, "fontWeight": "BOLD", "fills": ["#432818"] },
+            { "action": "CREATE_ICON", "icon": "bag", "size": 22, "color": "#D4A373" }
           ]
         },
         {
@@ -1264,7 +1290,7 @@ ${userPrompt || "Dise\xF1a en Figma con componentes reales y Auto-Layout"}` }];
               "width": 325,
               "children": [
                 { "action": "CREATE_TEXT", "characters": "$28.50 USD", "fontSize": 18, "fontWeight": "BOLD", "fills": ["#BB3E03"] },
-                { "action": "CREATE_BUTTON", "label": "Comprar", "variant": "PRIMARY", "fills": ["#D4A373"], "cornerRadius": 8 }
+                { "action": "CREATE_INTERACTIVE_BUTTON", "label": "Comprar", "baseColor": "#D4A373", "hoverColor": "#BC8A5A", "cornerRadius": 8 }
               ]
             }
           ]
@@ -1292,7 +1318,7 @@ ${userPrompt || "Dise\xF1a en Figma con componentes reales y Auto-Layout"}` }];
               "width": 325,
               "children": [
                 { "action": "CREATE_TEXT", "characters": "$19.00 USD", "fontSize": 18, "fontWeight": "BOLD", "fills": ["#BB3E03"] },
-                { "action": "CREATE_BUTTON", "label": "Comprar", "variant": "PRIMARY", "fills": ["#D4A373"], "cornerRadius": 8 }
+                { "action": "CREATE_INTERACTIVE_BUTTON", "label": "Comprar", "baseColor": "#D4A373", "hoverColor": "#BC8A5A", "cornerRadius": 8 }
               ]
             }
           ]
@@ -1311,8 +1337,7 @@ ${userPrompt || "Dise\xF1a en Figma con componentes reales y Auto-Layout"}` }];
     {
       "action": "CREATE_FRAME",
       "name": "Screen - Dise\xF1o Refero AAA",
-      "width": 393,
-      "height": 852,
+      "preset": "iPhone 16",
       "fills": ["#0D1117"],
       "layoutMode": "VERTICAL",
       "itemSpacing": 16,
@@ -1320,7 +1345,7 @@ ${userPrompt || "Dise\xF1a en Figma con componentes reales y Auto-Layout"}` }];
       "children": [
         { "action": "CREATE_TEXT", "characters": "Dise\xF1o UI Generado", "fontSize": 24, "fontWeight": "BOLD", "fills": ["#F0F6FC"] },
         { "action": "CREATE_TEXT", "characters": "Componente generado con Auto-Layout y fidelidad AAA", "fontSize": 14, "fills": ["#8B949E"] },
-        { "action": "CREATE_BUTTON", "label": "Comenzar Ahora", "variant": "PRIMARY", "fills": ["#6366F1"], "width": 353, "height": 48, "cornerRadius": 8 }
+        { "action": "CREATE_INTERACTIVE_BUTTON", "label": "Comenzar Ahora", "baseColor": "#6366F1", "hoverColor": "#4F46E5", "cornerRadius": 8 }
       ]
     }
   ]
@@ -1589,15 +1614,16 @@ PATRONES FEW-SHOT DE ALTA FIDELIDAD:
    - Cards de productos: Auto-Layout, imagen placeholder, precio destacado, bot\xF3n Comprar y badge "Popular".
 
 OPERACIONES DISPONIBLES EN FIGMA:
-- "CREATE_FRAME": { name, width, height, fills: ["#HEX"], cornerRadius, layoutMode, itemSpacing, padding: {top,right,bottom,left}, strokes: ["#HEX"], strokeWeight, children: [...] }
-- "CREATE_BUTTON": { label, variant: "PRIMARY"|"SECONDARY"|"OUTLINE"|"GITHUB", fills: ["#HEX"], textColor, cornerRadius: 6, paddingX: 16, paddingY: 10, fontSize: 14 }
-- "CREATE_ICON": { icon: "shield-check"|"bell"|"person"|"geo-alt"|"telephone"|"exclamation-triangle"|"heart"|"search"|"house"|"gear"|"arrow-left"|"arrow-right"|"plus"|"lock"|"envelope", size: 20, color: "#HEX" }
+- "CREATE_FRAME": { name, preset: "iPhone 16"|"iPhone 17"|"Android Compact", width, height, fills: ["#HEX"], cornerRadius, layoutMode: "VERTICAL"|"HORIZONTAL", layoutWrap: "WRAP", itemSpacing, padding: {top,right,bottom,left}, overflow: "VERTICAL"|"HORIZONTAL"|"NONE", dropShadow, backgroundBlur, innerShadow, clipsContent, children: [...] }
+- "CREATE_BUTTON": { label, variant: "PRIMARY"|"SECONDARY"|"OUTLINE"|"GITHUB", fills: ["#HEX"], textColor, icon: "cart"|"lock"|"arrow-left"|"star", cornerRadius: 8, interaction: { trigger: "ON_CLICK", destination: "NombreFrame", transition: "SMART_ANIMATE"|"DISSOLVE" } }
+- "CREATE_ICON": { icon: "cart"|"bag"|"heart"|"star"|"arrow-left"|"arrow-right"|"lock"|"envelope"|"search"|"house"|"gear"|"shield-check", size: 20, color: "#HEX" }
 - "CREATE_INTERACTIVE_BUTTON": { name, label, baseColor: "#HEX", hoverColor: "#HEX", textColor: "#HEX", cornerRadius: 8 }
 - "CREATE_BADGE": { label, backgroundColor: "#HEX", textColor: "#HEX", fontSize: 11, cornerRadius: 999 }
-- "CREATE_INPUT": { placeholder, width: 280, height: 42, fills: ["#HEX"], borderColor: "#HEX" }
+- "CREATE_INPUT": { placeholder, width: 345, height: 48, fills: ["#HEX"], borderColor: "#HEX", innerShadow: true }
 - "CREATE_TEXT": { characters, fontSize, fontWeight: "REGULAR"|"MEDIUM"|"BOLD", fills: ["#HEX"], textAlign: "LEFT"|"CENTER"|"RIGHT" }
-- "CREATE_RECTANGLE": { width, height, fills: ["#HEX"], cornerRadius }
+- "CREATE_RECTANGLE": { width, height, fills: ["#HEX"], cornerRadius, dropShadow }
 - "CREATE_ELLIPSE": { width, height, fills: ["#HEX"] }
+- "CREATE_INTERACTION": { source: "BotonLogin", destination: "CatalogoGourmet", trigger: "ON_CLICK", transition: "SMART_ANIMATE" }
 - "EDIT_NODE", "APPLY_AUTOLAYOUT", "ALIGN_SELECTION", "RENAME_NODES".
 
 REGLAS DE SALIDA OBLIGATORIAS:

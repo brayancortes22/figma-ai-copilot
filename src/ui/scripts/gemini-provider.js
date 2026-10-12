@@ -4,12 +4,11 @@
  */
 
 export const GEMINI_2026_MODELS = [
-  'gemini-3.8-flash',
   'gemini-3.6-flash',
   'gemini-3.5-flash',
-  'gemini-2.5-flash',
-  'gemini-2.5-flash-lite',
-  'gemini-flash-latest'
+  'gemini-3.5-flash-lite',
+  'gemini-flash-lite-latest',
+  'gemini-3.8-flash'
 ];
 
 export async function callGeminiCascade(apiKey, selectedModel, systemPrompt, userPrompt, imageBase64 = null, onModelSwitch = null) {
@@ -17,7 +16,7 @@ export async function callGeminiCascade(apiKey, selectedModel, systemPrompt, use
     throw new Error('API_KEY_REQUIRED');
   }
 
-  const preferred = (selectedModel && selectedModel !== 'auto-smart') ? selectedModel : 'gemini-3.8-flash';
+  const preferred = (selectedModel && selectedModel !== 'auto-smart') ? selectedModel : 'gemini-3.6-flash';
   const candidates = [preferred, ...GEMINI_2026_MODELS].filter(Boolean);
   const modelsToTry = [...new Set(candidates)];
 

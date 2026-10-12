@@ -67,6 +67,11 @@ export function parseFills(fills) {
 }
 
 export function applyStrokesAndEffects(node, op) {
+  if (op.opacity != null && 'opacity' in node) {
+    const rawOp = Number(op.opacity);
+    node.opacity = rawOp > 1 ? rawOp / 100 : Math.max(0, Math.min(1, rawOp));
+  }
+
   if (op.strokes || op.borderColor) {
     node.strokes = parseFills(op.strokes || op.borderColor);
     node.strokeWeight = Number(op.strokeWeight ?? op.borderWidth ?? 1);
@@ -80,17 +85,40 @@ export function applyStrokesAndEffects(node, op) {
 
   if (op.effects && Array.isArray(op.effects)) {
     node.effects = op.effects;
-  } else if (op.dropShadow || op.shadow) {
-    const s = typeof op.dropShadow === 'object' ? op.dropShadow : {};
-    node.effects = [{
-      type: 'DROP_SHADOW',
-      color: s.color ? { ...parseColor(s.color), a: s.opacity ?? 0.15 } : { r: 0, g: 0, b: 0, a: 0.18 },
-      offset: { x: Number(s.x ?? 0), y: Number(s.y ?? 4) },
-      radius: Number(s.blur ?? s.radius ?? 12),
-      spread: Number(s.spread ?? 0),
-      visible: true,
-      blendMode: 'NORMAL'
-    }];
+  } else {
+    const effs = [];
+    if (op.dropShadow || op.shadow) {
+      const s = typeof op.dropShadow === 'object' ? op.dropShadow : {};
+      effs.push({
+        type: 'DROP_SHADOW',
+        color: s.color ? { ...parseColor(s.color), a: s.opacity ?? 0.15 } : { r: 0, g: 0, b: 0, a: 0.18 },
+        offset: { x: Number(s.x ?? 0), y: Number(s.y ?? 4) },
+        radius: Number(s.blur ?? s.radius ?? 12),
+        spread: Number(s.spread ?? 0),
+        visible: true,
+        blendMode: 'NORMAL'
+      });
+    }
+    if (op.innerShadow) {
+      const is = typeof op.innerShadow === 'object' ? op.innerShadow : {};
+      effs.push({
+        type: 'INNER_SHADOW',
+        color: is.color ? { ...parseColor(is.color), a: is.opacity ?? 0.2 } : { r: 0, g: 0, b: 0, a: 0.25 },
+        offset: { x: Number(is.x ?? 0), y: Number(is.y ?? 2) },
+        radius: Number(is.blur ?? is.radius ?? 4),
+        spread: Number(is.spread ?? 0),
+        visible: true,
+        blendMode: 'NORMAL'
+      });
+    }
+    if (op.backgroundBlur || op.glass) {
+      const r = typeof op.backgroundBlur === 'number' ? op.backgroundBlur : 16;
+      effs.push({ type: 'BACKGROUND_BLUR', radius: r, visible: true });
+    } else if (op.layerBlur) {
+      const r = typeof op.layerBlur === 'number' ? op.layerBlur : 12;
+      effs.push({ type: 'LAYER_BLUR', radius: r, visible: true });
+    }
+    if (effs.length > 0) node.effects = effs;
   }
 }
 

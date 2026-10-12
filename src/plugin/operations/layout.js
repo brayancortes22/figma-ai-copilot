@@ -4,6 +4,8 @@
  */
 
 import { parseFills, applyStrokesAndEffects } from '../helpers.js';
+import { resolveDevicePreset } from '../presets.js';
+import { applyScrollBehavior } from './prototype.js';
 
 let childExecutor = null;
 
@@ -13,13 +15,18 @@ export function registerChildExecutor(executor) {
 
 export async function opCreateFrame(op, parent) {
   const frame = figma.createFrame();
-  frame.name = op.name || 'Frame';
-  frame.resize(Math.max(1, op.width || 320), Math.max(1, op.height || 200));
+  const preset = resolveDevicePreset(op);
+  const width = Math.max(1, op.width || preset?.width || 320);
+  const height = Math.max(1, op.height || preset?.height || 200);
+
+  frame.name = op.name || preset?.name || 'Frame';
+  frame.resize(width, height);
 
   if (op.cornerRadius != null) frame.cornerRadius = Number(op.cornerRadius);
   if (op.fills !== undefined) frame.fills = parseFills(op.fills);
 
   applyStrokesAndEffects(frame, op);
+  applyScrollBehavior(frame, op);
 
   const mode = String(op.layoutMode || '').toUpperCase();
   if (mode === 'HORIZONTAL' || mode === 'VERTICAL') {
@@ -35,6 +42,10 @@ export async function opCreateFrame(op, parent) {
 
     if (op.primaryAxisAlignItems) frame.primaryAxisAlignItems = op.primaryAxisAlignItems.toUpperCase();
     if (op.counterAxisAlignItems) frame.counterAxisAlignItems = op.counterAxisAlignItems.toUpperCase();
+
+    if (op.layoutWrap === 'WRAP' || op.wrap) {
+      try { frame.layoutWrap = 'WRAP'; } catch {}
+    }
   } else {
     frame.layoutMode = 'NONE';
   }
@@ -100,6 +111,10 @@ export async function opApplyAutoLayout(op) {
 
   if (op.primaryAxisAlignItems) frame.primaryAxisAlignItems = op.primaryAxisAlignItems.toUpperCase();
   if (op.counterAxisAlignItems) frame.counterAxisAlignItems = op.counterAxisAlignItems.toUpperCase();
+
+  if (op.layoutWrap === 'WRAP' || op.wrap) {
+    try { frame.layoutWrap = 'WRAP'; } catch {}
+  }
 
   return frame;
 }
