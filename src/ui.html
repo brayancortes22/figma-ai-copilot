@@ -1272,6 +1272,9 @@
         dom.imagePreviewContainer.style.display = 'none';
         if (dom.inputUploadImage) dom.inputUploadImage.value = '';
       }
+
+      function handleSelectionUpdate(nodes) {
+        currentSelection = nodes;
         if (!nodes || nodes.length === 0) {
           dom.selectionContext.innerHTML = '✨ Lienzo libre';
           dom.selectionContext.title = 'No hay elementos seleccionados. Los nuevos elementos se crearán en la página activa.';
