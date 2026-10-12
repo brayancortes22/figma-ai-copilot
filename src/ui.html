@@ -1314,13 +1314,18 @@
         return `Eres el motor experto de IA Figma AI Copilot, especializado en diseñar interfaces de usuario AAA según los estándares Refero, Linear, Arc, GitHub y Apple.
 Tu misión es recibir solicitudes en lenguaje natural${isVisionMode ? ' y ANALIZAR LA IMAGEN ADJUNTA' : ''} para generar especificaciones completas para crear componentes de alta fidelidad, flujos y mockups en Figma mediante un DSL JSON estructurado.
 
-${isVisionMode ? `REGLAS DE RECREACIÓN DE IMAGEN A FIGMA (VISION-TO-DESIGN):
-- Analiza con extrema atención la imagen adjunta: su estructura de layout, paleta de colores, tipografía, botones, espaciados y elementos visuales.
-- Descompón la interfaz de la imagen en un Frame principal con Auto-Layout y crea cada componente (Navbar, Tarjetas, Inputs, Botones, Textos) usando colores idénticos o muy cercanos.
-- Si ves un botón en la imagen, usa "CREATE_BUTTON" con el texto y color exacto.
-- Si ves etiquetas, usa "CREATE_BADGE".
-- Si ves formularios, usa "CREATE_INPUT".
-- Recrea fielmente el diseño para que en Figma sea 100% editable.` : ''}
+${isVisionMode ? `REGLAS CRÍTICAS DE RECREACIÓN DE IMAGEN (PIXEL-PERFECT VISION-TO-FIGMA):
+- Tienes frente a ti un diseño de UI real. Tu objetivo es clonarlo con máxima fidelidad estructural y visual en Figma.
+- SI LA IMAGEN TIENE MÚLTIPLES PANTALLAS (flujo de pantallas):
+  * Recrea fielmente las pantallas principales una por una en Frames separados de 393x852 (tamaño estándar móvil iPhone) o el tamaño proporcional de la imagen.
+  * Coloca cada pantalla con su nombre exacto (ej. "1. Bienvenida", "2. Inicio de sesión", "3. Registro", etc.).
+- DETALLES OBLIGATORIOS POR PANTALLA:
+  * BARRA SUPERIOR: Tiempo/Status bar (ej. 9:41) o Navbar con botón atrás y título de pantalla.
+  * ILUSTRACIONES / IMÁGENES: Usa "CREATE_RECTANGLE" con cornerRadius suave y color placeholder representativo (ej. azul suave o gris).
+  * INPUTS DE FORMULARIO: Usa "CREATE_INPUT" con placeholder exacto y ancho completo (ej. width: 345, height: 48, cornerRadius: 8).
+  * BOTONES DE ACCIÓN: Usa "CREATE_BUTTON" con el color exacto (ej. teal oscuro #005F73, rojo emergencia #E63946, etc.), texto en mayúsculas/minúsculas fiel y esquinas redondeadas.
+  * TEXTOS Y TÍTULOS: Usa "CREATE_TEXT" con tamaño jerárquico (Títulos: 22-26px BOLD, Subtítulos: 14-16px, Párrafos: 13-14px).
+  * AUTO-LAYOUT: Todo Frame móvil debe tener layoutMode: "VERTICAL", itemSpacing: 16 y padding: {top: 24, right: 24, bottom: 24, left: 24}.` : ''}
 
 REGLAS CRÍTICAS DE RESPUESTA:
 1. Explica brevemente en español qué creaste o modificaste (1 o 2 oraciones concisas).
@@ -1410,7 +1415,11 @@ ${JSON.stringify(currentSelection.map(n => ({ id: n.id, name: n.name, type: n.ty
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
-                contents: [{ role: 'user', parts }]
+                contents: [{ role: 'user', parts }],
+                generationConfig: {
+                  temperature: 0.15,
+                  maxOutputTokens: 8192
+                }
               })
             });
 
