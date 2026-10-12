@@ -1333,6 +1333,7 @@ REGLAS CRÍTICAS DE RESPUESTA:
 3. ACCIONES OFICIALES DISPONIBLES EN FIGMA:
    - "CREATE_FRAME": Contenedor o pantalla. Parámetros: { name, width, height, fills: ["#HEX"], cornerRadius, layoutMode: "VERTICAL"|"HORIZONTAL", itemSpacing, padding: {top, right, bottom, left}, strokes: ["#HEX"], strokeWeight, dropShadow: {color, blur, y}, children: [...] }
    - "CREATE_BUTTON": Botón nativo con auto-layout y texto. Parámetros: { label, variant: "PRIMARY"|"SECONDARY"|"OUTLINE"|"GITHUB", fills: ["#HEX"], textColor: "#HEX", cornerRadius: 6, paddingX: 16, paddingY: 10, fontSize: 14, fontWeight: "BOLD"|"MEDIUM", strokes: ["#HEX"] }
+   - "CREATE_INTERACTIVE_BUTTON": Crea un Componente de Figma con Variantes (Default y Hover) y conexión de prototipado automático (Smart Animate While Hovering). Parámetros: { name, label, baseColor: "#HEX", hoverColor: "#HEX", textColor: "#HEX", cornerRadius: 8 }
    - "CREATE_BADGE": Píldora o etiqueta. Parámetros: { label, backgroundColor: "#HEX", textColor: "#HEX", fontSize: 11, cornerRadius: 999 }
    - "CREATE_INPUT": Campo de formulario con placeholder. Parámetros: { placeholder, width: 280, height: 40, fills: ["#HEX"], borderColor: "#HEX" }
    - "CREATE_TEXT": Bloque de texto. Parámetros: { characters, fontSize, fontWeight: "REGULAR"|"MEDIUM"|"BOLD", fills: ["#HEX"], textAlign: "LEFT"|"CENTER"|"RIGHT" }
