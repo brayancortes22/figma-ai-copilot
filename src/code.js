@@ -492,12 +492,55 @@ async function opCreateText(op, parent) {
   return text;
 }
 
-async function opCreateRectangle(op, parent) {
-  const rect = figma.createRectangle();
-  rect.name = op.name || 'Rectangle';
-  rect.resize(Math.max(1, op.width || 120), Math.max(1, op.height || 80));
+// Catálogo de iconos vectoriales Bootstrap Icons optimizados para Figma
+const BOOTSTRAP_ICONS = {
+  // Navegación y UI
+  'house': '<path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z"/>',
+  'search': '<path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>',
+  'bell': '<path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/>',
+  'person': '<path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/>',
+  'gear': '<path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0"/>',
+  
+  // SafeRoute y Mapas
+  'shield-check': '<path d="M5.338 1.59a61 61 0 0 0-2.837.856.48.48 0 0 0-.328.39c-.55 3.998-.08 7.904 1.745 11.238a.5.5 0 0 0 .428.286c.64.07 1.28.114 1.92.133a46 46 0 0 0 1.918-.133.5.5 0 0 0 .428-.286c1.824-3.334 2.294-7.24 1.745-11.238a.48.48 0 0 0-.328-.39c-.933-.284-1.88-.57-2.837-.856a.5.5 0 0 0-.286 0zm5.523 5.48a.5.5 0 0 1 .123.593l-2.5 4.5a.5.5 0 0 1-.803.111l-1.5-1.5a.5.5 0 1 1 .707-.707l1.096 1.096 2.17-3.906a.5.5 0 0 1 .707-.187"/>',
+  'geo-alt': '<path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A32 32 0 0 1 8 14.58a32 32 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10"/><path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4"/>',
+  'telephone': '<path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.6 17.6 0 0 0 4.168 6.608 17.6 17.6 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.68.68 0 0 0-.58-.122l-2.19.547a1.75 1.75 0 0 1-1.657-.459L5.482 8.062a1.75 1.75 0 0 1-.46-1.657l.548-2.19a.68.68 0 0 0-.122-.58z"/>',
+  'exclamation-triangle': '<path d="M7.938 2.016a.13.13 0 0 1 .125 0l6.857 11.656c.028.05.028.11 0 .16s-.08.08-.125.08H1.205c-.045 0-.097-.03-.125-.08s-.028-.11 0-.16zM8 0c-.27 0-.527.14-.656.36L.487 12.016C.358 12.236.358 12.51.487 12.73s.386.36.656.36h13.714c.27 0 .527-.14.656-.36s.129-.494 0-.714L8.656.36A.75.75 0 0 0 8 0M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.55.55 0 0 1-1.1 0z"/>',
+  'heart': '<path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"/>',
+  
+  // Flechas y Acciones
+  'arrow-left': '<path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>',
+  'arrow-right': '<path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/>',
+  'plus': '<path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>',
+  'check-circle': '<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/><path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>',
+  'lock': '<path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2m3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2M5 8h6a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1"/>',
+  'envelope': '<path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z"/>'
+};
 
-  if (op.cornerRadius != null) rect.cornerRadius = Number(op.cornerRadius);
+/**
+ * Crea un Icono Vectorial nativo de Bootstrap Icons en Figma.
+ */
+async function opCreateIcon(op, parent) {
+  const iconName = (op.icon || op.name || 'house').toLowerCase();
+  const colorHex = op.color || op.fill || '#005F73';
+  const size = Math.max(8, Number(op.size || 24));
+  const svgPath = BOOTSTRAP_ICONS[iconName] || BOOTSTRAP_ICONS['shield-check'] || BOOTSTRAP_ICONS['house'];
+
+  const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" fill="${colorHex}" viewBox="0 0 16 16">${svgPath}</svg>`;
+  
+  const iconNode = figma.createNodeFromSvg(svgContent);
+  iconNode.name = `Icon/${iconName}`;
+  
+  const targetParent = parent || figma.currentPage;
+  targetParent.appendChild(iconNode);
+
+  if (op.x != null && op.y != null) {
+    iconNode.x = Number(op.x);
+    iconNode.y = Number(op.y);
+  }
+
+  return iconNode;
+}
   if (op.fills !== undefined) rect.fills = parseFills(op.fills);
 
   const targetParent = parent || figma.currentPage;
@@ -672,6 +715,8 @@ async function executeSingleOperation(rawOp, parent = null) {
       return await opCreateFrame(op, parent);
     case 'CREATE_BUTTON':
       return await opCreateButton(op, parent);
+    case 'CREATE_ICON':
+      return await opCreateIcon(op, parent);
     case 'CREATE_COMPONENT_SET':
     case 'CREATE_INTERACTIVE_BUTTON':
       return await opCreateInteractiveComponentSet(op, parent);
