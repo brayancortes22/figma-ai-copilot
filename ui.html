@@ -5,825 +5,776 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Figma AI Copilot - por bscl</title>
   <style>
-    /* ==========================================================================
-       FIGMA AI COPILOT - DESIGN SYSTEM REFERO AAA (Linear & Apple Aesthetic)
-       Arquitectura Frontend Modular & Glassmorphism ProMax
-       Autor: Brayan Stid Cortés Lombana (bscl)
-       ========================================================================== */
-
-    :root {
-      --bg-base: #0B0D12;
-      --bg-surface: rgba(18, 21, 29, 0.72);
-      --bg-surface-elevated: rgba(26, 31, 44, 0.82);
-      --bg-glass-input: rgba(13, 16, 23, 0.85);
-      --border-subtle: rgba(255, 255, 255, 0.08);
-      --border-focus: rgba(99, 102, 241, 0.55);
-      --border-highlight: rgba(255, 255, 255, 0.14);
-
-      --accent-primary: #6366F1;
-      --accent-secondary: #8B5CF6;
-      --accent-gradient: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #EC4899 100%);
-      --accent-glow: rgba(99, 102, 241, 0.28);
-      
-      --color-success: #10B981;
-      --color-success-bg: rgba(16, 185, 129, 0.12);
-      --color-warning: #F59E0B;
-      --color-danger: #EF4444;
-      --color-danger-bg: rgba(239, 68, 68, 0.12);
-
-      --text-primary: #F8FAFC;
-      --text-secondary: #94A3B8;
-      --text-muted: #64748B;
-      --text-inverse: #0B0D12;
-
-      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", Helvetica, Arial, sans-serif;
-      --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
-      
-      --radius-sm: 6px;
-      --radius-md: 10px;
-      --radius-lg: 14px;
-      --radius-full: 9999px;
-
-      --transition-smooth: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-      --shadow-elevation: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
-      --shadow-glow: 0 0 20px -2px var(--accent-glow);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-
-    body {
-      font-family: var(--font-family);
-      background-color: var(--bg-base);
-      color: var(--text-primary);
-      font-size: 13px;
-      line-height: 1.5;
-      height: 100vh;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-    }
-
-    /* Fondo ambiental sutil */
-    body::before {
-      content: '';
-      position: absolute;
-      top: -120px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 380px;
-      height: 240px;
-      background: radial-gradient(ellipse, rgba(99, 102, 241, 0.18) 0%, rgba(139, 92, 246, 0.08) 50%, transparent 75%);
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    /* Scrollbars minimalistas */
-    ::-webkit-scrollbar {
-      width: 5px;
-      height: 5px;
-    }
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.12);
-      border-radius: var(--radius-full);
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(255, 255, 255, 0.22);
-    }
-
-    /* --------------------------------------------------------------------------
-       HEADER & NAVIGATION BAR
-       -------------------------------------------------------------------------- */
-    .app-header {
-      position: relative;
-      z-index: 10;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 14px;
-      background: var(--bg-surface);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border-subtle);
-    }
-
-    .brand-section {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-    }
-
-    .brand-logo {
-      width: 26px;
-      height: 26px;
-      border-radius: 8px;
-      background: var(--accent-gradient);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 2px 10px var(--accent-glow);
-      flex-shrink: 0;
-    }
-
-    .brand-logo svg {
-      width: 15px;
-      height: 15px;
-      color: white;
-    }
-
-    .brand-meta {
-      display: flex;
-      flex-direction: column;
-      gap: 1px;
-    }
-
-    .brand-title {
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: -0.01em;
-      color: var(--text-primary);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .brand-badge-author {
-      font-size: 9px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: #A5B4FC;
-      background: rgba(99, 102, 241, 0.16);
-      padding: 1px 5px;
-      border-radius: var(--radius-sm);
-      border: 1px solid rgba(99, 102, 241, 0.25);
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 11px;
-      font-weight: 500;
-      color: #34D399;
-      background: var(--color-success-bg);
-      border: 1px solid rgba(16, 185, 129, 0.25);
-      padding: 2px 8px;
-      border-radius: var(--radius-full);
-      user-select: none;
-      transition: var(--transition-smooth);
-    }
-
-    .status-dot {
-      width: 6px;
-      height: 6px;
-      background-color: var(--color-success);
-      border-radius: 50%;
-      box-shadow: 0 0 6px var(--color-success);
-      animation: pulse-dot 2.2s infinite ease-in-out;
-    }
-
-    @keyframes pulse-dot {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.55; transform: scale(0.85); }
-    }
-
-    .icon-btn {
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--border-subtle);
-      color: var(--text-secondary);
-      width: 28px;
-      height: 28px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: var(--transition-smooth);
-      position: relative;
-    }
-
-    .icon-btn:hover {
-      background: rgba(255, 255, 255, 0.09);
-      color: var(--text-primary);
-      border-color: var(--border-highlight);
-      transform: translateY(-1px);
-    }
-
-    .icon-btn:active {
-      transform: translateY(0);
-    }
-
-    .icon-btn svg {
-      width: 14px;
-      height: 14px;
-      fill: currentColor;
-    }
-
-    /* --------------------------------------------------------------------------
-       SETTINGS PANEL (COLLAPSIBLE DRAWER)
-       -------------------------------------------------------------------------- */
-    .settings-drawer {
-      position: relative;
-      z-index: 9;
-      max-height: 0;
-      overflow: hidden;
-      background: var(--bg-surface-elevated);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border-subtle);
-      transition: max-height 0.32s cubic-bezier(0.16, 1, 0.3, 1), padding 0.32s ease;
-      padding: 0 14px;
-    }
-
-    .settings-drawer.open {
-      max-height: 380px;
-      padding: 12px 14px;
-    }
-
-    .settings-grid {
-      display: grid;
-      gap: 10px;
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .form-label {
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--text-secondary);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .form-input, .form-select {
-      width: 100%;
-      background: var(--bg-glass-input);
-      border: 1px solid var(--border-subtle);
-      color: var(--text-primary);
-      padding: 6px 10px;
-      border-radius: var(--radius-sm);
-      font-size: 12px;
-      font-family: inherit;
-      outline: none;
-      transition: var(--transition-smooth);
-    }
-
-    .form-input:focus, .form-select:focus {
-      border-color: var(--border-focus);
-      box-shadow: 0 0 0 2px var(--accent-glow);
-    }
-
-    .password-wrap {
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-
-    .password-wrap .form-input {
-      padding-right: 30px;
-    }
-
-    .password-toggle {
-      position: absolute;
-      right: 6px;
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 3px;
-    }
-
-    .password-toggle:hover {
-      color: var(--text-primary);
-    }
-
-    .settings-footer {
-      display: flex;
-      gap: 8px;
-      margin-top: 4px;
-    }
-
-    .btn-secondary {
-      flex: 1;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border-subtle);
-      color: var(--text-primary);
-      padding: 6px 12px;
-      border-radius: var(--radius-sm);
-      font-size: 11px;
-      font-weight: 500;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-      transition: var(--transition-smooth);
-    }
-
-    .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: var(--border-highlight);
-    }
-
-    .btn-primary-mini {
-      background: var(--accent-primary);
-      border: none;
-      color: white;
-      padding: 6px 12px;
-      border-radius: var(--radius-sm);
-      font-size: 11px;
-      font-weight: 500;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-      transition: var(--transition-smooth);
-    }
-
-    .btn-primary-mini:hover {
-      opacity: 0.92;
-      box-shadow: 0 0 10px var(--accent-glow);
-    }
-
-    /* --------------------------------------------------------------------------
-       SELECTION CONTEXT BAR
-       -------------------------------------------------------------------------- */
-    .context-bar {
-      position: relative;
-      z-index: 5;
-      padding: 6px 14px;
-      background: rgba(15, 18, 25, 0.65);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      user-select: none;
-    }
-
-    .context-info {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      color: var(--text-secondary);
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
-
-    .context-tag {
-      font-size: 10px;
-      font-weight: 600;
-      color: #818CF8;
-      background: rgba(99, 102, 241, 0.12);
-      border: 1px solid rgba(99, 102, 241, 0.2);
-      padding: 1px 6px;
-      border-radius: var(--radius-sm);
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
-    }
-
-    .context-refresh {
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      padding: 2px;
-      display: flex;
-      align-items: center;
-      border-radius: var(--radius-sm);
-      transition: var(--transition-smooth);
-    }
-
-    .context-refresh:hover {
-      color: var(--text-primary);
-      transform: rotate(90deg);
-    }
-
-    .context-refresh svg {
-      width: 12px;
-      height: 12px;
-    }
-
-    /* --------------------------------------------------------------------------
-       CHAT MESSAGES CONTAINER
-       -------------------------------------------------------------------------- */
-    .chat-container {
-      flex: 1;
-      overflow-y: auto;
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .message-row {
-      display: flex;
-      gap: 10px;
-      max-width: 100%;
-      animation: message-appear 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-
-    @keyframes message-appear {
-      from {
-        opacity: 0;
-        transform: translateY(8px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .message-row.user {
-      justify-content: flex-end;
-    }
-
-    .message-avatar {
-      width: 26px;
-      height: 26px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-    }
-
-    .message-avatar.ai {
-      background: var(--accent-gradient);
-      color: white;
-    }
-
-    .message-avatar.user {
-      background: #334155;
-      color: #CBD5E1;
-      display: none; /* Mantener look conversacional limpio */
-    }
-
-    .message-avatar svg {
-      width: 14px;
-      height: 14px;
-    }
-
-    .message-bubble {
-      position: relative;
-      max-width: 90%;
-      padding: 10px 14px;
-      border-radius: var(--radius-lg);
-      font-size: 12.5px;
-      line-height: 1.55;
-      word-break: break-word;
-      transition: var(--transition-smooth);
-    }
-
-    .message-row.ai .message-bubble {
-      background: var(--bg-surface);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border: 1px solid var(--border-subtle);
-      border-top-left-radius: var(--radius-sm);
-      color: var(--text-primary);
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
-    }
-
-    .message-row.user .message-bubble {
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(139, 92, 246, 0.35));
-      border: 1px solid rgba(99, 102, 241, 0.4);
-      border-top-right-radius: var(--radius-sm);
-      color: #FFFFFF;
-      box-shadow: 0 4px 14px var(--accent-glow);
-    }
-
-    .message-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 4px;
-      font-size: 10.5px;
-      color: var(--text-muted);
-    }
-
-    .message-author {
-      font-weight: 600;
-      color: #A5B4FC;
-    }
-
-    .message-time {
-      font-size: 10px;
-    }
-
-    /* Markdown & code styling inside message */
-    .message-bubble p {
-      margin-bottom: 6px;
-    }
-    .message-bubble p:last-child {
-      margin-bottom: 0;
-    }
-    .message-bubble code {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      background: rgba(0, 0, 0, 0.35);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 1px 4px;
-      border-radius: 4px;
-      color: #E2E8F0;
-    }
-    .message-bubble pre {
-      background: #08090E;
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-sm);
-      padding: 8px 10px;
-      margin: 8px 0;
-      overflow-x: auto;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      line-height: 1.4;
-      color: #93C5FD;
-    }
-
-    /* Acciones ejecutables dentro de la respuesta de la IA */
-    .dsl-action-card {
-      margin-top: 8px;
-      padding: 8px 10px;
-      background: rgba(99, 102, 241, 0.08);
-      border: 1px solid rgba(99, 102, 241, 0.25);
-      border-radius: var(--radius-sm);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
-    .dsl-action-info {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      color: #C7D2FE;
-    }
-
-    .dsl-action-btn {
-      background: var(--accent-primary);
-      border: none;
-      color: white;
-      padding: 4px 8px;
-      border-radius: 5px;
-      font-size: 10.5px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      transition: var(--transition-smooth);
-    }
-
-    .dsl-action-btn:hover {
-      background: #4F46E5;
-      transform: translateY(-1px);
-    }
-
-    /* Estado de carga / Shimmer */
-    .typing-indicator {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 4px 0;
-    }
-
-    .typing-dot {
-      width: 5px;
-      height: 5px;
-      background: #818CF8;
-      border-radius: 50%;
-      animation: typing-bounce 1.4s infinite ease-in-out;
-    }
-    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-
-    @keyframes typing-bounce {
-      0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
-      40% { transform: translateY(-5px); opacity: 1; }
-    }
-
-    /* --------------------------------------------------------------------------
-       QUICK ACTIONS / QUICK PROMPT PILLS
-       -------------------------------------------------------------------------- */
-    .quick-prompts-bar {
-      padding: 4px 14px 6px;
-      display: flex;
-      gap: 6px;
-      overflow-x: auto;
-      white-space: nowrap;
-      position: relative;
-      z-index: 5;
-    }
-
-    .quick-pill {
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--border-subtle);
-      color: var(--text-secondary);
-      font-size: 11px;
-      font-weight: 500;
-      padding: 4px 10px;
-      border-radius: var(--radius-full);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      user-select: none;
-      transition: var(--transition-smooth);
-      flex-shrink: 0;
-    }
-
-    .quick-pill:hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--text-primary);
-      border-color: rgba(99, 102, 241, 0.4);
-      transform: translateY(-1px);
-    }
-
-    .quick-pill:active {
-      transform: translateY(0);
-    }
-
-    /* --------------------------------------------------------------------------
-       INPUT AREA & BOTTOM CONTROLS
-       -------------------------------------------------------------------------- */
-    .input-section {
-      position: relative;
-      z-index: 10;
-      padding: 10px 14px 12px;
-      background: var(--bg-surface);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-top: 1px solid var(--border-subtle);
-    }
-
-    .input-container {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      background: var(--bg-glass-input);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      transition: var(--transition-smooth);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
-    }
-
-    .input-container:focus-within {
-      border-color: var(--border-focus);
-      box-shadow: 0 0 0 2px var(--accent-glow), 0 4px 18px rgba(0, 0, 0, 0.4);
-    }
-
-    .chat-textarea {
-      width: 100%;
-      min-height: 40px;
-      max-height: 120px;
-      background: transparent;
-      border: none;
-      color: var(--text-primary);
-      padding: 10px 12px 6px;
-      font-family: inherit;
-      font-size: 12.5px;
-      line-height: 1.45;
-      resize: none;
-      outline: none;
-    }
-
-    .chat-textarea::placeholder {
-      color: var(--text-muted);
-    }
-
-    .input-controls {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 4px 8px 6px;
-    }
-
-    .input-meta-hint {
-      font-size: 10px;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .kbd {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 3px;
-      padding: 1px 4px;
-      font-family: var(--font-mono);
-      font-size: 9px;
-      color: var(--text-secondary);
-    }
-
-    .btn-send {
-      width: 28px;
-      height: 28px;
-      border-radius: 8px;
-      background: var(--accent-primary);
-      border: none;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: var(--transition-smooth);
-      box-shadow: 0 2px 8px var(--accent-glow);
-    }
-
-    .btn-send:hover:not(:disabled) {
-      background: #4F46E5;
-      transform: scale(1.05);
-      box-shadow: 0 3px 12px rgba(99, 102, 241, 0.5);
-    }
-
-    .btn-send:active:not(:disabled) {
-      transform: scale(0.96);
-    }
-
-    .btn-send:disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
-      box-shadow: none;
-    }
-
-    .btn-send svg {
-      width: 14px;
-      height: 14px;
-      fill: currentColor;
-    }
-
-    /* Alerta toast sutil */
-    .toast-container {
-      position: absolute;
-      bottom: 74px;
-      left: 14px;
-      right: 14px;
-      z-index: 100;
-      pointer-events: none;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .toast-message {
-      background: rgba(15, 23, 42, 0.95);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-sm);
-      padding: 8px 12px;
-      font-size: 11px;
-      color: #E2E8F0;
-      box-shadow: var(--shadow-elevation);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      animation: toast-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-      pointer-events: auto;
-    }
-
-    .toast-message.success { border-color: rgba(16, 185, 129, 0.4); }
-    .toast-message.error { border-color: rgba(239, 68, 68, 0.4); }
-
-    @keyframes toast-in {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  </style>
+/* ==========================================================================
+   FIGMA AI COPILOT - DESIGN SYSTEM REFERO AAA (Linear & Apple Aesthetic)
+   Arquitectura Frontend Modular & Glassmorphism ProMax
+   Autor: Brayan Stid Cortés Lombana (bscl)
+   ========================================================================== */
+
+:root {
+  --bg-base: #0B0D12;
+  --bg-surface: rgba(18, 21, 29, 0.72);
+  --bg-surface-elevated: rgba(26, 31, 44, 0.82);
+  --bg-glass-input: rgba(13, 16, 23, 0.85);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-focus: rgba(99, 102, 241, 0.55);
+  --border-highlight: rgba(255, 255, 255, 0.14);
+
+  --accent-primary: #6366F1;
+  --accent-secondary: #8B5CF6;
+  --accent-gradient: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #EC4899 100%);
+  --accent-glow: rgba(99, 102, 241, 0.28);
+  
+  --color-success: #10B981;
+  --color-success-bg: rgba(16, 185, 129, 0.12);
+  --color-warning: #F59E0B;
+  --color-danger: #EF4444;
+  --color-danger-bg: rgba(239, 68, 68, 0.12);
+
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  --text-inverse: #0B0D12;
+
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-full: 9999px;
+
+  --transition-smooth: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  --shadow-elevation: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+  --shadow-glow: 0 0 20px -2px var(--accent-glow);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-size: 13px;
+  line-height: 1.5;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: absolute;
+  top: -120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 380px;
+  height: 240px;
+  background: radial-gradient(ellipse, rgba(99, 102, 241, 0.18) 0%, rgba(139, 92, 246, 0.08) 50%, transparent 75%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); border-radius: var(--radius-full); }
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.22); }
+
+/* Header & Nav */
+.app-header {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: var(--bg-surface);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.brand-section {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.brand-logo {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: var(--accent-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 10px var(--accent-glow);
+  flex-shrink: 0;
+}
+
+.brand-logo svg {
+  width: 15px;
+  height: 15px;
+  color: white;
+}
+
+.brand-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.brand-title {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.brand-badge-author {
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #A5B4FC;
+  background: rgba(99, 102, 241, 0.16);
+  padding: 1px 5px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #34D399;
+  background: var(--color-success-bg);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  user-select: none;
+  transition: var(--transition-smooth);
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  background-color: var(--color-success);
+  border-radius: 50%;
+  box-shadow: 0 0 6px var(--color-success);
+  animation: pulse-dot 2.2s infinite ease-in-out;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(0.85); }
+}
+
+.icon-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  position: relative;
+}
+
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.09);
+  color: var(--text-primary);
+  border-color: var(--border-highlight);
+  transform: translateY(-1px);
+}
+
+.icon-btn:active {
+  transform: translateY(0);
+}
+
+.icon-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+
+/* Settings Drawer */
+.settings-drawer {
+  position: relative;
+  z-index: 9;
+  max-height: 0;
+  overflow: hidden;
+  background: var(--bg-surface-elevated);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-subtle);
+  transition: max-height 0.32s cubic-bezier(0.16, 1, 0.3, 1), padding 0.32s ease;
+  padding: 0 14px;
+}
+
+.settings-drawer.open {
+  max-height: 380px;
+  padding: 12px 14px;
+}
+
+.settings-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.form-input, .form-select {
+  width: 100%;
+  background: var(--bg-glass-input);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-family: inherit;
+  outline: none;
+  transition: var(--transition-smooth);
+}
+
+.form-input:focus, .form-select:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+.password-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrap .form-input {
+  padding-right: 30px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 6px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px;
+}
+
+.password-toggle:hover {
+  color: var(--text-primary);
+}
+
+.settings-footer {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.btn-secondary {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: var(--transition-smooth);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--border-highlight);
+}
+
+.btn-primary-mini {
+  background: var(--accent-primary);
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: var(--transition-smooth);
+}
+
+.btn-primary-mini:hover {
+  opacity: 0.92;
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+/* Context Bar */
+.context-bar {
+  position: relative;
+  z-index: 5;
+  padding: 6px 14px;
+  background: rgba(15, 18, 25, 0.65);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  user-select: none;
+}
+
+.context-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.context-tag {
+  font-size: 10px;
+  font-weight: 600;
+  color: #818CF8;
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.context-refresh {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  border-radius: var(--radius-sm);
+  transition: var(--transition-smooth);
+}
+
+.context-refresh:hover {
+  color: var(--text-primary);
+  transform: rotate(90deg);
+}
+
+.context-refresh svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* Chat Messages */
+.chat-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+  z-index: 1;
+}
+
+.message-row {
+  display: flex;
+  gap: 10px;
+  max-width: 100%;
+  animation: message-appear 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes message-appear {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.message-row.user { justify-content: flex-end; }
+
+.message-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.message-avatar.ai {
+  background: var(--accent-gradient);
+  color: white;
+}
+
+.message-avatar.user {
+  background: #334155;
+  color: #CBD5E1;
+  display: none;
+}
+
+.message-avatar svg {
+  width: 14px;
+  height: 14px;
+}
+
+.message-bubble {
+  position: relative;
+  max-width: 90%;
+  padding: 10px 14px;
+  border-radius: var(--radius-lg);
+  font-size: 12.5px;
+  line-height: 1.55;
+  word-break: break-word;
+  transition: var(--transition-smooth);
+}
+
+.message-row.ai .message-bubble {
+  background: var(--bg-surface);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--border-subtle);
+  border-top-left-radius: var(--radius-sm);
+  color: var(--text-primary);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.message-row.user .message-bubble {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(139, 92, 246, 0.35));
+  border: 1px solid rgba(99, 102, 241, 0.4);
+  border-top-right-radius: var(--radius-sm);
+  color: #FFFFFF;
+  box-shadow: 0 4px 14px var(--accent-glow);
+}
+
+.message-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+  font-size: 10.5px;
+  color: var(--text-muted);
+}
+
+.message-author { font-weight: 600; color: #A5B4FC; }
+.message-time { font-size: 10px; }
+
+.message-bubble p { margin-bottom: 6px; }
+.message-bubble p:last-child { margin-bottom: 0; }
+.message-bubble code {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 1px 4px;
+  border-radius: 4px;
+  color: #E2E8F0;
+}
+.message-bubble pre {
+  background: #08090E;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  margin: 8px 0;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.4;
+  color: #93C5FD;
+}
+
+.dsl-action-card {
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.dsl-action-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #C7D2FE;
+}
+
+.dsl-action-btn {
+  background: var(--accent-primary);
+  border: none;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 5px;
+  font-size: 10.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: var(--transition-smooth);
+}
+
+.dsl-action-btn:hover {
+  background: #4F46E5;
+  transform: translateY(-1px);
+}
+
+.typing-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 0;
+}
+
+.typing-dot {
+  width: 5px;
+  height: 5px;
+  background: #818CF8;
+  border-radius: 50%;
+  animation: typing-bounce 1.4s infinite ease-in-out;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typing-bounce {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+  40% { transform: translateY(-5px); opacity: 1; }
+}
+
+/* Quick Prompts Bar */
+.quick-prompts-bar {
+  padding: 4px 14px 6px;
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  white-space: nowrap;
+  position: relative;
+  z-index: 5;
+}
+
+.quick-pill {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  user-select: none;
+  transition: var(--transition-smooth);
+  flex-shrink: 0;
+}
+
+.quick-pill:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+  border-color: rgba(99, 102, 241, 0.4);
+  transform: translateY(-1px);
+}
+
+.quick-pill:active { transform: translateY(0); }
+
+/* Input Section */
+.input-section {
+  position: relative;
+  z-index: 10;
+  padding: 10px 14px 12px;
+  background: var(--bg-surface);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.input-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-glass-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  transition: var(--transition-smooth);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+.input-container:focus-within {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 2px var(--accent-glow), 0 4px 18px rgba(0, 0, 0, 0.4);
+}
+
+.chat-textarea {
+  width: 100%;
+  min-height: 40px;
+  max-height: 120px;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  padding: 10px 12px 6px;
+  font-family: inherit;
+  font-size: 12.5px;
+  line-height: 1.45;
+  resize: none;
+  outline: none;
+}
+
+.chat-textarea::placeholder { color: var(--text-muted); }
+
+.input-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px 6px;
+}
+
+.input-meta-hint {
+  font-size: 10px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.kbd {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 3px;
+  padding: 1px 4px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-secondary);
+}
+
+.btn-send {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--accent-primary);
+  border: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  box-shadow: 0 2px 8px var(--accent-glow);
+}
+
+.btn-send:hover:not(:disabled) {
+  background: #4F46E5;
+  transform: scale(1.05);
+  box-shadow: 0 3px 12px rgba(99, 102, 241, 0.5);
+}
+
+.btn-send:active:not(:disabled) { transform: scale(0.96); }
+
+.btn-send:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.btn-send svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+
+/* Toast Notifications */
+.toast-container {
+  position: absolute;
+  bottom: 74px;
+  left: 14px;
+  right: 14px;
+  z-index: 100;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.toast-message {
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-size: 11px;
+  color: #E2E8F0;
+  box-shadow: var(--shadow-elevation);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  animation: toast-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  pointer-events: auto;
+}
+
+.toast-message.success { border-color: rgba(16, 185, 129, 0.4); }
+.toast-message.error { border-color: rgba(239, 68, 68, 0.4); }
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+</style>
 </head>
 <body>
 
@@ -846,7 +797,7 @@
     </div>
 
     <div class="header-actions">
-      <div class="status-badge" id="statusBadge" title="Estado de conexión con el proveedor de IA">
+      <div class="status-badge" id="statusBadge" title="Estado de conexión">
         <span class="status-dot"></span>
         <span id="statusText">🟢 Listo</span>
       </div>
@@ -869,7 +820,7 @@
           <span>Proveedor de Inteligencia</span>
         </label>
         <select class="form-select" id="providerSelect">
-          <option value="gemini" selected>✨ Google Gemini Pro (Recomendado)</option>
+          <option value="gemini" selected>✨ Google Gemini (Recomendado)</option>
           <option value="antigravity">🪐 Antigravity / Smart Router (:3000)</option>
           <option value="openai">🟢 OpenAI (GPT-4o / mini)</option>
           <option value="groq">⚡ Groq Cloud (Ultra Rápido)</option>
@@ -879,7 +830,7 @@
 
       <div class="form-group" id="groupLocalUrl" style="display: none;">
         <label class="form-label" for="inputLocalUrl">
-          <span>URL de Antigravity / Puente Local</span>
+          <span>URL de Antigravity / Smart Router</span>
         </label>
         <input type="text" class="form-input" id="inputLocalUrl" placeholder="http://localhost:3000" value="http://localhost:3000">
       </div>
@@ -908,7 +859,7 @@
         </label>
         <select class="form-select" id="selectModelPreset">
           <optgroup label="Google Gemini">
-            <option value="gemini-3.8-flash" selected>⚡ Gemini 3.8 Flash (Última Generación)</option>
+            <option value="gemini-3.8-flash" selected>⚡ Gemini 3.8 Flash (Predeterminado)</option>
             <option value="gemini-3.1-pro-preview">🧠 Gemini 3.1 Pro Preview (Máxima Precisión)</option>
             <option value="gemini-2.5-pro">💎 Gemini 2.5 Pro</option>
             <option value="gemini-2.5-flash">🚀 Gemini 2.5 Flash</option>
@@ -927,13 +878,7 @@
       </div>
 
       <div class="settings-footer">
-        <button type="button" class="btn-secondary" id="btnTestConnection">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-          </svg>
-          <span>Probar Conexión</span>
-        </button>
-        <button type="button" class="btn-primary-mini" id="btnSaveSettings">
+        <button type="button" class="btn-primary-mini" id="btnSaveSettings" style="width: 100%;">
           Guardar Ajustes
         </button>
       </div>
@@ -962,7 +907,6 @@
        ÁREA PRINCIPAL DE CHAT CON BURBUJAS REFERO AAA
        ======================================================================== -->
   <main class="chat-container" id="chatContainer">
-    <!-- Mensaje de bienvenida inicial -->
     <div class="message-row ai">
       <div class="message-avatar ai">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
@@ -1009,7 +953,7 @@
       <textarea 
         class="chat-textarea" 
         id="promptInput" 
-        placeholder="Ej: Diseña un navbar minimalista con logo a la izquierda y 3 enlaces..." 
+        placeholder="Ej: Diseña un navbar minimalista con logo a la izquierda..." 
         rows="1"
       ></textarea>
       
@@ -1024,17 +968,15 @@
 
       <div class="input-controls">
         <div style="display: flex; align-items: center; gap: 6px;">
-          <!-- Botón de capturar selección de Figma como imagen -->
-          <button type="button" class="icon-btn" id="btnCaptureFigmaImage" title="Capturar la capa/imagen seleccionada en Figma y recrearla" style="width: 26px; height: 26px; padding: 4px;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;">
+          <button type="button" class="icon-btn" id="btnCaptureFigmaImage" title="Capturar la capa seleccionada en Figma y recrearla">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
               <circle cx="12" cy="13" r="4"></circle>
             </svg>
           </button>
           
-          <!-- Botón de subir imagen desde archivo local -->
-          <label for="inputUploadImage" class="icon-btn" title="Subir imagen desde tu computadora" style="width: 26px; height: 26px; padding: 4px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; margin: 0;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;">
+          <label for="inputUploadImage" class="icon-btn" title="Subir imagen local" style="display: inline-flex; cursor: pointer; margin: 0;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
               <circle cx="8.5" cy="8.5" r="1.5"></circle>
               <polyline points="21 15 16 10 5 21"></polyline>
@@ -1057,901 +999,720 @@
     </div>
   </footer>
 
-  <!-- Contenedor flotante de notificaciones Toast -->
   <div class="toast-container" id="toastContainer"></div>
 
-  <!-- ========================================================================
-       LÓGICA JAVASCRIPT: COMUNICACIÓN FIGMA, GESTIÓN DE ESTADO Y LLAMADA A IA
-       ======================================================================== -->
   <script>
-    (function () {
-      'use strict';
-
-      // ------------------------------------------------------------------------
-      // CONFIGURACIÓN Y ESTADO DE LA APLICACIÓN
-      // ------------------------------------------------------------------------
-      const STORAGE_KEY = 'figma_ai_copilot_config_v1';
-      
-      const defaultConfig = {
-        provider: 'gemini', // 'gemini' | 'antigravity' | 'openai' | 'groq' | 'openrouter'
-        localUrl: 'http://localhost:3000',
-        apiKey: '',
-        model: 'gemini-2.5-pro'
-      };
-
-      let appConfig = loadConfig();
-      let currentSelection = [];
-      let isGenerating = false;
-
-      // Elementos del DOM
-      const dom = {
-        statusBadge: document.getElementById('statusBadge'),
-        statusText: document.getElementById('statusText'),
-        btnToggleSettings: document.getElementById('btnToggleSettings'),
-        settingsDrawer: document.getElementById('settingsDrawer'),
-        providerSelect: document.getElementById('providerSelect'),
-        groupLocalUrl: document.getElementById('groupLocalUrl'),
-        inputLocalUrl: document.getElementById('inputLocalUrl'),
-        groupApiKey: document.getElementById('groupApiKey'),
-        apiKeyLabel: document.getElementById('apiKeyLabel'),
-        inputApiKey: document.getElementById('inputApiKey'),
-        btnToggleApiKey: document.getElementById('btnToggleApiKey'),
-        selectModelPreset: document.getElementById('selectModelPreset'),
-        inputModelName: document.getElementById('inputModelName'),
-        btnTestConnection: document.getElementById('btnTestConnection'),
-        btnSaveSettings: document.getElementById('btnSaveSettings'),
-        selectionContext: document.getElementById('selectionContext'),
-        btnRefreshSelection: document.getElementById('btnRefreshSelection'),
-        chatContainer: document.getElementById('chatContainer'),
-        promptInput: document.getElementById('promptInput'),
-        btnSendPrompt: document.getElementById('btnSendPrompt'),
-        toastContainer: document.getElementById('toastContainer'),
-        imagePreviewContainer: document.getElementById('imagePreviewContainer'),
-        imagePreviewThumb: document.getElementById('imagePreviewThumb'),
-        imagePreviewText: document.getElementById('imagePreviewText'),
-        btnRemoveImage: document.getElementById('btnRemoveImage'),
-        btnCaptureFigmaImage: document.getElementById('btnCaptureFigmaImage'),
-        inputUploadImage: document.getElementById('inputUploadImage')
-      };
-
-      let activeImageBase64 = null;
-
-      // ------------------------------------------------------------------------
-      // PERSISTENCIA Y CARGA DE CONFIGURACIÓN
-      // ------------------------------------------------------------------------
-      function loadConfig() {
-        try {
-          const saved = localStorage.getItem(STORAGE_KEY);
-          if (saved) {
-            return { ...defaultConfig, ...JSON.parse(saved) };
-          }
-        } catch (e) {
-          console.warn('[Figma AI Copilot] Error cargando config de localStorage:', e);
-        }
-        return { ...defaultConfig };
+(() => {
+  // src/ui/scripts/state.js
+  var STORAGE_KEY = "figma_ai_copilot_config_v1";
+  var defaultConfig = {
+    provider: "gemini",
+    localUrl: "http://localhost:3000",
+    apiKey: "",
+    model: "gemini-3.8-flash"
+  };
+  var appConfig = loadInitialConfig();
+  var currentSelection = [];
+  var activeImageBase64 = null;
+  var isGenerating = false;
+  function loadInitialConfig() {
+    try {
+      if (typeof window !== "undefined" && window.localStorage) {
+        const saved = window.localStorage.getItem(STORAGE_KEY);
+        if (saved) return { ...defaultConfig, ...JSON.parse(saved) };
       }
-
-      function saveConfig(newConfig) {
-        appConfig = { ...appConfig, ...newConfig };
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(appConfig));
-          showToast('Ajustes guardados correctamente', 'success');
-        } catch (e) {
-          console.error('[Figma AI Copilot] Error guardando config:', e);
-          showToast('Error guardando en almacenamiento local', 'error');
-        }
+    } catch (e) {
+      console.warn("[Figma AI Copilot] Fallback in-memory por DOMException en localStorage:", e);
+    }
+    return { ...defaultConfig };
+  }
+  function getConfig() {
+    return appConfig;
+  }
+  function requestFigmaStorage() {
+    try {
+      parent.postMessage({ pluginMessage: { type: "STORAGE_GET", key: STORAGE_KEY } }, "*");
+    } catch (e) {
+      console.warn("[Figma AI Copilot] Error solicitando STORAGE_GET a Figma:", e);
+    }
+  }
+  function applyStorageValue(key, value) {
+    if (key === STORAGE_KEY && value && typeof value === "object") {
+      appConfig = { ...defaultConfig, ...value };
+      return true;
+    }
+    return false;
+  }
+  function saveConfig(newConfig) {
+    appConfig = { ...appConfig, ...newConfig };
+    try {
+      parent.postMessage({ pluginMessage: { type: "STORAGE_SET", key: STORAGE_KEY, value: appConfig } }, "*");
+    } catch (e) {
+      console.warn("[Figma AI Copilot] Error guardando en STORAGE_SET de Figma:", e);
+    }
+    try {
+      if (typeof window !== "undefined" && window.localStorage) {
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(appConfig));
       }
+    } catch (e) {
+      console.warn("[Figma AI Copilot] DOMException al persistir en localStorage:", e);
+    }
+    return appConfig;
+  }
+  function setSelection(nodes) {
+    currentSelection = nodes || [];
+  }
+  function getSelection() {
+    return currentSelection;
+  }
+  function formatNodeType(type, qty) {
+    const map = {
+      "FRAME": qty > 1 ? "Frames" : "Frame",
+      "TEXT": qty > 1 ? "Textos" : "Texto",
+      "RECTANGLE": qty > 1 ? "Rect\xE1ngulos" : "Rect\xE1ngulo",
+      "COMPONENT": qty > 1 ? "Componentes" : "Componente",
+      "INSTANCE": qty > 1 ? "Instancias" : "Instancia",
+      "GROUP": qty > 1 ? "Grupos" : "Grupo",
+      "VECTOR": qty > 1 ? "Vectores" : "Vector"
+    };
+    return map[type] || type;
+  }
+  function setActiveImage(base64) {
+    activeImageBase64 = base64;
+  }
+  function getActiveImage() {
+    return activeImageBase64;
+  }
+  function clearActiveImage() {
+    activeImageBase64 = null;
+  }
+  function setGenerating(val) {
+    isGenerating = Boolean(val);
+  }
+  function getGenerating() {
+    return isGenerating;
+  }
 
-      function syncSettingsUI() {
-        dom.providerSelect.value = appConfig.provider;
-        dom.inputLocalUrl.value = appConfig.localUrl;
-        dom.inputApiKey.value = appConfig.apiKey;
-        
-        // Verificar si el modelo configurado existe en el selector o si es personalizado
-        const presetOption = dom.selectModelPreset.querySelector(`option[value="${appConfig.model}"]`);
-        if (presetOption) {
-          dom.selectModelPreset.value = appConfig.model;
-          dom.inputModelName.style.display = 'none';
-        } else {
-          dom.selectModelPreset.value = 'custom';
-          dom.inputModelName.value = appConfig.model || 'gemini-3.8-flash';
-          dom.inputModelName.style.display = 'block';
-        }
+  // src/ui/scripts/ai-service.js
+  async function callAIService(systemPrompt, userPrompt, imageBase64 = null) {
+    const config = getConfig();
+    switch (config.provider) {
+      case "gemini":
+        return await callGeminiDirect(systemPrompt, userPrompt, imageBase64);
+      case "antigravity":
+      case "smart-router":
+        return await callSmartRouter(systemPrompt, userPrompt);
+      case "openai":
+        return await callOpenAIDirect(systemPrompt, userPrompt, imageBase64);
+      case "groq":
+        return await callGroqDirect(systemPrompt, userPrompt);
+      case "openrouter":
+        return await callOpenRouterDirect(systemPrompt, userPrompt);
+      default:
+        throw new Error(`Proveedor de IA no reconocido: ${config.provider}`);
+    }
+  }
+  async function callGeminiDirect(systemPrompt, userPrompt, imageBase64) {
+    const config = getConfig();
+    if (!config.apiKey) {
+      throw new Error("Abre el engranaje \u2699\uFE0F y pega tu Gemini API Key de Google AI Studio");
+    }
+    const candidates = [
+      config.model,
+      "gemini-3.8-flash",
+      "gemini-3.1-pro-preview",
+      "gemini-2.5-pro",
+      "gemini-2.5-flash",
+      "gemini-flash-latest",
+      "gemini-pro-latest"
+    ].filter(Boolean);
+    const modelsToTry = [...new Set(candidates)];
+    const parts = [{ text: `${systemPrompt}
 
-        updateProviderFormVisibility();
-      }
-
-      function updateProviderFormVisibility() {
-        const prov = dom.providerSelect.value;
-        if (prov === 'antigravity') {
-          dom.groupLocalUrl.style.display = 'flex';
-          dom.groupApiKey.style.display = 'none';
-        } else {
-          dom.groupLocalUrl.style.display = 'none';
-          dom.groupApiKey.style.display = 'flex';
-          if (prov === 'gemini') {
-            dom.apiKeyLabel.textContent = 'Google Gemini API Key';
-            dom.inputApiKey.placeholder = 'AIzaSy... (Tu clave de Google AI Studio)';
-          } else if (prov === 'openai') {
-            dom.apiKeyLabel.textContent = 'OpenAI API Key';
-            dom.inputApiKey.placeholder = 'sk-proj-...';
-          } else if (prov === 'groq') {
-            dom.apiKeyLabel.textContent = 'Groq Cloud API Key';
-            dom.inputApiKey.placeholder = 'gsk_...';
-          } else if (prov === 'openrouter') {
-            dom.apiKeyLabel.textContent = 'OpenRouter API Key';
-            dom.inputApiKey.placeholder = 'sk-or-v1-...';
-          }
-        }
-      }
-
-      // ------------------------------------------------------------------------
-      // COMUNICACIÓN BIDIRECCIONAL CON FIGMA SANDBOX
-      // ------------------------------------------------------------------------
-      function postMessageToFigma(msg) {
-        parent.postMessage({ pluginMessage: msg }, '*');
-      }
-
-      function requestCurrentSelection() {
-        postMessageToFigma({ type: 'GET_SELECTION' });
-      }
-
-      // Escuchar eventos entrantes desde code.js (Figma Sandbox)
-      window.onmessage = function (event) {
-        const msg = event.data ? event.data.pluginMessage : null;
-        if (!msg) return;
-
-        switch (msg.type) {
-          case 'SELECTION_CHANGE':
-            handleSelectionUpdate(msg.selection || []);
-            break;
-
-          case 'SELECTION_IMAGE_DATA':
-            handleSelectionImageReceived(msg);
-            break;
-
-          case 'SELECTION_IMAGE_ERROR':
-            showToast(msg.error, 'error');
-            break;
-
-          case 'EXECUTION_SUCCESS':
-            setStatusOnline('Completado');
-            showToast(msg.message || `Operaciones ejecutadas con éxito (${msg.count || 0} nodos)`, 'success');
-            appendSystemNotice('success', msg.message || '✅ Diseño actualizado en el lienzo de Figma');
-            break;
-
-          case 'EXECUTION_ERROR':
-            setStatusError('Error en lienzo');
-            showToast(msg.error || 'Ocurrió un error en Figma al aplicar los cambios', 'error');
-            appendSystemNotice('error', `⚠️ Error en Figma: ${msg.error}`);
-            break;
-
-          case 'INIT_STATE':
-            if (msg.selection) handleSelectionUpdate(msg.selection);
-            break;
-
-          default:
-            console.log('[Figma AI Copilot] Mensaje recibido de Figma:', msg);
-        }
-      };
-
-      function handleSelectionImageReceived(data) {
-        let b64 = data.base64;
-        if (!b64 && data.bytes) {
-          // Convertir array de bytes a base64
-          let binary = '';
-          const bytes = new Uint8Array(data.bytes);
-          for (let i = 0; i < bytes.byteLength; i++) {
-            binary += String.fromCharCode(bytes[i]);
-          }
-          b64 = btoa(binary);
-        }
-
-        if (b64) {
-          const fullDataUrl = `data:${data.mimeType || 'image/png'};base64,${b64}`;
-          setImagePreview(fullDataUrl, `📸 Capa: ${data.nodeName || 'Selección'}`);
-          showToast('Imagen capturada de Figma. Escribe tu instrucción o envía para recrearla.', 'success');
-        } else {
-          showToast('No se pudo convertir la imagen a formato Base64', 'error');
-        }
-      }
-
-      function setImagePreview(dataUrl, label = '📸 Imagen de referencia') {
-        activeImageBase64 = dataUrl;
-        dom.imagePreviewThumb.src = dataUrl;
-        dom.imagePreviewText.textContent = label;
-        dom.imagePreviewContainer.style.display = 'flex';
-        if (!dom.promptInput.value) {
-          dom.promptInput.value = 'Recrea este diseño en Figma con componentes reales y Auto-Layout';
-        }
-      }
-
-      function clearImagePreview() {
-        activeImageBase64 = null;
-        dom.imagePreviewThumb.src = '';
-        dom.imagePreviewContainer.style.display = 'none';
-        if (dom.inputUploadImage) dom.inputUploadImage.value = '';
-      }
-
-      function handleSelectionUpdate(nodes) {
-        currentSelection = nodes;
-        if (!nodes || nodes.length === 0) {
-          dom.selectionContext.innerHTML = '✨ Lienzo libre';
-          dom.selectionContext.title = 'No hay elementos seleccionados. Los nuevos elementos se crearán en la página activa.';
-          return;
-        }
-
-        const count = nodes.length;
-        const types = {};
-        nodes.forEach(n => {
-          types[n.type] = (types[n.type] || 0) + 1;
-        });
-
-        const typeStrings = Object.entries(types).map(([type, qty]) => `${qty} ${formatNodeType(type, qty)}`);
-        const summary = typeStrings.join(', ');
-
-        dom.selectionContext.innerHTML = `🎯 ${summary}`;
-        dom.selectionContext.title = `Selección activa: ${nodes.map(n => n.name).join(', ')}`;
-      }
-
-      function formatNodeType(type, qty) {
-        const map = {
-          'FRAME': qty > 1 ? 'Frames' : 'Frame',
-          'TEXT': qty > 1 ? 'Textos' : 'Texto',
-          'RECTANGLE': qty > 1 ? 'Rectángulos' : 'Rectángulo',
-          'COMPONENT': qty > 1 ? 'Componentes' : 'Componente',
-          'INSTANCE': qty > 1 ? 'Instancias' : 'Instancia',
-          'GROUP': qty > 1 ? 'Grupos' : 'Grupo',
-          'VECTOR': qty > 1 ? 'Vectores' : 'Vector'
-        };
-        return map[type] || type;
-      }
-
-      // ------------------------------------------------------------------------
-      // SYSTEM PROMPT DEL DSL DE FIGMA (CON SOPORTE MULTIMODAL DE VISIÓN)
-      // ------------------------------------------------------------------------
-      function buildSystemPrompt(isVisionMode = false) {
-        return `Eres el motor experto de IA Figma AI Copilot, especializado en diseñar interfaces de usuario AAA según los estándares Refero, Linear, Arc, GitHub y Apple.
-Tu misión es recibir solicitudes en lenguaje natural${isVisionMode ? ' y ANALIZAR LA IMAGEN ADJUNTA' : ''} para generar especificaciones completas para crear componentes de alta fidelidad, flujos y mockups en Figma mediante un DSL JSON estructurado.
-
-${isVisionMode ? `REGLAS CRÍTICAS DE RECREACIÓN DE IMAGEN (PIXEL-PERFECT VISION-TO-FIGMA):
-- Tienes frente a ti un diseño de UI real. Tu objetivo es clonarlo con máxima fidelidad estructural y visual en Figma.
-- SI LA IMAGEN TIENE MÚLTIPLES PANTALLAS (flujo de pantallas):
-  * Recrea fielmente las pantallas principales una por una en Frames separados de 393x852 (tamaño estándar móvil iPhone) o el tamaño proporcional de la imagen.
-  * Coloca cada pantalla con su nombre exacto (ej. "1. Bienvenida", "2. Inicio de sesión", "3. Registro", etc.).
-- DETALLES OBLIGATORIOS POR PANTALLA:
-  * BARRA SUPERIOR: Tiempo/Status bar (ej. 9:41) o Navbar con botón atrás y título de pantalla.
-  * ILUSTRACIONES / IMÁGENES: Usa "CREATE_RECTANGLE" con cornerRadius suave y color placeholder representativo (ej. azul suave o gris).
-  * INPUTS DE FORMULARIO: Usa "CREATE_INPUT" con placeholder exacto y ancho completo (ej. width: 345, height: 48, cornerRadius: 8).
-  * BOTONES DE ACCIÓN: Usa "CREATE_BUTTON" con el color exacto (ej. teal oscuro #005F73, rojo emergencia #E63946, etc.), texto en mayúsculas/minúsculas fiel y esquinas redondeadas.
-  * TEXTOS Y TÍTULOS: Usa "CREATE_TEXT" con tamaño jerárquico (Títulos: 22-26px BOLD, Subtítulos: 14-16px, Párrafos: 13-14px).
-  * AUTO-LAYOUT: Todo Frame móvil debe tener layoutMode: "VERTICAL", itemSpacing: 16 y padding: {top: 24, right: 24, bottom: 24, left: 24}.` : ''}
-
-REGLAS CRÍTICAS DE RESPUESTA:
-1. Explica brevemente en español qué creaste o modificaste (1 o 2 oraciones concisas).
-2. Proporciona OBLIGATORIAMENTE un bloque de código JSON cercado (\`\`\`json ... \`\`\`) con la clave "operations", que contiene un array de acciones ejecutables.
-3. ACCIONES OFICIALES DISPONIBLES EN FIGMA:
-   - "CREATE_FRAME": Contenedor o pantalla. Parámetros: { name, width, height, fills: ["#HEX"], cornerRadius, layoutMode: "VERTICAL"|"HORIZONTAL", itemSpacing, padding: {top, right, bottom, left}, strokes: ["#HEX"], strokeWeight, dropShadow: {color, blur, y}, children: [...] }
-   - "CREATE_BUTTON": Botón nativo con auto-layout y texto. Parámetros: { label, variant: "PRIMARY"|"SECONDARY"|"OUTLINE"|"GITHUB", fills: ["#HEX"], textColor: "#HEX", cornerRadius: 6, paddingX: 16, paddingY: 10, fontSize: 14, fontWeight: "BOLD"|"MEDIUM", strokes: ["#HEX"] }
-   - "CREATE_ICON": Icono vectorial nativo de Bootstrap Icons. Parámetros: { icon: "shield-check"|"bell"|"person"|"geo-alt"|"telephone"|"exclamation-triangle"|"heart"|"search"|"house"|"gear"|"arrow-left"|"arrow-right"|"plus"|"lock"|"envelope", size: 20, color: "#HEX" }
-   - "CREATE_INTERACTIVE_BUTTON": Crea un Componente de Figma con Variantes (Default y Hover) y conexión de prototipado automático (Smart Animate While Hovering). Parámetros: { name, label, baseColor: "#HEX", hoverColor: "#HEX", textColor: "#HEX", cornerRadius: 8 }
-   - "CREATE_BADGE": Píldora o etiqueta. Parámetros: { label, backgroundColor: "#HEX", textColor: "#HEX", fontSize: 11, cornerRadius: 999 }
-   - "CREATE_INPUT": Campo de formulario con placeholder. Parámetros: { placeholder, width: 280, height: 40, fills: ["#HEX"], borderColor: "#HEX" }
-   - "CREATE_TEXT": Bloque de texto. Parámetros: { characters, fontSize, fontWeight: "REGULAR"|"MEDIUM"|"BOLD", fills: ["#HEX"], textAlign: "LEFT"|"CENTER"|"RIGHT" }
-   - "CREATE_RECTANGLE": Formas o placeholders de imagen. Parámetros: { width, height, fills: ["#HEX"], cornerRadius }
-   - "CREATE_ELLIPSE": Avatares o círculos. Parámetros: { width, height, fills: ["#HEX"] }
-
-REGLAS DE DISEÑO DE ALTO IMPACTO (MOCKUPS PRO):
-- Si el usuario pide un MOCKUP DE GITHUB:
-  * Crea un Frame contenedor oscuro (#0D1117) de 1200x800 con Auto-Layout vertical.
-  * Header superior (#161B22, borde #30363D) con Logo, buscador (#0D1117), enlaces ("Pull requests", "Issues", "Marketplace") y avatar circular.
-  * Repo Header (#0D1117): "owner / repo-name", Badge "Public", y botones ("Watch", "Fork", "Star").
-  * Botón verde oficial de GitHub: variant: "GITHUB", fills: ["#238636"].
-  * Pestañas horizontales ("Code", "Issues", "Pull requests", "Actions", "Settings").
-  * Tabla de archivos con ramas ("main") y botón "Add file" y botón verde "<> Code".
-- Si el usuario pide REPOSTERÍA / E-COMMERCE / LOGIN:
-  * Genera el flujo completo: Pantalla de Login con inputs y botón principal + Catálogo con tarjetas de producto (Auto-Layout, precio destacado, botón de comprar, badge de "Popular" o "Oferta").
-
-Contexto de la selección actual en Figma:
-${JSON.stringify(currentSelection.map(n => ({ id: n.id, name: n.name, type: n.type, width: n.width, height: n.height })))}`;
-      }
-
-      // ------------------------------------------------------------------------
-      // SERVICIO CLIENTE DE IA (GEMINI PRO / ANTIGRAVITY / OPENAI / GROQ / OPENROUTER)
-      // ------------------------------------------------------------------------
-      async function callAIService(userPrompt, imageBase64 = null) {
-        const sysPrompt = buildSystemPrompt(Boolean(imageBase64));
-
-        if (appConfig.provider === 'gemini') {
-          return await callGeminiDirect(sysPrompt, userPrompt, imageBase64);
-        } else if (appConfig.provider === 'antigravity' || appConfig.provider === 'smart-router') {
-          return await callSmartRouter(sysPrompt, userPrompt);
-        } else if (appConfig.provider === 'openai') {
-          return await callOpenAIDirect(sysPrompt, userPrompt);
-        } else if (appConfig.provider === 'groq') {
-          return await callGroqDirect(sysPrompt, userPrompt);
-        } else if (appConfig.provider === 'openrouter') {
-          return await callOpenRouterDirect(sysPrompt, userPrompt);
-        } else {
-          throw new Error('Proveedor desconocido');
-        }
-      }
-
-      async function callGeminiDirect(systemPrompt, userPrompt, imageBase64 = null) {
-        if (!appConfig.apiKey) {
-          throw new Error('Por favor abre el engranaje ⚙️ y pega tu Gemini API Key de Google AI Studio');
-        }
-
-        // Modelos candidatos en orden de preferencia según la versión actual de la API de Google
-        const candidateModels = [
-          appConfig.model,
-          'gemini-3.8-flash',
-          'gemini-3.1-pro-preview',
-          'gemini-2.5-pro',
-          'gemini-2.5-flash',
-          'gemini-flash-latest',
-          'gemini-pro-latest'
-        ].filter(Boolean);
-
-        // Remover duplicados
-        const modelsToTry = [...new Set(candidateModels)];
-        let lastError = null;
-
-        // Construcción del contenido multimodal
-        const parts = [{ text: `${systemPrompt}\n\nInstrucción del usuario:\n${userPrompt || 'Recrea este diseño en Figma con componentes reales'}` }];
-        if (imageBase64) {
-          // Extraer data pura si viene con prefijo data:image/...;base64,
-          const cleanBase64 = imageBase64.replace(/^data:image\/[a-z]+;base64,/, '');
-          parts.push({
-            inlineData: {
-              mimeType: 'image/png',
-              data: cleanBase64
-            }
-          });
-        }
-
-        for (const model of modelsToTry) {
-          try {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(appConfig.apiKey)}`;
-            const res = await fetch(url, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                contents: [{ role: 'user', parts }],
-                generationConfig: {
-                  temperature: 0.15,
-                  maxOutputTokens: 8192
-                }
-              })
-            });
-
-            if (res.ok) {
-              const data = await res.json();
-              const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-              if (text) {
-                appConfig.model = model;
-                return text;
-              }
-            } else {
-              const err = await res.json().catch(() => ({}));
-              lastError = new Error(err.error?.message || `Error en Gemini (${res.status})`);
-              console.warn(`[Figma AI Copilot] Error en modelo ${model} (${res.status}):`, err.error?.message);
-              // Si es 404 (no existe), 429 (cuota agotada temporal) o 503 (alta demanda), probamos el siguiente modelo
-              if (res.status === 404 || res.status === 429 || res.status === 503 || err.error?.status === 'RESOURCE_EXHAUSTED') {
-                continue;
-              } else {
-                throw lastError;
-              }
-            }
-          } catch (err) {
-            lastError = err;
-            if (err.message?.includes('exceeded') || err.message?.includes('demand') || err.message?.includes('quota') || err.message?.includes('404')) {
-              continue;
-            }
-            throw err;
-          }
-        }
-
-        throw lastError || new Error('No se pudo conectar con ningún modelo de Gemini disponible');
-      }
-
-      async function callOpenAIDirect(systemPrompt, userPrompt) {
-        if (!appConfig.apiKey) throw new Error('Se requiere un API Key de OpenAI');
-        const model = appConfig.model || 'gpt-4o';
-        const url = 'https://api.openai.com/v1/chat/completions';
-
+Instrucci\xF3n del usuario:
+${userPrompt || "Recrea este dise\xF1o en Figma"}` }];
+    if (imageBase64) {
+      const cleanBase64 = imageBase64.replace(/^data:image\/[a-z]+;base64,/, "");
+      parts.push({
+        inlineData: { mimeType: "image/png", data: cleanBase64 }
+      });
+    }
+    let lastError = null;
+    for (const model of modelsToTry) {
+      try {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(config.apiKey)}`;
         const res = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${appConfig.apiKey}`
-          },
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            model,
-            messages: [
-              { role: 'system', content: systemPrompt },
-              { role: 'user', content: userPrompt }
-            ]
+            contents: [{ role: "user", parts }],
+            generationConfig: { temperature: 0.15, maxOutputTokens: 8192 }
           })
         });
-
-        if (!res.ok) {
+        if (res.ok) {
+          const data = await res.json();
+          const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (text) return text;
+        } else {
           const err = await res.json().catch(() => ({}));
-          throw new Error(err.error?.message || `Error en OpenAI API (${res.status})`);
+          lastError = new Error(err.error?.message || `Error Gemini (${res.status})`);
+          if ([404, 429, 503].includes(res.status) || err.error?.status === "RESOURCE_EXHAUSTED") continue;
+          throw lastError;
         }
-
-        const data = await res.json();
-        return data.choices?.[0]?.message?.content || '';
+      } catch (err) {
+        lastError = err;
+        if (err.message?.includes("exceeded") || err.message?.includes("quota") || err.message?.includes("404")) continue;
+        throw err;
       }
+    }
+    throw lastError || new Error("No se pudo conectar con ning\xFAn modelo de Gemini disponible");
+  }
+  async function callSmartRouter(systemPrompt, userPrompt) {
+    const config = getConfig();
+    const baseUrl = config.localUrl ? config.localUrl.replace(/\/+$/, "") : "http://localhost:3000";
+    const res = await fetch(`${baseUrl}/v1/chat/completions`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: config.model || "qwen-3.8-27b",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt }
+        ]
+      })
+    });
+    if (!res.ok) throw new Error(`Smart Router error (${res.status})`);
+    const data = await res.json();
+    return data.choices?.[0]?.message?.content || "";
+  }
+  async function callOpenAIDirect(systemPrompt, userPrompt, imageBase64) {
+    const config = getConfig();
+    if (!config.apiKey) throw new Error("Se requiere un API Key de OpenAI");
+    const userContent = imageBase64 ? [{ type: "text", text: userPrompt }, { type: "image_url", image_url: { url: imageBase64 } }] : userPrompt;
+    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${config.apiKey}` },
+      body: JSON.stringify({
+        model: config.model || "gpt-4o",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userContent }
+        ]
+      })
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error?.message || `OpenAI error (${res.status})`);
+    }
+    const data = await res.json();
+    return data.choices?.[0]?.message?.content || "";
+  }
+  async function callGroqDirect(systemPrompt, userPrompt) {
+    const config = getConfig();
+    if (!config.apiKey) throw new Error("Se requiere un API Key de Groq");
+    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${config.apiKey}` },
+      body: JSON.stringify({
+        model: config.model || "llama-3.3-70b-versatile",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt }
+        ]
+      })
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error?.message || `Groq error (${res.status})`);
+    }
+    const data = await res.json();
+    return data.choices?.[0]?.message?.content || "";
+  }
+  async function callOpenRouterDirect(systemPrompt, userPrompt) {
+    const config = getConfig();
+    if (!config.apiKey) throw new Error("Se requiere un API Key de OpenRouter");
+    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${config.apiKey}`,
+        "HTTP-Referer": "https://figma.com",
+        "X-Title": "Figma AI Copilot"
+      },
+      body: JSON.stringify({
+        model: config.model || "meta-llama/llama-3.3-70b-instruct:free",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt }
+        ]
+      })
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error?.message || `OpenRouter error (${res.status})`);
+    }
+    const data = await res.json();
+    return data.choices?.[0]?.message?.content || "";
+  }
 
-      async function callGroqDirect(systemPrompt, userPrompt) {
-        if (!appConfig.apiKey) throw new Error('Se requiere un API Key de Groq');
-        const model = appConfig.model || 'llama-3.3-70b-versatile';
-        const url = 'https://api.groq.com/openai/v1/chat/completions';
+  // src/ui/scripts/dsl-parser.js
+  function buildSystemPrompt(selection = [], isVisionMode = false) {
+    const visionRules = isVisionMode ? `
+REGLAS VISION-TO-FIGMA (CLONACI\xD3N PIXEL-PERFECT):
+- Recrea pantallas en Frames m\xF3viles de 393x852 con layoutMode: "VERTICAL", itemSpacing: 16 y padding: 24.
+- Status bar superior (9:41), Navbar con bot\xF3n atr\xE1s y t\xEDtulo.
+- Placeholders de ilustraci\xF3n con CREATE_RECTANGLE (color suave representativo).
+- Inputs de formulario: CREATE_INPUT (ancho: 345, alto: 48, cornerRadius: 8).
+- Botones de acci\xF3n: CREATE_BUTTON con colores exactos y texto fiel.
+- T\xEDtulos jer\xE1rquicos: CREATE_TEXT (22-26px BOLD), Subt\xEDtulos (14-16px), P\xE1rrafos (13-14px).` : "";
+    const selectionContext = selection.length > 0 ? JSON.stringify(selection.map((n) => ({ id: n.id, name: n.name, type: n.type, width: n.width, height: n.height }))) : "Lienzo libre (sin selecci\xF3n activa)";
+    return `Eres Figma AI Copilot, motor de dise\xF1o generativo nivel Refero AAA (Linear, Arc, Apple).
+Generas especificaciones de dise\xF1o ejecutables en Figma mediante un DSL JSON estructurado.${visionRules}
 
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${appConfig.apiKey}`
-          },
-          body: JSON.stringify({
-            model,
-            messages: [
-              { role: 'system', content: systemPrompt },
-              { role: 'user', content: userPrompt }
-            ]
-          })
-        });
+PATRONES FEW-SHOT DE ALTA FIDELIDAD:
+1. MOCKUP GITHUB:
+   - Frame contenedor oscuro (#0D1117) de 1200x800 con Auto-Layout vertical.
+   - Header (#161B22, borde #30363D) con buscador (#0D1117), links y avatar.
+   - Repo Header (#0D1117): "owner / repo", CREATE_BADGE "Public", botones Watch/Fork/Star.
+   - Bot\xF3n oficial: CREATE_BUTTON variant: "GITHUB", fills: ["#238636"] para "<> Code".
+   - Navegaci\xF3n por pesta\xF1as: Code, Issues, Pull requests, Actions, Settings.
+2. REPOSTER\xCDA / E-COMMERCE:
+   - Flujo: Pantalla Login con CREATE_INPUT y CREATE_BUTTON + Pantalla Cat\xE1logo m\xF3vil.
+   - Cards de productos: Auto-Layout, imagen placeholder, precio destacado, bot\xF3n Comprar y badge "Popular".
 
-        if (!res.ok) {
-          const err = await res.json().catch(() => ({}));
-          throw new Error(err.error?.message || `Error en Groq API (${res.status})`);
+OPERACIONES DISPONIBLES EN FIGMA:
+- "CREATE_FRAME": { name, width, height, fills: ["#HEX"], cornerRadius, layoutMode, itemSpacing, padding: {top,right,bottom,left}, strokes: ["#HEX"], strokeWeight, children: [...] }
+- "CREATE_BUTTON": { label, variant: "PRIMARY"|"SECONDARY"|"OUTLINE"|"GITHUB", fills: ["#HEX"], textColor, cornerRadius: 6, paddingX: 16, paddingY: 10, fontSize: 14 }
+- "CREATE_ICON": { icon: "shield-check"|"bell"|"person"|"geo-alt"|"telephone"|"exclamation-triangle"|"heart"|"search"|"house"|"gear"|"arrow-left"|"arrow-right"|"plus"|"lock"|"envelope", size: 20, color: "#HEX" }
+- "CREATE_INTERACTIVE_BUTTON": { name, label, baseColor: "#HEX", hoverColor: "#HEX", textColor: "#HEX", cornerRadius: 8 }
+- "CREATE_BADGE": { label, backgroundColor: "#HEX", textColor: "#HEX", fontSize: 11, cornerRadius: 999 }
+- "CREATE_INPUT": { placeholder, width: 280, height: 42, fills: ["#HEX"], borderColor: "#HEX" }
+- "CREATE_TEXT": { characters, fontSize, fontWeight: "REGULAR"|"MEDIUM"|"BOLD", fills: ["#HEX"], textAlign: "LEFT"|"CENTER"|"RIGHT" }
+- "CREATE_RECTANGLE": { width, height, fills: ["#HEX"], cornerRadius }
+- "CREATE_ELLIPSE": { width, height, fills: ["#HEX"] }
+- "EDIT_NODE", "APPLY_AUTOLAYOUT", "ALIGN_SELECTION", "RENAME_NODES".
+
+REGLAS DE SALIDA OBLIGATORIAS:
+1. Explica brevemente en espa\xF1ol tu propuesta de dise\xF1o (1-2 oraciones).
+2. Proporciona OBLIGATORIAMENTE un bloque de c\xF3digo JSON cercado:
+\`\`\`json
+{
+  "operations": [ ... ]
+}
+\`\`\`
+
+Contexto actual de selecci\xF3n en Figma:
+${selectionContext}`;
+  }
+  function extractDSLFromResponse(rawText) {
+    if (!rawText || typeof rawText !== "string") return null;
+    const jsonMatch = rawText.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+    let jsonStr = jsonMatch ? jsonMatch[1].trim() : null;
+    if (!jsonStr) {
+      const trimmed = rawText.trim();
+      if (trimmed.startsWith("{") && trimmed.endsWith("}") || trimmed.startsWith("[") && trimmed.endsWith("]")) {
+        jsonStr = trimmed;
+      }
+    }
+    if (jsonStr) {
+      try {
+        const parsed = JSON.parse(jsonStr);
+        if (Array.isArray(parsed.operations)) return parsed.operations;
+        if (Array.isArray(parsed)) return parsed;
+        if (typeof parsed === "object" && (parsed.action || parsed.type)) return [parsed];
+      } catch (e) {
+        console.warn("[Figma AI Copilot] Error parseando bloque JSON DSL:", e);
+      }
+    }
+    return null;
+  }
+
+  // src/ui/scripts/dom-utils.js
+  function escapeHtml(str) {
+    if (!str) return "";
+    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+  }
+  function formatTimestamp() {
+    return (/* @__PURE__ */ new Date()).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }
+  function formatMarkdownBasic(str) {
+    let escaped = escapeHtml(str);
+    escaped = escaped.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+    escaped = escaped.replace(/`([^`]+)`/g, "<code>$1</code>");
+    return escaped.split("\n\n").map((p) => `<p>${p.replace(/\n/g, "<br>")}</p>`).join("");
+  }
+  function showToast(message, type = "info") {
+    const container = document.getElementById("toastContainer");
+    if (!container) return;
+    const toast = document.createElement("div");
+    toast.className = `toast-message ${type}`;
+    toast.innerHTML = `
+    <span>${escapeHtml(message)}</span>
+    <span style="cursor: pointer; opacity: 0.7; margin-left: 8px;">\u2715</span>
+  `;
+    toast.querySelector("span:last-child").addEventListener("click", () => toast.remove());
+    container.appendChild(toast);
+    setTimeout(() => {
+      if (toast.parentNode) {
+        toast.style.opacity = "0";
+        toast.style.transition = "opacity 0.2s ease";
+        setTimeout(() => toast.remove(), 200);
+      }
+    }, 3400);
+  }
+  function setStatus(statusType, label = "Listo") {
+    const badge = document.getElementById("statusBadge");
+    const text = document.getElementById("statusText");
+    if (!badge || !text) return;
+    if (statusType === "online") {
+      text.textContent = `\u{1F7E2} ${label}`;
+      badge.style.color = "#34D399";
+      badge.style.borderColor = "rgba(16, 185, 129, 0.25)";
+    } else if (statusType === "busy") {
+      text.textContent = `\u26A1 ${label}`;
+      badge.style.color = "#818CF8";
+      badge.style.borderColor = "rgba(99, 102, 241, 0.35)";
+    } else if (statusType === "error") {
+      text.textContent = `\u{1F534} ${label}`;
+      badge.style.color = "#F87171";
+      badge.style.borderColor = "rgba(239, 68, 68, 0.3)";
+    }
+  }
+
+  // src/ui/scripts/chat-view.js
+  function appendUserMessage(text) {
+    const container = document.getElementById("chatContainer");
+    if (!container) return;
+    const row = document.createElement("div");
+    row.className = "message-row user";
+    row.innerHTML = `
+    <div class="message-bubble">
+      <div class="message-header"><span class="message-time">${formatTimestamp()}</span></div>
+      <p>${escapeHtml(text)}</p>
+    </div>`;
+    container.appendChild(row);
+    container.scrollTop = container.scrollHeight;
+  }
+  function appendAIMessage(rawText, dslOperations, onReExecute) {
+    const container = document.getElementById("chatContainer");
+    if (!container) return;
+    const row = document.createElement("div");
+    row.className = "message-row ai";
+    const cleanText = rawText.replace(/```(?:json)?\s*[\s\S]*?\s*```/g, "").trim() || "He preparado las operaciones solicitadas.";
+    let dslBtnHtml = "";
+    if (dslOperations && dslOperations.length > 0) {
+      const count = dslOperations.length;
+      dslBtnHtml = `
+      <div class="dsl-action-card">
+        <div class="dsl-action-info"><span>\u26A1 <strong>${count}</strong> ${count > 1 ? "operaciones listas" : "operaci\xF3n lista"}</span></div>
+        <button class="dsl-action-btn" data-reexecute="true"><span>Re-ejecutar</span></button>
+      </div>`;
+    }
+    row.innerHTML = `
+    <div class="message-avatar ai">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+    </div>
+    <div class="message-bubble">
+      <div class="message-header"><span class="message-author">Figma AI Copilot</span><span class="message-time">${formatTimestamp()}</span></div>
+      <div>${formatMarkdownBasic(cleanText)}</div>
+      ${dslBtnHtml}
+    </div>`;
+    if (dslOperations && dslOperations.length > 0 && onReExecute) {
+      row.querySelector('[data-reexecute="true"]')?.addEventListener("click", () => onReExecute(dslOperations));
+    }
+    container.appendChild(row);
+    container.scrollTop = container.scrollHeight;
+  }
+  function showTypingIndicator() {
+    const container = document.getElementById("chatContainer");
+    if (!container) return;
+    const row = document.createElement("div");
+    row.className = "message-row ai";
+    row.id = "activeTypingIndicator";
+    row.innerHTML = `
+    <div class="message-avatar ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg></div>
+    <div class="message-bubble"><div class="typing-indicator"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div></div>`;
+    container.appendChild(row);
+    container.scrollTop = container.scrollHeight;
+  }
+  function removeTypingIndicator() {
+    document.getElementById("activeTypingIndicator")?.remove();
+  }
+
+  // src/ui/scripts/image-handler.js
+  function handleSelectionImageReceived(data) {
+    let b64 = data.base64;
+    if (!b64 && data.bytes) {
+      let bin = "";
+      const bytes = new Uint8Array(data.bytes);
+      for (let i = 0; i < bytes.byteLength; i++) bin += String.fromCharCode(bytes[i]);
+      b64 = btoa(bin);
+    }
+    if (b64) {
+      const fullUrl = `data:${data.mimeType || "image/png"};base64,${b64}`;
+      setImagePreview(fullUrl, `\u{1F4F8} Capa: ${data.nodeName || "Selecci\xF3n"}`);
+      showToast("Imagen capturada de Figma. Lista para recrear.", "success");
+    } else {
+      showToast("No se pudo convertir la imagen a formato Base64", "error");
+    }
+  }
+  function setImagePreview(dataUrl, label = "\u{1F4F8} Imagen de referencia") {
+    setActiveImage(dataUrl);
+    const container = document.getElementById("imagePreviewContainer");
+    const thumb = document.getElementById("imagePreviewThumb");
+    const text = document.getElementById("imagePreviewText");
+    const input = document.getElementById("promptInput");
+    if (thumb) thumb.src = dataUrl;
+    if (text) text.textContent = label;
+    if (container) container.style.display = "flex";
+    if (input && !input.value) input.value = "Recrea este dise\xF1o en Figma con componentes reales y Auto-Layout";
+  }
+  function clearPreview() {
+    clearActiveImage();
+    const container = document.getElementById("imagePreviewContainer");
+    const thumb = document.getElementById("imagePreviewThumb");
+    const upload = document.getElementById("inputUploadImage");
+    if (thumb) thumb.src = "";
+    if (container) container.style.display = "none";
+    if (upload) upload.value = "";
+  }
+
+  // src/ui/scripts/settings-view.js
+  function syncSettingsUI() {
+    const cfg = getConfig();
+    const provider = document.getElementById("providerSelect");
+    const localUrl = document.getElementById("inputLocalUrl");
+    const apiKey = document.getElementById("inputApiKey");
+    const preset = document.getElementById("selectModelPreset");
+    const customModel = document.getElementById("inputModelName");
+    if (provider) provider.value = cfg.provider;
+    if (localUrl) localUrl.value = cfg.localUrl;
+    if (apiKey) apiKey.value = cfg.apiKey;
+    if (preset) {
+      const opt = preset.querySelector(`option[value="${cfg.model}"]`);
+      if (opt) {
+        preset.value = cfg.model;
+        if (customModel) customModel.style.display = "none";
+      } else {
+        preset.value = "custom";
+        if (customModel) {
+          customModel.value = cfg.model || "gemini-3.8-flash";
+          customModel.style.display = "block";
         }
-
-        const data = await res.json();
-        return data.choices?.[0]?.message?.content || '';
       }
+    }
+    updateProviderFormVisibility();
+  }
+  function updateProviderFormVisibility() {
+    const prov = document.getElementById("providerSelect")?.value;
+    const groupUrl = document.getElementById("groupLocalUrl");
+    const groupKey = document.getElementById("groupApiKey");
+    const keyLabel = document.getElementById("apiKeyLabel");
+    const inputKey = document.getElementById("inputApiKey");
+    if (groupUrl) groupUrl.style.display = prov === "antigravity" || prov === "smart-router" ? "flex" : "none";
+    if (groupKey) groupKey.style.display = prov === "antigravity" || prov === "smart-router" ? "none" : "flex";
+    if (keyLabel && inputKey) {
+      if (prov === "gemini") {
+        keyLabel.textContent = "Google Gemini API Key";
+        inputKey.placeholder = "AIzaSy... (Google AI Studio)";
+      } else if (prov === "openai") {
+        keyLabel.textContent = "OpenAI API Key";
+        inputKey.placeholder = "sk-proj-...";
+      } else if (prov === "groq") {
+        keyLabel.textContent = "Groq Cloud API Key";
+        inputKey.placeholder = "gsk_...";
+      } else if (prov === "openrouter") {
+        keyLabel.textContent = "OpenRouter API Key";
+        inputKey.placeholder = "sk-or-v1-...";
+      }
+    }
+  }
+  function setupSettingsListeners() {
+    document.getElementById("btnToggleSettings")?.addEventListener("click", () => {
+      document.getElementById("settingsDrawer")?.classList.toggle("open");
+    });
+    document.getElementById("providerSelect")?.addEventListener("change", updateProviderFormVisibility);
+    document.getElementById("btnToggleApiKey")?.addEventListener("click", () => {
+      const input = document.getElementById("inputApiKey");
+      if (input) input.type = input.type === "password" ? "text" : "password";
+    });
+    document.getElementById("selectModelPreset")?.addEventListener("change", (e) => {
+      const custom = document.getElementById("inputModelName");
+      if (!custom) return;
+      if (e.target.value === "custom") {
+        custom.style.display = "block";
+        custom.focus();
+      } else {
+        custom.style.display = "none";
+        custom.value = e.target.value;
+      }
+    });
+    document.getElementById("btnSaveSettings")?.addEventListener("click", () => {
+      const provider = document.getElementById("providerSelect")?.value;
+      const localUrl = document.getElementById("inputLocalUrl")?.value.trim();
+      const apiKey = document.getElementById("inputApiKey")?.value.trim();
+      const preset = document.getElementById("selectModelPreset")?.value;
+      const custom = document.getElementById("inputModelName")?.value.trim();
+      const model = preset === "custom" ? custom : preset;
+      saveConfig({ provider, localUrl: localUrl || "http://localhost:3000", apiKey, model: model || "gemini-3.8-flash" });
+      document.getElementById("settingsDrawer")?.classList.remove("open");
+      showToast("Ajustes guardados correctamente", "success");
+    });
+  }
 
-      async function callOpenRouterDirect(systemPrompt, userPrompt) {
-        if (!appConfig.apiKey) throw new Error('Se requiere un API Key de OpenRouter');
-        const model = appConfig.model || 'meta-llama/llama-3.3-70b-instruct:free';
-        const url = 'https://openrouter.ai/api/v1/chat/completions';
-
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${appConfig.apiKey}`,
-            'HTTP-Referer': 'https://figma.com',
-            'X-Title': 'Figma AI Copilot'
-          },
-          body: JSON.stringify({
-            model,
-            messages: [
-              { role: 'system', content: systemPrompt },
-              { role: 'user', content: userPrompt }
-            ]
-          })
-        });
-
-        if (!res.ok) {
-          const err = await res.json().catch(() => ({}));
-          throw new Error(err.error?.message || `Error en OpenRouter (${res.status})`);
+  // src/ui/scripts/ui-controller.js
+  function initUI() {
+    syncSettingsUI();
+    setupSettingsListeners();
+    setupPromptListeners();
+    requestFigmaStorage();
+    postMessageToFigma({ type: "GET_SELECTION" });
+    window.addEventListener("message", handleWindowMessage);
+  }
+  function postMessageToFigma(msg) {
+    parent.postMessage({ pluginMessage: msg }, "*");
+  }
+  function handleWindowMessage(event) {
+    const msg = event.data ? event.data.pluginMessage : null;
+    if (!msg) return;
+    switch (msg.type) {
+      case "DSL_RESULT":
+        setStatus("online", "Listo");
+        if (msg.status === "success") {
+          showToast(msg.message || "Operaciones ejecutadas con \xE9xito", "success");
+        } else {
+          showToast(msg.message || msg.error || "Error en ejecuci\xF3n de DSL", "error");
         }
-
-        const data = await res.json();
-        return data.choices?.[0]?.message?.content || '';
-      }
-
-      // ------------------------------------------------------------------------
-      // PARSEO Y EXTRACCIÓN DE DSL FIGMA
-      // ------------------------------------------------------------------------
-      function extractDSLFromResponse(rawText) {
-        if (!rawText) return null;
-        
-        // Buscar bloques ```json ... ```
-        const jsonMatch = rawText.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
-        let jsonStr = jsonMatch ? jsonMatch[1].trim() : null;
-
-        if (!jsonStr) {
-          // Intentar parsear el texto completo si empieza por { o [
-          const trimmed = rawText.trim();
-          if ((trimmed.startsWith('{') && trimmed.endsWith('}')) || (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
-            jsonStr = trimmed;
-          }
+        break;
+      case "STORAGE_GET_RESULT":
+      case "STORAGE_VALUE":
+        if (applyStorageValue(msg.key, msg.value)) {
+          syncSettingsUI();
+          showToast("Ajustes sincronizados con Figma", "info");
         }
-
-        if (jsonStr) {
-          try {
-            const parsed = JSON.parse(jsonStr);
-            if (parsed.operations) return parsed.operations;
-            if (Array.isArray(parsed)) return parsed;
-            return [parsed];
-          } catch (e) {
-            console.warn('[Figma AI Copilot] Error parseando bloque JSON:', e);
-          }
-        }
-        return null;
+        break;
+      case "SELECTION_CHANGE":
+      case "INIT_STATE":
+        setSelection(msg.selection || []);
+        updateSelectionBadge(msg.selection || []);
+        break;
+      case "SELECTION_IMAGE_DATA":
+        handleSelectionImageReceived(msg);
+        break;
+      case "SELECTION_IMAGE_ERROR":
+        showToast(msg.error || "Error al exportar imagen", "error");
+        break;
+      case "EXECUTION_SUCCESS":
+        setStatus("online", "Listo");
+        showToast(msg.message || "Dise\xF1o actualizado en Figma", "success");
+        break;
+      case "EXECUTION_ERROR":
+        setStatus("error", "Error en lienzo");
+        showToast(msg.error || "Fallo al aplicar cambios", "error");
+        break;
+    }
+  }
+  function updateSelectionBadge(nodes) {
+    const badge = document.getElementById("selectionContext");
+    if (!badge) return;
+    if (!nodes || nodes.length === 0) {
+      badge.innerHTML = "\u2728 Lienzo libre";
+      badge.title = "Nuevos elementos se crear\xE1n en la p\xE1gina activa";
+      return;
+    }
+    const types = {};
+    nodes.forEach((n) => {
+      types[n.type] = (types[n.type] || 0) + 1;
+    });
+    const summary = Object.entries(types).map(([t, q]) => `${q} ${formatNodeType(t, q)}`).join(", ");
+    badge.innerHTML = `\u{1F3AF} ${summary}`;
+    badge.title = `Selecci\xF3n: ${nodes.map((n) => n.name).join(", ")}`;
+  }
+  async function handleSendPrompt(customText) {
+    const input = document.getElementById("promptInput");
+    const sendBtn = document.getElementById("btnSendPrompt");
+    const text = (customText || input?.value || "").trim();
+    const image = getActiveImage();
+    if (!text || getGenerating()) return;
+    setGenerating(true);
+    if (sendBtn) sendBtn.disabled = true;
+    setStatus("busy", image ? "Analizando imagen..." : "Pensando...");
+    appendUserMessage(text + (image ? " \u{1F4F8} (con referencia)" : ""));
+    if (input) input.value = "";
+    clearPreview();
+    showTypingIndicator();
+    try {
+      const sysPrompt = buildSystemPrompt(getSelection(), Boolean(image));
+      const rawResponse = await callAIService(sysPrompt, text, image);
+      removeTypingIndicator();
+      const dslOperations = extractDSLFromResponse(rawResponse);
+      appendAIMessage(rawResponse, dslOperations, executeDSL);
+      if (dslOperations && dslOperations.length > 0) {
+        executeDSL(dslOperations);
+      } else {
+        setStatus("online", "Listo");
       }
-
-      // ------------------------------------------------------------------------
-      // GESTIÓN DE UI: CHAT, MENSAJES Y NOTIFICACIONES
-      // ------------------------------------------------------------------------
-      function formatTimestamp() {
-        const now = new Date();
-        return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } catch (err) {
+      removeTypingIndicator();
+      setStatus("error", "Fallo");
+      showToast(err.message, "error");
+    } finally {
+      setGenerating(false);
+      if (sendBtn) sendBtn.disabled = false;
+      input?.focus();
+    }
+  }
+  function executeDSL(operations) {
+    if (!operations || operations.length === 0) return;
+    setStatus("busy", "Aplicando en Figma...");
+    postMessageToFigma({ type: "EXECUTE_DSL", operations, payload: operations });
+  }
+  function setupPromptListeners() {
+    document.getElementById("btnRefreshSelection")?.addEventListener("click", () => {
+      postMessageToFigma({ type: "GET_SELECTION" });
+      showToast("Sincronizando selecci\xF3n...", "info");
+    });
+    document.getElementById("btnCaptureFigmaImage")?.addEventListener("click", () => {
+      showToast("Capturando imagen de capa...", "info");
+      postMessageToFigma({ type: "EXPORT_SELECTION_IMAGE" });
+    });
+    document.getElementById("inputUploadImage")?.addEventListener("change", (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        setImagePreview(evt.target.result, `\u{1F4C1} ${file.name}`);
+        showToast("Imagen cargada. Pulsa Enviar para recrearla.", "success");
+      };
+      reader.readAsDataURL(file);
+    });
+    document.getElementById("btnRemoveImage")?.addEventListener("click", clearPreview);
+    const input = document.getElementById("promptInput");
+    input?.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        handleSendPrompt();
       }
+    });
+    document.getElementById("btnSendPrompt")?.addEventListener("click", () => handleSendPrompt());
+    document.querySelectorAll(".quick-pill").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const p = btn.getAttribute("data-prompt");
+        if (p) handleSendPrompt(p);
+      });
+    });
+  }
 
-      function appendUserMessage(text) {
-        const row = document.createElement('div');
-        row.className = 'message-row user';
-        row.innerHTML = `
-          <div class="message-bubble">
-            <div class="message-header">
-              <span class="message-time">${formatTimestamp()}</span>
-            </div>
-            <p>${escapeHtml(text)}</p>
-          </div>
-        `;
-        dom.chatContainer.appendChild(row);
-        scrollToBottom();
-      }
+  // src/ui/scripts/main.js
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => {
+      initUI();
+    });
+  } else {
+    initUI();
+  }
+})();
 
-      function appendAIMessage(rawText, dslOperations) {
-        const row = document.createElement('div');
-        row.className = 'message-row ai';
-
-        // Limpiar el texto de la explicación quitando el bloque json para lectura humana fluida
-        const displayText = rawText.replace(/```(?:json)?\s*[\s\S]*?\s*```/g, '').trim() || 'He preparado las operaciones solicitadas para tu lienzo.';
-
-        let dslButtonHtml = '';
-        if (dslOperations && dslOperations.length > 0) {
-          const opsCount = dslOperations.length;
-          dslButtonHtml = `
-            <div class="dsl-action-card">
-              <div class="dsl-action-info">
-                <span>⚡ <strong>${opsCount}</strong> ${opsCount > 1 ? 'operaciones listas' : 'operación lista'}</span>
-              </div>
-              <button class="dsl-action-btn" data-execute-dsl="true">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <polygon points="5 3 19 12 5 21 5 3"/>
-                </svg>
-                <span>Re-ejecutar</span>
-              </button>
-            </div>
-          `;
-        }
-
-        row.innerHTML = `
-          <div class="message-avatar ai">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-              <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
-            </svg>
-          </div>
-          <div class="message-bubble">
-            <div class="message-header">
-              <span class="message-author">Figma AI Copilot</span>
-              <span class="message-time">${formatTimestamp()}</span>
-            </div>
-            <div>${formatMarkdownBasic(displayText)}</div>
-            ${dslButtonHtml}
-          </div>
-        `;
-
-        if (dslOperations && dslOperations.length > 0) {
-          const btn = row.querySelector('[data-execute-dsl="true"]');
-          if (btn) {
-            btn.addEventListener('click', () => {
-              executeDSLInFigma(dslOperations);
-            });
-          }
-        }
-
-        dom.chatContainer.appendChild(row);
-        scrollToBottom();
-      }
-
-      function showTypingIndicator() {
-        const row = document.createElement('div');
-        row.className = 'message-row ai';
-        row.id = 'activeTypingIndicator';
-        row.innerHTML = `
-          <div class="message-avatar ai">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-              <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
-            </svg>
-          </div>
-          <div class="message-bubble">
-            <div class="typing-indicator">
-              <span class="typing-dot"></span>
-              <span class="typing-dot"></span>
-              <span class="typing-dot"></span>
-            </div>
-          </div>
-        `;
-        dom.chatContainer.appendChild(row);
-        scrollToBottom();
-      }
-
-      function removeTypingIndicator() {
-        const el = document.getElementById('activeTypingIndicator');
-        if (el) el.remove();
-      }
-
-      function appendSystemNotice(type, text) {
-        const row = document.createElement('div');
-        row.style.display = 'flex';
-        row.style.justifyContent = 'center';
-        row.style.margin = '4px 0';
-        row.innerHTML = `
-          <div style="font-size: 11px; padding: 4px 10px; border-radius: var(--radius-full); background: ${type === 'success' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)'}; color: ${type === 'success' ? '#34D399' : '#F87171'}; border: 1px solid ${type === 'success' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'};">
-            ${escapeHtml(text)}
-          </div>
-        `;
-        dom.chatContainer.appendChild(row);
-        scrollToBottom();
-      }
-
-      function scrollToBottom() {
-        dom.chatContainer.scrollTop = dom.chatContainer.scrollHeight;
-      }
-
-      function escapeHtml(str) {
-        return str
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-          .replace(/"/g, '&quot;')
-          .replace(/'/g, '&#039;');
-      }
-
-      function formatMarkdownBasic(str) {
-        let escaped = escapeHtml(str);
-        // Negrita **texto**
-        escaped = escaped.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        // Código en línea `codigo`
-        escaped = escaped.replace(/`([^`]+)`/g, '<code>$1</code>');
-        // Párrafos con saltos dobles
-        return escaped.split('\n\n').map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
-      }
-
-      function showToast(message, type = 'info') {
-        const toast = document.createElement('div');
-        toast.className = `toast-message ${type}`;
-        toast.innerHTML = `
-          <span>${escapeHtml(message)}</span>
-          <span style="cursor: pointer; opacity: 0.7; margin-left: 8px;">✕</span>
-        `;
-        
-        toast.querySelector('span:last-child').addEventListener('click', () => toast.remove());
-        dom.toastContainer.appendChild(toast);
-
-        setTimeout(() => {
-          if (toast.parentNode) {
-            toast.style.opacity = '0';
-            toast.style.transition = 'opacity 0.2s ease';
-            setTimeout(() => toast.remove(), 200);
-          }
-        }, 3400);
-      }
-
-      function setStatusOnline(label = 'Listo') {
-        dom.statusText.textContent = `🟢 ${label}`;
-        dom.statusBadge.style.color = '#34D399';
-        dom.statusBadge.style.borderColor = 'rgba(16, 185, 129, 0.25)';
-      }
-
-      function setStatusBusy(label = 'Generando...') {
-        dom.statusText.textContent = `⚡ ${label}`;
-        dom.statusBadge.style.color = '#818CF8';
-        dom.statusBadge.style.borderColor = 'rgba(99, 102, 241, 0.35)';
-      }
-
-      function setStatusError(label = 'Error') {
-        dom.statusText.textContent = `🔴 ${label}`;
-        dom.statusBadge.style.color = '#F87171';
-        dom.statusBadge.style.borderColor = 'rgba(239, 68, 68, 0.3)';
-      }
-
-      // ------------------------------------------------------------------------
-      // EJECUCIÓN DEL DSL EN FIGMA SANDBOX
-      // ------------------------------------------------------------------------
-      function executeDSLInFigma(operations) {
-        if (!operations || operations.length === 0) return;
-        setStatusBusy('Aplicando en Figma...');
-        
-        // Enviamos con ambos nombres de propiedad (operations y payload) para compatibilidad absoluta
-        postMessageToFigma({
-          type: 'EXECUTE_DSL',
-          operations: operations,
-          payload: operations
-        });
-      }
-
-      // ------------------------------------------------------------------------
-      // FLUJO PRINCIPAL DE ENVÍO Y GENERACIÓN
-      // ------------------------------------------------------------------------
-      async function handleSendPrompt(customText) {
-        const text = (customText || dom.promptInput.value || '').trim();
-        const imageToSend = activeImageBase64;
-        if (!text || isGenerating) return;
-
-        isGenerating = true;
-        dom.btnSendPrompt.disabled = true;
-        setStatusBusy(imageToSend ? 'Analizando imagen...' : 'Pensando...');
-        appendUserMessage(text + (imageToSend ? ' 📸 (con imagen de referencia)' : ''));
-        dom.promptInput.value = '';
-        clearImagePreview();
-        autoResizeTextarea();
-        showTypingIndicator();
-
-        try {
-          const rawResponse = await callAIService(text, imageToSend);
-          removeTypingIndicator();
-
-          const dslOperations = extractDSLFromResponse(rawResponse);
-          appendAIMessage(rawResponse, dslOperations);
-
-          if (dslOperations && dslOperations.length > 0) {
-            executeDSLInFigma(dslOperations);
-          } else {
-            setStatusOnline('Listo');
-          }
-        } catch (error) {
-          removeTypingIndicator();
-          setStatusError('Fallo');
-          console.error('[Figma AI Copilot] Error en proceso de generación:', error);
-          showToast(error.message, 'error');
-          appendSystemNotice('error', `Error: ${error.message}`);
-        } finally {
-          isGenerating = false;
-          dom.btnSendPrompt.disabled = false;
-          dom.promptInput.focus();
-        }
-      }
-
-      function autoResizeTextarea() {
-        dom.promptInput.style.height = 'auto';
-        dom.promptInput.style.height = Math.min(dom.promptInput.scrollHeight, 120) + 'px';
-      }
-
-      // ------------------------------------------------------------------------
-      // EVENT LISTENERS & INICIALIZACIÓN
-      // ------------------------------------------------------------------------
-      function setupEventListeners() {
-        // Toggle del cajón de configuración
-        dom.btnToggleSettings.addEventListener('click', () => {
-          dom.settingsDrawer.classList.toggle('open');
-        });
-
-        // Cambio de proveedor en configuración
-        dom.providerSelect.addEventListener('change', updateProviderFormVisibility);
-
-        // Toggle mostrar/ocultar API Key
-        dom.btnToggleApiKey.addEventListener('click', () => {
-          const isPass = dom.inputApiKey.type === 'password';
-          dom.inputApiKey.type = isPass ? 'text' : 'password';
-        });
-
-        // Cambio de selector de modelo predeterminado
-        dom.selectModelPreset.addEventListener('change', () => {
-          if (dom.selectModelPreset.value === 'custom') {
-            dom.inputModelName.style.display = 'block';
-            dom.inputModelName.focus();
-          } else {
-            dom.inputModelName.style.display = 'none';
-            dom.inputModelName.value = dom.selectModelPreset.value;
-          }
-        });
-
-        // Guardar ajustes
-        dom.btnSaveSettings.addEventListener('click', () => {
-          const selectedModel = dom.selectModelPreset.value === 'custom' 
-            ? dom.inputModelName.value.trim() 
-            : dom.selectModelPreset.value;
-
-          saveConfig({
-            provider: dom.providerSelect.value,
-            localUrl: dom.inputLocalUrl.value.trim() || 'http://localhost:3000',
-            apiKey: dom.inputApiKey.value.trim(),
-            model: selectedModel || 'gemini-3.8-flash'
-          });
-          dom.settingsDrawer.classList.remove('open');
-        });
-
-        // Probar conexión
-        dom.btnTestConnection.addEventListener('click', async () => {
-          dom.btnTestConnection.disabled = true;
-          const origText = dom.btnTestConnection.innerHTML;
-          dom.btnTestConnection.innerHTML = '<span>Probando...</span>';
-
-          try {
-            const provider = dom.providerSelect.value;
-            if (provider === 'smart-router') {
-              const url = dom.inputLocalUrl.value.trim().replace(/\/+$/, '') + '/health';
-              const res = await fetch(url, { signal: AbortSignal.timeout(3000) });
-              if (res.ok) {
-                showToast('Smart AI Router responde correctamente (Online)', 'success');
-              } else {
-                throw new Error(`Código HTTP ${res.status}`);
-              }
-            } else {
-              showToast(`Configuración de ${provider} validada`, 'success');
-            }
-          } catch (e) {
-            showToast(`Error al conectar: ${e.message}`, 'error');
-          } finally {
-            dom.btnTestConnection.disabled = false;
-            dom.btnTestConnection.innerHTML = origText;
-          }
-        });
-
-        // Refrescar selección
-        dom.btnRefreshSelection.addEventListener('click', () => {
-          requestCurrentSelection();
-          showToast('Sincronizando selección...', 'info');
-        });
-
-        // Textarea auto-resize y envío con Enter
-        dom.promptInput.addEventListener('input', autoResizeTextarea);
-        dom.promptInput.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            handleSendPrompt();
-          }
-        });
-
-        // Botón enviar
-        dom.btnSendPrompt.addEventListener('click', () => handleSendPrompt());
-
-        // Capturar selección de Figma como imagen de referencia
-        if (dom.btnCaptureFigmaImage) {
-          dom.btnCaptureFigmaImage.addEventListener('click', () => {
-            showToast('Capturando imagen de la capa seleccionada...', 'info');
-            postMessageToFigma({ type: 'EXPORT_SELECTION_IMAGE' });
-          });
-        }
-
-        // Subir imagen desde archivo local
-        if (dom.inputUploadImage) {
-          dom.inputUploadImage.addEventListener('change', (e) => {
-            const file = e.target.files?.[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = (event) => {
-              setImagePreview(event.target.result, `📁 ${file.name}`);
-              showToast('Imagen cargada. Pulsa Enviar para recrearla en Figma.', 'success');
-            };
-            reader.readAsDataURL(file);
-          });
-        }
-
-        // Remover imagen adjunta
-        if (dom.btnRemoveImage) {
-          dom.btnRemoveImage.addEventListener('click', () => {
-            clearImagePreview();
-            showToast('Imagen de referencia descartada', 'info');
-          });
-        }
-
-        // Quick pills
-        document.querySelectorAll('.quick-pill').forEach(btn => {
-          btn.addEventListener('click', () => {
-            const prompt = btn.getAttribute('data-prompt');
-            if (prompt) handleSendPrompt(prompt);
-          });
-        });
-      }
-
-      // Inicialización
-      syncSettingsUI();
-      setupEventListeners();
-      requestCurrentSelection();
-
-      console.log('[Figma AI Copilot] UI inicializado con éxito. Versión Refero AAA lista.');
-    })();
-  </script>
+</script>
 </body>
 </html>

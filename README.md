@@ -1,35 +1,41 @@
 # 🚀 Figma AI Copilot (bscl)
 
-Un plugin de diseño asistido por Inteligencia Artificial para Figma. Diseñado para funcionar de manera **completamente autónoma y portable**: cualquiera puede abrirlo en Figma, colocar su clave de **Google Gemini Pro** (o OpenAI / Groq) y empezar a crear, editar y organizar diseños directamente en el lienzo mediante chat en tiempo real.
+Un plugin de diseño asistido por Inteligencia Artificial para Figma. Diseñado para funcionar de manera **completamente autónoma, modular y portable**: cualquiera puede abrirlo en Figma, colocar su clave de **Google Gemini Pro** (o OpenAI / Groq / OpenRouter) y empezar a crear, editar y organizar diseños directamente en el lienzo mediante chat en tiempo real.
 
 ---
 
 ## 🌟 Características Principales
 
 1. **100% Autónomo (Plug & Play)**:
-   - **No requiere instalar Node.js ni correr terminales locales**.
-   - Se conecta directamente con la API oficial de **Google Gemini Pro** (o OpenAI / Groq).
-   - Opcionalmente, soporta conexión local con **Antigravity / Smart AI Router** si tú deseas trabajar de forma local.
+   - Se conecta directamente con la API oficial de **Google Gemini** (modelo recomendado: `gemini-3.8-flash` con fallback automático en cascada).
+   - Compatible también con **OpenAI (GPT-4o)**, **Groq Cloud (Llama 3.3 / Qwen)**, **OpenRouter** y servidores locales (**Antigravity / Smart AI Router :3000**).
+   - **Persistencia Robusta (`figma.clientStorage`)**: Claves y ajustes guardados de forma nativa en Figma, blindados contra bloqueos de `localStorage` (`DOMException`) en entornos con sandbox.
 
-2. **Acciones Reales en el Lienzo de Figma**:
-   - `CREATE_FRAME`: Pantallas móviles, tarjetas, modales y navbars con **Auto-Layout dinámico** (Horizontal/Vertical), padding y espaciados automáticos.
+2. **Componentes y Acciones Nativas en Figma**:
+   - `CREATE_FRAME`: Pantallas móviles (iPhone 393x852), tarjetas, modales y navbars con **Auto-Layout dinámico** (Horizontal/Vertical), padding y espaciados automáticos.
+   - `CREATE_BUTTON`: Botones reales con auto-layout, variantes oficiales (`PRIMARY`, `SECONDARY`, `OUTLINE`, `GITHUB`) y soporte para iconos vectoriales.
+   - `CREATE_ICON`: Catálogo integrado de más de 20 iconos vectoriales limpios de **Bootstrap Icons** (`shield-check`, `search`, `house`, `bell`, `person`, `gear`, `star`, `code-slash`, `git`, `eye`, `cart`, `bag`, `lock`, `envelope`, etc.) renderizados vía `createNodeFromSvg`.
+   - `CREATE_INTERACTIVE_BUTTON`: Genera **Component Sets con Variantes nativas de Figma** (`Default` y `Hover`) y configura automáticamente conexiones de prototipado (**Smart Animate While Hovering**). Se integra de forma segura sin romper layouts anidados.
+   - `CREATE_BADGE`: Etiquetas tipo píldora (`Public`, `Beta`, `Nuevo`).
+   - `CREATE_INPUT`: Campos de texto con placeholder para formularios de Login y Registro.
    - `CREATE_TEXT`: Textos y títulos con carga asíncrona de tipografías (`Inter`, `Roboto`, etc.) y pesos configurables.
-   - `CREATE_RECTANGLE` / `CREATE_ELLIPSE`: Formas geométricas, esquinas redondeadas (`cornerRadius`) y paletas modernas.
+   - `CREATE_RECTANGLE` / `CREATE_ELLIPSE`: Formas geométricas, placeholders de imagen y avatares.
    - `EDIT_NODE`: Modifica colores, dimensiones, radios de esquina o textos de capas existentes.
    - `APPLY_AUTOLAYOUT`: Convierte selecciones desordenadas en contenedores limpios y estructurados.
 
-3. **Lectura del Contexto de Selección**:
-   - Detecta qué capas tienes seleccionadas en Figma y las envía al modelo de IA para que pueda rediseñarlas, alinearlas o cambiar sus estilos.
+3. **Visión Multimodal (Vision-to-Design)**:
+   - **Capturar desde Figma**: Botón de cámara para capturar la capa o imagen seleccionada y recrearla fielmente con componentes reales.
+   - **Subir Imagen Local**: Permite cargar imágenes o capturas de pantalla desde tu computadora para clonar mockups.
 
-4. **Interfaz Refero AAA (Glassmorphism & Dark Mode)**:
-   - Inspirada en productos como Linear, Arc y Apple.
-   - Acceso con un clic a atajos rápidos: *"📱 Mobile Frame"*, *"🔘 Botón Moderno"*, *"🃏 Card de Producto"*, *"📐 Auto-Layout"* y *"🎨 Modo Oscuro"*.
+4. **Arquitectura Modular Senior (< 180 líneas por archivo)**:
+   - Código desacoplado siguiendo el principio de responsabilidad única (Regla 5 Anti God-Class):
+     - `src/plugin/`: Módulos de sandbox (`main.js`, `dispatcher.js`, `helpers.js`, `icons.js`, `operations/`).
+     - `src/ui/`: Módulos de interfaz (`state.js`, `ai-service.js`, `dsl-parser.js`, `ui-controller.js`, `chat-view.js`, `settings-view.js`, `image-handler.js`, `styles/copilot.css`).
+   - Empaquetador ultra rápido con `esbuild` (`npm run build`).
 
 ---
 
 ## 🛠️ Instalación en Figma (Paso a Paso en 1 Minuto)
-
-Cualquier persona a la que le compartas esta carpeta puede instalar el plugin siguiendo estos pasos:
 
 1. Abre **Figma** (en la app de escritorio o en el navegador).
 2. Abre cualquier archivo de diseño (nuevo o existente).
@@ -41,29 +47,34 @@ Cualquier persona a la que le compartas esta carpeta puede instalar el plugin si
 
 ---
 
-## 🔑 Configuración de Google Gemini Pro
+## 🔑 Configuración de Google Gemini
 
 1. Al abrir el plugin en Figma, haz clic en el ícono de **Engranaje (⚙️)** en la esquina superior derecha.
-2. Por defecto estará seleccionado **✨ Google Gemini Pro**.
+2. Por defecto estará seleccionado **✨ Google Gemini Pro** con el modelo `gemini-3.8-flash`.
 3. Pega tu API Key de Gemini:
    - Si no tienes una, puedes generarla gratis en [Google AI Studio](https://aistudio.google.com/app/apikey).
 4. Haz clic en **"Guardar Ajustes"**.
-5. ¡Listo! Tu plugin recordará la clave en tu navegador/Figma y ya puedes chatear con la IA para diseñar.
+5. ¡Listo! Tu plugin recordará la clave tanto en `figma.clientStorage` como en almacenamiento local.
 
 ---
 
-## 🪐 Modo Antigravity (Para Desarrolladores Locales)
+## 💻 Desarrollo y Compilación Modular
 
-Si estás trabajando en tu entorno local y quieres que el plugin use tu puente de desarrollo o modelos locales:
-1. En el engranaje (⚙️), selecciona el proveedor **🪐 Antigravity / Smart Router (:3000)**.
-2. Configura la URL local (`http://localhost:3000`).
-3. El plugin canalizará las peticiones a través de tu entorno local de IA.
+Si deseas modificar el código fuente modular:
+
+```bash
+# Instalar dependencias (esbuild)
+npm install
+
+# Compilar código modular a los artefactos de Figma (code.js y ui.html)
+npm run build
+```
 
 ---
 
 ## 💡 Ejemplos de lo que puedes pedirle al Chat
 
-* *"Crea una tarjeta de producto moderna para unos tenis deportivos con foto arriba, nombre, precio de $129 y botón de comprar violeta."*
-* *"Diseña una barra de navegación (Navbar) oscura con logo a la izquierda, 4 enlaces y botón de perfil."*
-* *"Selecciona estos 3 elementos y aplícales auto-layout horizontal con 20px de separación."*
-* *"Convierte el fondo del frame seleccionado a #0F172A y pon todos los textos en blanco."*
+* *"Crea un mockup completo de la página de repositorio de GitHub: header oscuro con buscador y logo, barra de repositorio con nombre y badge Public, botones de Watch, Fork y Star con iconos, pestañas de navegación y botón verde <> Code."*
+* *"Crea un diseño completo mobile de alta fidelidad para una repostería artesanal gourmet: login con inputs y botón interactivo, y catálogo con cards de pasteles, precios destacados y botones de compra."*
+* *"Crea un botón interactivo con variante hover que cambie de color suavemente al pasar el mouse por encima."*
+* *(Con una imagen seleccionada o adjunta)*: *"Recrea este diseño en Figma con componentes reales y Auto-Layout."*

@@ -4,6 +4,8 @@
   "description": "AI Copilot para Figma: Crea, edita y organiza diseños con lenguaje natural directamente en el lienzo",
   "main": "code.js",
   "scripts": {
+    "build": "node build.js",
+    "watch": "node build.js --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
