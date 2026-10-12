@@ -13,9 +13,8 @@ export async function callAIService(systemPrompt, userPrompt, imageBase64 = null
   const config = getConfig();
   const provider = config.provider || 'auto';
 
-  // 1. MODO AUTO INTELIGENTE (Nunca se bloquea por cuota o tráfico)
-  if (provider === 'auto') {
-    // Intento A: Si hay clave configurada, intentar primero con Google Gemini Cascada
+  // 1. MODO AUTO INTELIGENTE O GEMINI (Conmutación resiliente)
+  if (provider === 'auto' || provider === 'gemini') {
     if (config.apiKey && config.apiKey.trim().length > 5) {
       try {
         const result = await callGeminiCascade(
@@ -25,7 +24,7 @@ export async function callAIService(systemPrompt, userPrompt, imageBase64 = null
           userPrompt,
           imageBase64,
           (nextModel) => {
-            const msg = `🔄 Tráfico en Gemini. Probando ${nextModel}...`;
+            const msg = `🔄 Conmutando a ${nextModel}...`;
             if (onStatusNotice) onStatusNotice(msg);
             showToast(msg, 'info');
           }
@@ -43,7 +42,6 @@ export async function callAIService(systemPrompt, userPrompt, imageBase64 = null
       showToast(notice, 'info');
     }
 
-    // Intento B: Nube Gratuita Pública (Zero-Key)
     return await callFreeCloudDirect(systemPrompt, userPrompt, imageBase64);
   }
 
@@ -76,24 +74,14 @@ export async function callAIService(systemPrompt, userPrompt, imageBase64 = null
     );
   }
 
-  // 6. MODO GEMINI DIRECTO
-  if (provider === 'gemini') {
-    if (!config.apiKey) throw new Error('Pega tu API Key en el engranaje ⚙️ o cambia a "Modo Inteligente Automático"');
-    const result = await callGeminiCascade(
-      config.apiKey, config.model, systemPrompt, userPrompt, imageBase64,
-      (nextModel) => showToast(`🔄 Probando modelo de respaldo ${nextModel}...`, 'info')
-    );
-    return result.text;
-  }
-
-  // 7. MODO OPENAI DIRECTO
+  // 6. MODO OPENAI DIRECTO
   if (provider === 'openai') {
     if (!config.apiKey) throw new Error('Se requiere un API Key de OpenAI');
     const endpoint = PROVIDER_ENDPOINTS.openai;
     return await callOpenAICompatible(endpoint.url, config.apiKey, config.model || endpoint.defaultModel, systemPrompt, userPrompt);
   }
 
-  // 8. MODO SMART ROUTER LOCAL
+  // 7. MODO SMART ROUTER LOCAL
   if (provider === 'antigravity' || provider === 'smart-router') {
     const baseUrl = config.localUrl ? config.localUrl.replace(/\/+$/, '') : 'http://localhost:3000';
     return await callOpenAICompatible(`${baseUrl}/v1/chat/completions`, 'local-dummy-key', config.model || 'qwen-3.8-27b', systemPrompt, userPrompt);

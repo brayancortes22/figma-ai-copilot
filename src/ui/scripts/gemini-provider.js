@@ -1,5 +1,5 @@
 /**
- * Figma AI Copilot - Proveedor Google Gemini con Cascada Automática de Tráfico (2026)
+ * Figma AI Copilot - Proveedor Google Gemini con Cascada Automática Robusta (2026)
  * Autor: Brayan Stid Cortés Lombana (bscl)
  */
 
@@ -21,7 +21,7 @@ export async function callGeminiCascade(apiKey, selectedModel, systemPrompt, use
   const candidates = [preferred, ...GEMINI_2026_MODELS].filter(Boolean);
   const modelsToTry = [...new Set(candidates)];
 
-  const parts = [{ text: `${systemPrompt}\n\nInstrucción del usuario:\n${userPrompt || 'Recrea este diseño en Figma con componentes y Auto-Layout'}` }];
+  const parts = [{ text: `${systemPrompt}\n\nInstrucción del usuario:\n${userPrompt || 'Diseña en Figma con componentes reales y Auto-Layout'}` }];
   if (imageBase64) {
     const cleanBase64 = imageBase64.replace(/^data:image\/[a-z]+;base64,/, '');
     parts.push({
@@ -47,30 +47,29 @@ export async function callGeminiCascade(apiKey, selectedModel, systemPrompt, use
       if (res.ok) {
         const data = await res.json();
         const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (text) return { text, modelUsed: model };
+        if (text && text.trim().length > 10) {
+          return { text, modelUsed: model };
+        }
       } else {
         const err = await res.json().catch(() => ({}));
         const errMsg = err.error?.message || `HTTP ${res.status}`;
         lastError = new Error(errMsg);
+        console.warn(`[Figma AI Copilot] Modelo ${model} no disponible (${res.status}): ${errMsg}`);
 
-        // Si es cuota excedida (429), no encontrado (404), saturado (503) o RESOURCE_EXHAUSTED
-        if ([404, 429, 503].includes(res.status) || err.error?.status === 'RESOURCE_EXHAUSTED' || errMsg.includes('Quota exceeded')) {
-          if (i < modelsToTry.length - 1 && onModelSwitch) {
-            onModelSwitch(modelsToTry[i + 1]);
-          }
+        // Si este modelo falló (por cuota 429, no disponible 404, saturado 503, etc.)
+        // y hay más modelos en la lista, probamos el siguiente de inmediato
+        if (i < modelsToTry.length - 1) {
+          if (onModelSwitch) onModelSwitch(modelsToTry[i + 1]);
           continue;
         }
-        throw lastError;
       }
-    } catch (err) {
-      lastError = err;
-      if (err.message?.includes('exceeded') || err.message?.includes('quota') || err.message?.includes('demand') || err.message?.includes('404')) {
-        if (i < modelsToTry.length - 1 && onModelSwitch) {
-          onModelSwitch(modelsToTry[i + 1]);
-        }
+    } catch (networkErr) {
+      lastError = networkErr;
+      console.warn(`[Figma AI Copilot] Excepción de red en ${model}:`, networkErr.message);
+      if (i < modelsToTry.length - 1) {
+        if (onModelSwitch) onModelSwitch(modelsToTry[i + 1]);
         continue;
       }
-      throw err;
     }
   }
 

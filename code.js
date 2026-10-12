@@ -175,8 +175,26 @@
   function normalizeOperation(rawOp) {
     if (!rawOp || typeof rawOp !== "object") return {};
     const params = rawOp.params && typeof rawOp.params === "object" ? rawOp.params : {};
-    const merged = __spreadValues(__spreadValues({}, rawOp), params);
-    merged.action = (merged.action || merged.type || "").toUpperCase();
+    const props = rawOp.properties && typeof rawOp.properties === "object" ? rawOp.properties : {};
+    const merged = __spreadValues(__spreadValues(__spreadValues({}, rawOp), props), params);
+    if (merged.size && typeof merged.size === "object") {
+      if (merged.size.width) merged.width = merged.size.width;
+      if (merged.size.height) merged.height = merged.size.height;
+    }
+    if (merged.backgroundColor && !merged.fills) {
+      merged.fills = [merged.backgroundColor];
+    }
+    let act = String(merged.action || merged.type || merged.name || "").toUpperCase().trim();
+    act = act.replace(/[^A-Z0-9_]/g, "_").replace(/__+/g, "_");
+    if (act.includes("FRAME")) merged.action = "CREATE_FRAME";
+    else if (act.includes("BUTTON")) merged.action = "CREATE_BUTTON";
+    else if (act.includes("INPUT")) merged.action = "CREATE_INPUT";
+    else if (act.includes("BADGE")) merged.action = "CREATE_BADGE";
+    else if (act.includes("TEXT")) merged.action = "CREATE_TEXT";
+    else if (act.includes("RECT")) merged.action = "CREATE_RECTANGLE";
+    else if (act.includes("ELLIPSE") || act.includes("CIRCLE")) merged.action = "CREATE_ELLIPSE";
+    else if (act.includes("ICON")) merged.action = "CREATE_ICON";
+    else merged.action = act || "CREATE_FRAME";
     return merged;
   }
   var init_helpers = __esm({
