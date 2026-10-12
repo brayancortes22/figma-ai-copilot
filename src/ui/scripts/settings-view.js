@@ -45,27 +45,31 @@ export function updateProviderFormVisibility() {
   if (groupUrl) groupUrl.style.display = (prov === 'antigravity' || prov === 'smart-router') ? 'flex' : 'none';
   if (groupKey) groupKey.style.display = (prov === 'antigravity' || prov === 'smart-router' || prov === 'free-cloud') ? 'none' : 'flex';
 
-  if (keyLabel && inputKey) {
+  if (keyLabel && inputKey && apiKeyHint) {
     if (prov === 'auto') {
-      keyLabel.textContent = 'Google Gemini API Key (Opcional)';
-      inputKey.placeholder = 'AIzaSy... (Opcional - si no tienes o se agota, usa nube gratis)';
-      if (apiKeyHint) apiKeyHint.style.display = 'block';
+      keyLabel.textContent = 'API Key Opcional (Gemini, Cerebras o Groq)';
+      inputKey.placeholder = 'AIzaSy... o csk-... o gsk-... (Opcional)';
+      apiKeyHint.innerHTML = '💡 <strong>Modo Automático:</strong> Si no tienes clave o se agota tu cuota, el plugin usa la <strong>Nube Gratuita</strong> automáticamente sin interrumpir tu diseño.';
+    } else if (prov === 'cerebras') {
+      keyLabel.textContent = 'Cerebras Cloud API Key (1M tokens/día)';
+      inputKey.placeholder = 'csk-...';
+      apiKeyHint.innerHTML = '⚡ Clave gratis de 1M tokens/día en <a href="https://cloud.cerebras.ai" target="_blank" style="color: #818CF8; text-decoration: none;">cloud.cerebras.ai ↗</a>';
+    } else if (prov === 'groq') {
+      keyLabel.textContent = 'Groq Cloud API Key (Ultra Rápido)';
+      inputKey.placeholder = 'gsk-...';
+      apiKeyHint.innerHTML = '⚡ Clave gratis en <a href="https://console.groq.com/keys" target="_blank" style="color: #818CF8; text-decoration: none;">console.groq.com ↗</a>';
+    } else if (prov === 'openrouter') {
+      keyLabel.textContent = 'OpenRouter API Key (Modelos :free)';
+      inputKey.placeholder = 'sk-or-v1-...';
+      apiKeyHint.innerHTML = '🌐 Clave gratis en <a href="https://openrouter.ai/keys" target="_blank" style="color: #818CF8; text-decoration: none;">openrouter.ai ↗</a>';
     } else if (prov === 'gemini') {
       keyLabel.textContent = 'Google Gemini API Key';
-      inputKey.placeholder = 'AIzaSy... (Google AI Studio)';
-      if (apiKeyHint) apiKeyHint.style.display = 'none';
+      inputKey.placeholder = 'AIzaSy...';
+      apiKeyHint.innerHTML = '✨ Clave gratis en <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: #818CF8; text-decoration: none;">Google AI Studio ↗</a>';
     } else if (prov === 'openai') {
       keyLabel.textContent = 'OpenAI API Key';
       inputKey.placeholder = 'sk-proj-...';
-      if (apiKeyHint) apiKeyHint.style.display = 'none';
-    } else if (prov === 'groq') {
-      keyLabel.textContent = 'Groq Cloud API Key';
-      inputKey.placeholder = 'gsk_... (console.groq.com)';
-      if (apiKeyHint) apiKeyHint.style.display = 'none';
-    } else if (prov === 'openrouter') {
-      keyLabel.textContent = 'OpenRouter API Key';
-      inputKey.placeholder = 'sk-or-v1-... (openrouter.ai)';
-      if (apiKeyHint) apiKeyHint.style.display = 'none';
+      apiKeyHint.innerHTML = '🟢 Clave en <a href="https://platform.openai.com" target="_blank" style="color: #818CF8; text-decoration: none;">platform.openai.com ↗</a>';
     }
   }
 }

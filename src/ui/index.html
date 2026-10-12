@@ -52,8 +52,9 @@
         <select class="form-select" id="providerSelect">
           <option value="auto" selected>🤖 Modo Inteligente Automático (Recomendado - Sin bloqueos)</option>
           <option value="free-cloud">🌐 Nube Gratuita Pública (Sin API Key - 100% Libre)</option>
-          <option value="gemini">✨ Google Gemini (Con tu propia API Key)</option>
+          <option value="cerebras">🧠 Cerebras Cloud (1M tokens/día Gratis - 2600 t/s)</option>
           <option value="groq">⚡ Groq Cloud (Ultra Rápido y Gratuito)</option>
+          <option value="gemini">✨ Google Gemini (Google AI Studio)</option>
           <option value="openrouter">🌐 OpenRouter (Modelos Gratuitos)</option>
           <option value="openai">🟢 OpenAI (GPT-4o / mini)</option>
           <option value="antigravity">🪐 Antigravity / Smart Router Local (:3000)</option>
@@ -69,10 +70,10 @@
 
       <div class="form-group" id="groupApiKey">
         <label class="form-label" for="inputApiKey">
-          <span id="apiKeyLabel">Google Gemini API Key (Opcional)</span>
+          <span id="apiKeyLabel">API Key Opcional (Gemini, Cerebras o Groq)</span>
         </label>
         <div class="password-wrap">
-          <input type="password" class="form-input" id="inputApiKey" placeholder="Pega tu API Key de Gemini...">
+          <input type="password" class="form-input" id="inputApiKey" placeholder="Pega tu API Key...">
           <button type="button" class="password-toggle" id="btnToggleApiKey" title="Mostrar/Ocultar">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
@@ -81,7 +82,7 @@
           </button>
         </div>
         <div id="apiKeyHint" style="margin-top: 4px; font-size: 10.5px; color: var(--text-muted); line-height: 1.4;">
-          💡 Si no tienes clave o se agota tu cuota, el plugin usará la <strong>Nube Gratuita</strong> automáticamente sin interrumpir tu diseño. Clave gratis en <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: #818CF8; text-decoration: none;">Google AI Studio ↗</a>
+          💡 <strong>Modo Automático:</strong> Si no tienes clave o se agota tu cuota, el plugin usa la <strong>Nube Gratuita</strong> automáticamente sin interrumpir tu diseño.
         </div>
       </div>
 
@@ -93,6 +94,15 @@
           <optgroup label="Selección Automática">
             <option value="auto-smart" selected>🤖 Auto-Cascada (Usa el modelo óptimo con cuota libre)</option>
           </optgroup>
+          <optgroup label="Cerebras Cloud (1M tokens/día Gratis)">
+            <option value="llama-3.3-70b">🧠 Llama 3.3 70B (Cerebras - 2600 t/s)</option>
+            <option value="llama3.1-8b">🧠 Llama 3.1 8B (Cerebras - Instantáneo)</option>
+          </optgroup>
+          <optgroup label="Groq Cloud (Gratis & Ultra Rápido)">
+            <option value="llama-3.3-70b-versatile">⚡ Llama 3.3 70B (Groq - 500 t/s)</option>
+            <option value="llama-3.1-8b-instant">⚡ Llama 3.1 8B Instant (Groq)</option>
+            <option value="qwen/qwen3.8-27b">⚡ Qwen 3.8 27B (Groq)</option>
+          </optgroup>
           <optgroup label="Google Gemini (2026)">
             <option value="gemini-3.8-flash">⚡ Gemini 3.8 Flash (Última Generación)</option>
             <option value="gemini-3.6-flash">⚡ Gemini 3.6 Flash (Alta Velocidad)</option>
@@ -102,11 +112,6 @@
           </optgroup>
           <optgroup label="Nube Gratuita Pública (Sin Clave)">
             <option value="free-cloud-auto">🌐 Nube Pública Multi-Modelo (Llama 3.3 / Qwen)</option>
-          </optgroup>
-          <optgroup label="Groq Cloud (Gratis)">
-            <option value="llama-3.3-70b-versatile">⚡ Llama 3.3 70B (Groq - 500 t/s)</option>
-            <option value="llama-3.1-8b-instant">⚡ Llama 3.1 8B Instant (Ultra Veloz)</option>
-            <option value="qwen/qwen3.8-27b">⚡ Qwen 3.8 27B (Groq)</option>
           </optgroup>
           <optgroup label="OpenRouter (Gratis :free)">
             <option value="meta-llama/llama-3.3-70b-instruct:free">🌐 Llama 3.3 70B Free</option>
@@ -120,7 +125,7 @@
             <option value="custom">✏️ Personalizado (Escribir ID manual)...</option>
           </optgroup>
         </select>
-        <input type="text" class="form-input" id="inputModelName" style="display: none; margin-top: 6px;" placeholder="Ej: gemini-3.8-flash" value="auto-smart">
+        <input type="text" class="form-input" id="inputModelName" style="display: none; margin-top: 6px;" placeholder="Ej: llama-3.3-70b" value="auto-smart">
       </div>
 
       <div class="settings-footer">
