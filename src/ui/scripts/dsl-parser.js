@@ -57,6 +57,33 @@ Contexto actual de selección en Figma:
 ${selectionContext}`;
 }
 
+export function repairTruncatedJson(str) {
+  let s = str.trim();
+  let quotes = 0;
+  for (let i = 0; i < s.length; i++) {
+    if (s[i] === '"' && (i === 0 || s[i - 1] !== '\\')) quotes++;
+  }
+  if (quotes % 2 !== 0) s += '"';
+
+  const stack = [];
+  let inStr = false;
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    if (c === '"' && (i === 0 || s[i - 1] !== '\\')) inStr = !inStr;
+    if (!inStr) {
+      if (c === '{' || c === '[') stack.push(c);
+      else if (c === '}' && stack.length && stack[stack.length - 1] === '{') stack.pop();
+      else if (c === ']' && stack.length && stack[stack.length - 1] === '[') stack.pop();
+    }
+  }
+
+  while (stack.length) {
+    const o = stack.pop();
+    s += (o === '{' ? '}' : ']');
+  }
+  return s;
+}
+
 export function extractDSLFromResponse(rawText) {
   if (!rawText || typeof rawText !== 'string') return null;
 
@@ -67,6 +94,21 @@ export function extractDSLFromResponse(rawText) {
     const trimmed = rawText.trim();
     if ((trimmed.startsWith('{') && trimmed.endsWith('}')) || (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
       jsonStr = trimmed;
+    } else {
+      const startIdx = rawText.indexOf('```');
+      if (startIdx !== -1) {
+        let after = rawText.slice(startIdx + 3);
+        if (after.toLowerCase().startsWith('json')) after = after.slice(4);
+        jsonStr = repairTruncatedJson(after);
+      } else if (rawText.includes('{') || rawText.includes('[')) {
+        const first = Math.min(
+          rawText.indexOf('{') === -1 ? Infinity : rawText.indexOf('{'),
+          rawText.indexOf('[') === -1 ? Infinity : rawText.indexOf('[')
+        );
+        if (first !== Infinity) {
+          jsonStr = repairTruncatedJson(rawText.slice(first));
+        }
+      }
     }
   }
 
@@ -75,9 +117,21 @@ export function extractDSLFromResponse(rawText) {
       const parsed = JSON.parse(jsonStr);
       if (Array.isArray(parsed.operations)) return parsed.operations;
       if (Array.isArray(parsed)) return parsed;
-      if (typeof parsed === 'object' && (parsed.action || parsed.type)) return [parsed];
+      if (typeof parsed === 'object') {
+        if (parsed.action || parsed.type) return [parsed];
+        const keys = Object.keys(parsed);
+        if (keys.length === 1 && keys[0].toUpperCase().startsWith('CREATE_')) return [parsed];
+      }
     } catch (e) {
-      console.warn('[Figma AI Copilot] Error parseando bloque JSON DSL:', e);
+      try {
+        const fixed = repairTruncatedJson(jsonStr);
+        const parsed = JSON.parse(fixed);
+        if (Array.isArray(parsed.operations)) return parsed.operations;
+        if (Array.isArray(parsed)) return parsed;
+        if (typeof parsed === 'object') return [parsed];
+      } catch (err2) {
+        console.warn('[Figma AI Copilot] Error parseando bloque JSON DSL:', e);
+      }
     }
   }
   return null;

@@ -24,7 +24,8 @@ export function appendAIMessage(rawText, dslOperations, onReExecute) {
   if (!container) return;
   const row = document.createElement('div');
   row.className = 'message-row ai';
-  const cleanText = rawText.replace(/```(?:json)?\s*[\s\S]*?\s*```/g, '').trim() || 'He preparado las operaciones solicitadas.';
+  let cleanText = rawText.replace(/```(?:json)?\s*[\s\S]*?(?:```|$)/g, '').trim();
+  cleanText = cleanText || 'He generado el diseño con componentes reales y Auto-Layout en Figma.';
 
   let dslBtnHtml = '';
   if (dslOperations && dslOperations.length > 0) {

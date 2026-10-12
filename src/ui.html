@@ -1190,7 +1190,7 @@ ${userPrompt || "Dise\xF1a en Figma con componentes reales y Auto-Layout"}` }];
   function generateOfflineSmartDesign(prompt) {
     const p = (prompt || "").toLowerCase();
     if (p.includes("reposter") || p.includes("pastel") || p.includes("bakery") || p.includes("dulce")) {
-      return `He dise\xF1ado un prototipo m\xF3vil completo e interactivo para "Maison Sucr\xE9e": pantalla de Login con inputs y navegaci\xF3n inteligente al Cat\xE1logo, cards con Auto-Layout, precios destacados y botones con variantes hover.
+      return `He dise\xF1ado un prototipo m\xF3vil completo para "Maison Sucr\xE9e": pantalla de Login con inputs y navegaci\xF3n al Cat\xE1logo con cards y botones de compra.
 
 \`\`\`json
 {
@@ -1213,7 +1213,7 @@ ${userPrompt || "Dise\xF1a en Figma con componentes reales y Auto-Layout"}` }];
         { "action": "CREATE_INPUT", "name": "Password Input", "placeholder": "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022", "width": 345, "height": 48 },
         {
           "action": "CREATE_BUTTON",
-          "name": "Boton Iniciar Sesion",
+          "name": "Boton Entrar",
           "label": "Entrar al Cat\xE1logo \u{1F950}",
           "variant": "PRIMARY",
           "fills": ["#D4A373"],
@@ -1221,11 +1221,7 @@ ${userPrompt || "Dise\xF1a en Figma con componentes reales y Auto-Layout"}` }];
           "width": 345,
           "height": 48,
           "cornerRadius": 12,
-          "interaction": {
-            "trigger": "ON_CLICK",
-            "destination": "2. Cat\xE1logo - Maison Sucr\xE9e",
-            "transition": "SMART_ANIMATE"
-          }
+          "interaction": { "trigger": "ON_CLICK", "destination": "2. Cat\xE1logo - Maison Sucr\xE9e", "transition": "SMART_ANIMATE" }
         },
         { "action": "CREATE_TEXT", "characters": "\xBFOlvidaste tu contrase\xF1a?", "fontSize": 12, "fills": ["#A98467"] }
       ]
@@ -1257,11 +1253,7 @@ ${userPrompt || "Dise\xF1a en Figma con componentes reales y Auto-Layout"}` }];
               "icon": "arrow-left",
               "textColor": "#5A3E2B",
               "cornerRadius": 8,
-              "interaction": {
-                "trigger": "ON_CLICK",
-                "destination": "1. Login - Maison Sucr\xE9e",
-                "transition": "SMART_ANIMATE"
-              }
+              "interaction": { "trigger": "ON_CLICK", "destination": "1. Login - Maison Sucr\xE9e", "transition": "SMART_ANIMATE" }
             },
             { "action": "CREATE_TEXT", "characters": "Nuestros Pasteles", "fontSize": 20, "fontWeight": "BOLD", "fills": ["#432818"] },
             { "action": "CREATE_ICON", "icon": "bag", "size": 22, "color": "#D4A373" }
@@ -1269,7 +1261,7 @@ ${userPrompt || "Dise\xF1a en Figma con componentes reales y Auto-Layout"}` }];
         },
         {
           "action": "CREATE_FRAME",
-          "name": "Card Pastel 1 - Red Velvet",
+          "name": "Card Pastel 1",
           "layoutMode": "VERTICAL",
           "fills": ["#FFFFFF"],
           "cornerRadius": 16,
@@ -1294,35 +1286,51 @@ ${userPrompt || "Dise\xF1a en Figma con componentes reales y Auto-Layout"}` }];
               ]
             }
           ]
-        },
+        }
+      ]
+    }
+  ]
+}
+\`\`\``;
+    }
+    if (p.includes("login") || p.includes("autentica") || p.includes("sesi") || p.includes("recrea") || p.includes("auth")) {
+      return `He recreado la pantalla m\xF3vil con Auto-Layout, barra de estado, campos de entrada y bot\xF3n de acci\xF3n.
+
+\`\`\`json
+{
+  "operations": [
+    {
+      "action": "CREATE_FRAME",
+      "name": "LoginScreen",
+      "preset": "iPhone 16",
+      "fills": ["#FFFFFF"],
+      "layoutMode": "VERTICAL",
+      "itemSpacing": 20,
+      "padding": { "top": 54, "right": 24, "bottom": 36, "left": 24 },
+      "primaryAxisAlignItems": "CENTER",
+      "counterAxisAlignItems": "CENTER",
+      "children": [
         {
           "action": "CREATE_FRAME",
-          "name": "Card Pastel 2 - Macarons",
-          "layoutMode": "VERTICAL",
-          "fills": ["#FFFFFF"],
-          "cornerRadius": 16,
-          "padding": { "top": 14, "right": 14, "bottom": 14, "left": 14 },
-          "itemSpacing": 10,
-          "width": 353,
-          "dropShadow": { "color": "#00000010", "blur": 10, "y": 4 },
+          "name": "StatusBar",
+          "layoutMode": "HORIZONTAL",
+          "primaryAxisAlignItems": "SPACE_BETWEEN",
+          "counterAxisAlignItems": "CENTER",
+          "width": 345,
+          "height": 24,
+          "fills": ["#00000000"],
           "children": [
-            { "action": "CREATE_RECTANGLE", "name": "Foto Macarons", "width": 325, "height": 130, "fills": ["#EE9B00"], "cornerRadius": 10 },
-            { "action": "CREATE_TEXT", "characters": "Caja Macarons Par\xEDs (x12)", "fontSize": 16, "fontWeight": "BOLD", "fills": ["#432818"] },
-            { "action": "CREATE_TEXT", "characters": "Almendra francesa, pistacho y frambuesa", "fontSize": 12, "fills": ["#7F5539"] },
-            {
-              "action": "CREATE_FRAME",
-              "name": "Footer Card 2",
-              "layoutMode": "HORIZONTAL",
-              "primaryAxisAlignItems": "SPACE_BETWEEN",
-              "counterAxisAlignItems": "CENTER",
-              "width": 325,
-              "children": [
-                { "action": "CREATE_TEXT", "characters": "$19.00 USD", "fontSize": 18, "fontWeight": "BOLD", "fills": ["#BB3E03"] },
-                { "action": "CREATE_INTERACTIVE_BUTTON", "label": "Comprar", "baseColor": "#D4A373", "hoverColor": "#BC8A5A", "cornerRadius": 8 }
-              ]
-            }
+            { "action": "CREATE_TEXT", "characters": "9:41", "fontSize": 14, "fontWeight": "BOLD", "fills": ["#000000"] },
+            { "action": "CREATE_ICON", "icon": "bell", "size": 16, "color": "#000000" }
           ]
-        }
+        },
+        { "action": "CREATE_RECTANGLE", "name": "Illustration Placeholder", "width": 110, "height": 110, "cornerRadius": 24, "fills": ["#EEF2FF"], "dropShadow": { "blur": 12, "y": 4, "opacity": 0.1 } },
+        { "action": "CREATE_TEXT", "characters": "Iniciar Sesi\xF3n", "fontSize": 24, "fontWeight": "BOLD", "fills": ["#111827"] },
+        { "action": "CREATE_TEXT", "characters": "Ingresa tus credenciales para continuar", "fontSize": 13, "fills": ["#6B7280"] },
+        { "action": "CREATE_INPUT", "name": "Email Input", "placeholder": "usuario@ejemplo.com", "width": 345, "height": 48 },
+        { "action": "CREATE_INPUT", "name": "Password Input", "placeholder": "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022", "width": 345, "height": 48 },
+        { "action": "CREATE_INTERACTIVE_BUTTON", "label": "Iniciar Sesi\xF3n", "baseColor": "#4F46E5", "hoverColor": "#4338CA", "cornerRadius": 10 },
+        { "action": "CREATE_TEXT", "characters": "\xBFOlvidaste tu contrase\xF1a?", "fontSize": 12, "fills": ["#4F46E5"] }
       ]
     }
   ]
@@ -1353,6 +1361,130 @@ ${userPrompt || "Dise\xF1a en Figma con componentes reales y Auto-Layout"}` }];
 \`\`\``;
   }
 
+  // src/ui/scripts/dsl-parser.js
+  function buildSystemPrompt(selection = [], isVisionMode = false) {
+    const visionRules = isVisionMode ? `
+REGLAS VISION-TO-FIGMA (CLONACI\xD3N PIXEL-PERFECT):
+- Recrea pantallas en Frames m\xF3viles de 393x852 con layoutMode: "VERTICAL", itemSpacing: 16 y padding: 24.
+- Status bar superior (9:41), Navbar con bot\xF3n atr\xE1s y t\xEDtulo.
+- Placeholders de ilustraci\xF3n con CREATE_RECTANGLE (color suave representativo).
+- Inputs de formulario: CREATE_INPUT (ancho: 345, alto: 48, cornerRadius: 8).
+- Botones de acci\xF3n: CREATE_BUTTON con colores exactos y texto fiel.
+- T\xEDtulos jer\xE1rquicos: CREATE_TEXT (22-26px BOLD), Subt\xEDtulos (14-16px), P\xE1rrafos (13-14px).` : "";
+    const selectionContext = selection.length > 0 ? JSON.stringify(selection.map((n) => ({ id: n.id, name: n.name, type: n.type, width: n.width, height: n.height }))) : "Lienzo libre (sin selecci\xF3n activa)";
+    return `Eres Figma AI Copilot, motor de dise\xF1o generativo nivel Refero AAA (Linear, Arc, Apple).
+Generas especificaciones de dise\xF1o ejecutables en Figma mediante un DSL JSON estructurado.${visionRules}
+
+PATRONES FEW-SHOT DE ALTA FIDELIDAD:
+1. MOCKUP GITHUB:
+   - Frame contenedor oscuro (#0D1117) de 1200x800 con Auto-Layout vertical.
+   - Header (#161B22, borde #30363D) con buscador (#0D1117), links y avatar.
+   - Repo Header (#0D1117): "owner / repo", CREATE_BADGE "Public", botones Watch/Fork/Star.
+   - Bot\xF3n oficial: CREATE_BUTTON variant: "GITHUB", fills: ["#238636"] para "<> Code".
+   - Navegaci\xF3n por pesta\xF1as: Code, Issues, Pull requests, Actions, Settings.
+2. REPOSTER\xCDA / E-COMMERCE:
+   - Flujo: Pantalla Login con CREATE_INPUT y CREATE_BUTTON + Pantalla Cat\xE1logo m\xF3vil.
+   - Cards de productos: Auto-Layout, imagen placeholder, precio destacado, bot\xF3n Comprar y badge "Popular".
+
+OPERACIONES DISPONIBLES EN FIGMA:
+- "CREATE_FRAME": { name, preset: "iPhone 16"|"iPhone 17"|"Android Compact", width, height, fills: ["#HEX"], cornerRadius, layoutMode: "VERTICAL"|"HORIZONTAL", layoutWrap: "WRAP", itemSpacing, padding: {top,right,bottom,left}, overflow: "VERTICAL"|"HORIZONTAL"|"NONE", dropShadow, backgroundBlur, innerShadow, clipsContent, children: [...] }
+- "CREATE_BUTTON": { label, variant: "PRIMARY"|"SECONDARY"|"OUTLINE"|"GITHUB", fills: ["#HEX"], textColor, icon: "cart"|"lock"|"arrow-left"|"star", cornerRadius: 8, interaction: { trigger: "ON_CLICK", destination: "NombreFrame", transition: "SMART_ANIMATE"|"DISSOLVE" } }
+- "CREATE_ICON": { icon: "cart"|"bag"|"heart"|"star"|"arrow-left"|"arrow-right"|"lock"|"envelope"|"search"|"house"|"gear"|"shield-check", size: 20, color: "#HEX" }
+- "CREATE_INTERACTIVE_BUTTON": { name, label, baseColor: "#HEX", hoverColor: "#HEX", textColor: "#HEX", cornerRadius: 8 }
+- "CREATE_BADGE": { label, backgroundColor: "#HEX", textColor: "#HEX", fontSize: 11, cornerRadius: 999 }
+- "CREATE_INPUT": { placeholder, width: 345, height: 48, fills: ["#HEX"], borderColor: "#HEX", innerShadow: true }
+- "CREATE_TEXT": { characters, fontSize, fontWeight: "REGULAR"|"MEDIUM"|"BOLD", fills: ["#HEX"], textAlign: "LEFT"|"CENTER"|"RIGHT" }
+- "CREATE_RECTANGLE": { width, height, fills: ["#HEX"], cornerRadius, dropShadow }
+- "CREATE_ELLIPSE": { width, height, fills: ["#HEX"] }
+- "CREATE_INTERACTION": { source: "BotonLogin", destination: "CatalogoGourmet", trigger: "ON_CLICK", transition: "SMART_ANIMATE" }
+- "EDIT_NODE", "APPLY_AUTOLAYOUT", "ALIGN_SELECTION", "RENAME_NODES".
+
+REGLAS DE SALIDA OBLIGATORIAS:
+1. Explica brevemente en espa\xF1ol tu propuesta de dise\xF1o (1-2 oraciones).
+2. Proporciona OBLIGATORIAMENTE un bloque de c\xF3digo JSON cercado:
+\`\`\`json
+{
+  "operations": [ ... ]
+}
+\`\`\`
+
+Contexto actual de selecci\xF3n en Figma:
+${selectionContext}`;
+  }
+  function repairTruncatedJson(str) {
+    let s = str.trim();
+    let quotes = 0;
+    for (let i = 0; i < s.length; i++) {
+      if (s[i] === '"' && (i === 0 || s[i - 1] !== "\\")) quotes++;
+    }
+    if (quotes % 2 !== 0) s += '"';
+    const stack = [];
+    let inStr = false;
+    for (let i = 0; i < s.length; i++) {
+      const c = s[i];
+      if (c === '"' && (i === 0 || s[i - 1] !== "\\")) inStr = !inStr;
+      if (!inStr) {
+        if (c === "{" || c === "[") stack.push(c);
+        else if (c === "}" && stack.length && stack[stack.length - 1] === "{") stack.pop();
+        else if (c === "]" && stack.length && stack[stack.length - 1] === "[") stack.pop();
+      }
+    }
+    while (stack.length) {
+      const o = stack.pop();
+      s += o === "{" ? "}" : "]";
+    }
+    return s;
+  }
+  function extractDSLFromResponse(rawText) {
+    if (!rawText || typeof rawText !== "string") return null;
+    const jsonMatch = rawText.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+    let jsonStr = jsonMatch ? jsonMatch[1].trim() : null;
+    if (!jsonStr) {
+      const trimmed = rawText.trim();
+      if (trimmed.startsWith("{") && trimmed.endsWith("}") || trimmed.startsWith("[") && trimmed.endsWith("]")) {
+        jsonStr = trimmed;
+      } else {
+        const startIdx = rawText.indexOf("```");
+        if (startIdx !== -1) {
+          let after = rawText.slice(startIdx + 3);
+          if (after.toLowerCase().startsWith("json")) after = after.slice(4);
+          jsonStr = repairTruncatedJson(after);
+        } else if (rawText.includes("{") || rawText.includes("[")) {
+          const first = Math.min(
+            rawText.indexOf("{") === -1 ? Infinity : rawText.indexOf("{"),
+            rawText.indexOf("[") === -1 ? Infinity : rawText.indexOf("[")
+          );
+          if (first !== Infinity) {
+            jsonStr = repairTruncatedJson(rawText.slice(first));
+          }
+        }
+      }
+    }
+    if (jsonStr) {
+      try {
+        const parsed = JSON.parse(jsonStr);
+        if (Array.isArray(parsed.operations)) return parsed.operations;
+        if (Array.isArray(parsed)) return parsed;
+        if (typeof parsed === "object") {
+          if (parsed.action || parsed.type) return [parsed];
+          const keys = Object.keys(parsed);
+          if (keys.length === 1 && keys[0].toUpperCase().startsWith("CREATE_")) return [parsed];
+        }
+      } catch (e) {
+        try {
+          const fixed = repairTruncatedJson(jsonStr);
+          const parsed = JSON.parse(fixed);
+          if (Array.isArray(parsed.operations)) return parsed.operations;
+          if (Array.isArray(parsed)) return parsed;
+          if (typeof parsed === "object") return [parsed];
+        } catch (err2) {
+          console.warn("[Figma AI Copilot] Error parseando bloque JSON DSL:", e);
+        }
+      }
+    }
+    return null;
+  }
+
   // src/ui/scripts/free-cloud.js
   async function callFreeCloudDirect(systemPrompt, userPrompt, imageBase64 = null) {
     const userText = imageBase64 ? `${userPrompt || "Dise\xF1a en Figma"} (con imagen de referencia visual adjunta)` : userPrompt || "Dise\xF1a en Figma";
@@ -1380,8 +1512,8 @@ IMPORTANTE: Tu respuesta DEBE incluir obligatoriamente un bloque de c\xF3digo: \
       });
       if (res.ok) {
         const text = await res.text();
-        if (text && text.includes("operations")) return text;
-        if (text && text.includes("{") && text.includes("}")) return text;
+        const ops = extractDSLFromResponse(text);
+        if (ops && ops.length > 0) return text;
       }
     } catch (err) {
       console.warn("[Figma AI Copilot] Fall\xF3 endpoint 1 de nube gratuita:", err);
@@ -1401,8 +1533,8 @@ IMPORTANTE: Tu respuesta DEBE incluir obligatoriamente un bloque de c\xF3digo: \
       });
       if (res2.ok) {
         const text2 = await res2.text();
-        if (text2 && text2.includes("operations")) return text2;
-        if (text2 && text2.includes("{") && text2.includes("}")) return text2;
+        const ops2 = extractDSLFromResponse(text2);
+        if (ops2 && ops2.length > 0) return text2;
       }
     } catch (err2) {
       console.warn("[Figma AI Copilot] Fall\xF3 endpoint 2 de nube gratuita:", err2);
@@ -1588,79 +1720,6 @@ IMPORTANTE: Tu respuesta DEBE incluir obligatoriamente un bloque de c\xF3digo: \
     throw new Error(`Proveedor de IA no reconocido: ${provider}`);
   }
 
-  // src/ui/scripts/dsl-parser.js
-  function buildSystemPrompt(selection = [], isVisionMode = false) {
-    const visionRules = isVisionMode ? `
-REGLAS VISION-TO-FIGMA (CLONACI\xD3N PIXEL-PERFECT):
-- Recrea pantallas en Frames m\xF3viles de 393x852 con layoutMode: "VERTICAL", itemSpacing: 16 y padding: 24.
-- Status bar superior (9:41), Navbar con bot\xF3n atr\xE1s y t\xEDtulo.
-- Placeholders de ilustraci\xF3n con CREATE_RECTANGLE (color suave representativo).
-- Inputs de formulario: CREATE_INPUT (ancho: 345, alto: 48, cornerRadius: 8).
-- Botones de acci\xF3n: CREATE_BUTTON con colores exactos y texto fiel.
-- T\xEDtulos jer\xE1rquicos: CREATE_TEXT (22-26px BOLD), Subt\xEDtulos (14-16px), P\xE1rrafos (13-14px).` : "";
-    const selectionContext = selection.length > 0 ? JSON.stringify(selection.map((n) => ({ id: n.id, name: n.name, type: n.type, width: n.width, height: n.height }))) : "Lienzo libre (sin selecci\xF3n activa)";
-    return `Eres Figma AI Copilot, motor de dise\xF1o generativo nivel Refero AAA (Linear, Arc, Apple).
-Generas especificaciones de dise\xF1o ejecutables en Figma mediante un DSL JSON estructurado.${visionRules}
-
-PATRONES FEW-SHOT DE ALTA FIDELIDAD:
-1. MOCKUP GITHUB:
-   - Frame contenedor oscuro (#0D1117) de 1200x800 con Auto-Layout vertical.
-   - Header (#161B22, borde #30363D) con buscador (#0D1117), links y avatar.
-   - Repo Header (#0D1117): "owner / repo", CREATE_BADGE "Public", botones Watch/Fork/Star.
-   - Bot\xF3n oficial: CREATE_BUTTON variant: "GITHUB", fills: ["#238636"] para "<> Code".
-   - Navegaci\xF3n por pesta\xF1as: Code, Issues, Pull requests, Actions, Settings.
-2. REPOSTER\xCDA / E-COMMERCE:
-   - Flujo: Pantalla Login con CREATE_INPUT y CREATE_BUTTON + Pantalla Cat\xE1logo m\xF3vil.
-   - Cards de productos: Auto-Layout, imagen placeholder, precio destacado, bot\xF3n Comprar y badge "Popular".
-
-OPERACIONES DISPONIBLES EN FIGMA:
-- "CREATE_FRAME": { name, preset: "iPhone 16"|"iPhone 17"|"Android Compact", width, height, fills: ["#HEX"], cornerRadius, layoutMode: "VERTICAL"|"HORIZONTAL", layoutWrap: "WRAP", itemSpacing, padding: {top,right,bottom,left}, overflow: "VERTICAL"|"HORIZONTAL"|"NONE", dropShadow, backgroundBlur, innerShadow, clipsContent, children: [...] }
-- "CREATE_BUTTON": { label, variant: "PRIMARY"|"SECONDARY"|"OUTLINE"|"GITHUB", fills: ["#HEX"], textColor, icon: "cart"|"lock"|"arrow-left"|"star", cornerRadius: 8, interaction: { trigger: "ON_CLICK", destination: "NombreFrame", transition: "SMART_ANIMATE"|"DISSOLVE" } }
-- "CREATE_ICON": { icon: "cart"|"bag"|"heart"|"star"|"arrow-left"|"arrow-right"|"lock"|"envelope"|"search"|"house"|"gear"|"shield-check", size: 20, color: "#HEX" }
-- "CREATE_INTERACTIVE_BUTTON": { name, label, baseColor: "#HEX", hoverColor: "#HEX", textColor: "#HEX", cornerRadius: 8 }
-- "CREATE_BADGE": { label, backgroundColor: "#HEX", textColor: "#HEX", fontSize: 11, cornerRadius: 999 }
-- "CREATE_INPUT": { placeholder, width: 345, height: 48, fills: ["#HEX"], borderColor: "#HEX", innerShadow: true }
-- "CREATE_TEXT": { characters, fontSize, fontWeight: "REGULAR"|"MEDIUM"|"BOLD", fills: ["#HEX"], textAlign: "LEFT"|"CENTER"|"RIGHT" }
-- "CREATE_RECTANGLE": { width, height, fills: ["#HEX"], cornerRadius, dropShadow }
-- "CREATE_ELLIPSE": { width, height, fills: ["#HEX"] }
-- "CREATE_INTERACTION": { source: "BotonLogin", destination: "CatalogoGourmet", trigger: "ON_CLICK", transition: "SMART_ANIMATE" }
-- "EDIT_NODE", "APPLY_AUTOLAYOUT", "ALIGN_SELECTION", "RENAME_NODES".
-
-REGLAS DE SALIDA OBLIGATORIAS:
-1. Explica brevemente en espa\xF1ol tu propuesta de dise\xF1o (1-2 oraciones).
-2. Proporciona OBLIGATORIAMENTE un bloque de c\xF3digo JSON cercado:
-\`\`\`json
-{
-  "operations": [ ... ]
-}
-\`\`\`
-
-Contexto actual de selecci\xF3n en Figma:
-${selectionContext}`;
-  }
-  function extractDSLFromResponse(rawText) {
-    if (!rawText || typeof rawText !== "string") return null;
-    const jsonMatch = rawText.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
-    let jsonStr = jsonMatch ? jsonMatch[1].trim() : null;
-    if (!jsonStr) {
-      const trimmed = rawText.trim();
-      if (trimmed.startsWith("{") && trimmed.endsWith("}") || trimmed.startsWith("[") && trimmed.endsWith("]")) {
-        jsonStr = trimmed;
-      }
-    }
-    if (jsonStr) {
-      try {
-        const parsed = JSON.parse(jsonStr);
-        if (Array.isArray(parsed.operations)) return parsed.operations;
-        if (Array.isArray(parsed)) return parsed;
-        if (typeof parsed === "object" && (parsed.action || parsed.type)) return [parsed];
-      } catch (e) {
-        console.warn("[Figma AI Copilot] Error parseando bloque JSON DSL:", e);
-      }
-    }
-    return null;
-  }
-
   // src/ui/scripts/chat-view.js
   function appendUserMessage(text) {
     const container = document.getElementById("chatContainer");
@@ -1680,7 +1739,8 @@ ${selectionContext}`;
     if (!container) return;
     const row = document.createElement("div");
     row.className = "message-row ai";
-    const cleanText = rawText.replace(/```(?:json)?\s*[\s\S]*?\s*```/g, "").trim() || "He preparado las operaciones solicitadas.";
+    let cleanText = rawText.replace(/```(?:json)?\s*[\s\S]*?(?:```|$)/g, "").trim();
+    cleanText = cleanText || "He generado el dise\xF1o con componentes reales y Auto-Layout en Figma.";
     let dslBtnHtml = "";
     if (dslOperations && dslOperations.length > 0) {
       const count = dslOperations.length;
