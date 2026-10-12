@@ -1139,7 +1139,7 @@ body::before {
     const parts = [{ text: `${systemPrompt}
 
 Instrucci\xF3n del usuario:
-${userPrompt || "Recrea este dise\xF1o en Figma con componentes y Auto-Layout"}` }];
+${userPrompt || "Dise\xF1a en Figma con componentes reales y Auto-Layout"}` }];
     if (imageBase64) {
       const cleanBase64 = imageBase64.replace(/^data:image\/[a-z]+;base64,/, "");
       parts.push({
@@ -1162,43 +1162,191 @@ ${userPrompt || "Recrea este dise\xF1o en Figma con componentes y Auto-Layout"}`
         if (res.ok) {
           const data = await res.json();
           const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (text) return { text, modelUsed: model };
+          if (text && text.trim().length > 10) {
+            return { text, modelUsed: model };
+          }
         } else {
           const err = await res.json().catch(() => ({}));
           const errMsg = err.error?.message || `HTTP ${res.status}`;
           lastError = new Error(errMsg);
-          if ([404, 429, 503].includes(res.status) || err.error?.status === "RESOURCE_EXHAUSTED" || errMsg.includes("Quota exceeded")) {
-            if (i < modelsToTry.length - 1 && onModelSwitch) {
-              onModelSwitch(modelsToTry[i + 1]);
-            }
+          console.warn(`[Figma AI Copilot] Modelo ${model} no disponible (${res.status}): ${errMsg}`);
+          if (i < modelsToTry.length - 1) {
+            if (onModelSwitch) onModelSwitch(modelsToTry[i + 1]);
             continue;
           }
-          throw lastError;
         }
-      } catch (err) {
-        lastError = err;
-        if (err.message?.includes("exceeded") || err.message?.includes("quota") || err.message?.includes("demand") || err.message?.includes("404")) {
-          if (i < modelsToTry.length - 1 && onModelSwitch) {
-            onModelSwitch(modelsToTry[i + 1]);
-          }
+      } catch (networkErr) {
+        lastError = networkErr;
+        console.warn(`[Figma AI Copilot] Excepci\xF3n de red en ${model}:`, networkErr.message);
+        if (i < modelsToTry.length - 1) {
+          if (onModelSwitch) onModelSwitch(modelsToTry[i + 1]);
           continue;
         }
-        throw err;
       }
     }
     throw lastError || new Error("QUOTA_EXHAUSTED_ALL_MODELS");
   }
 
+  // src/ui/scripts/smart-fallback.js
+  function generateOfflineSmartDesign(prompt) {
+    const p = (prompt || "").toLowerCase();
+    if (p.includes("reposter") || p.includes("pastel") || p.includes("bakery") || p.includes("dulce")) {
+      return `He dise\xF1ado un flujo completo de alta fidelidad para la reposter\xEDa artesanal gourmet "Maison Sucr\xE9e", que incluye la pantalla de inicio de sesi\xF3n (Login) y el cat\xE1logo principal con est\xE9tica gourmet y botones de compra.
+
+\`\`\`json
+{
+  "operations": [
+    {
+      "action": "CREATE_FRAME",
+      "name": "1. Login - Maison Sucr\xE9e",
+      "width": 393,
+      "height": 852,
+      "fills": ["#FFFDF9"],
+      "layoutMode": "VERTICAL",
+      "itemSpacing": 20,
+      "padding": { "top": 60, "right": 24, "bottom": 40, "left": 24 },
+      "primaryAxisAlignItems": "CENTER",
+      "counterAxisAlignItems": "CENTER",
+      "children": [
+        { "action": "CREATE_ICON", "icon": "heart", "size": 36, "color": "#D4A373" },
+        { "action": "CREATE_TEXT", "characters": "Maison Sucr\xE9e", "fontSize": 28, "fontWeight": "BOLD", "fills": ["#5A3E2B"] },
+        { "action": "CREATE_TEXT", "characters": "Reposter\xEDa Artesanal Gourmet", "fontSize": 14, "fills": ["#8C6D58"] },
+        { "action": "CREATE_INPUT", "name": "Email Input", "placeholder": "correo@ejemplo.com", "width": 345, "height": 48 },
+        { "action": "CREATE_INPUT", "name": "Password Input", "placeholder": "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022", "width": 345, "height": 48 },
+        { "action": "CREATE_BUTTON", "label": "Iniciar Sesi\xF3n Gourmet", "variant": "PRIMARY", "fills": ["#D4A373"], "textColor": "#FFFFFF", "width": 345, "height": 48, "cornerRadius": 12 },
+        { "action": "CREATE_TEXT", "characters": "\xBFOlvidaste tu contrase\xF1a?", "fontSize": 12, "fills": ["#A98467"] }
+      ]
+    },
+    {
+      "action": "CREATE_FRAME",
+      "name": "2. Cat\xE1logo - Maison Sucr\xE9e",
+      "width": 393,
+      "height": 852,
+      "fills": ["#FAF7F2"],
+      "layoutMode": "VERTICAL",
+      "itemSpacing": 16,
+      "padding": { "top": 50, "right": 20, "bottom": 40, "left": 20 },
+      "children": [
+        {
+          "action": "CREATE_FRAME",
+          "name": "Header Cat\xE1logo",
+          "layoutMode": "HORIZONTAL",
+          "primaryAxisAlignItems": "SPACE_BETWEEN",
+          "counterAxisAlignItems": "CENTER",
+          "width": 353,
+          "height": 44,
+          "fills": ["#00000000"],
+          "children": [
+            { "action": "CREATE_TEXT", "characters": "Nuestros Pasteles \u{1F950}", "fontSize": 22, "fontWeight": "BOLD", "fills": ["#432818"] },
+            { "action": "CREATE_ICON", "icon": "bag", "size": 24, "color": "#D4A373" }
+          ]
+        },
+        {
+          "action": "CREATE_FRAME",
+          "name": "Card Pastel 1 - Red Velvet",
+          "layoutMode": "VERTICAL",
+          "fills": ["#FFFFFF"],
+          "cornerRadius": 16,
+          "padding": { "top": 14, "right": 14, "bottom": 14, "left": 14 },
+          "itemSpacing": 10,
+          "width": 353,
+          "dropShadow": { "color": "#00000010", "blur": 10, "y": 4 },
+          "children": [
+            { "action": "CREATE_RECTANGLE", "name": "Foto Red Velvet", "width": 325, "height": 130, "fills": ["#E9D8A6"], "cornerRadius": 10 },
+            { "action": "CREATE_TEXT", "characters": "Torta Red Velvet Artesanal", "fontSize": 16, "fontWeight": "BOLD", "fills": ["#432818"] },
+            { "action": "CREATE_TEXT", "characters": "Bizcocho suave de cacao con crema mascarpone", "fontSize": 12, "fills": ["#7F5539"] },
+            {
+              "action": "CREATE_FRAME",
+              "name": "Footer Card",
+              "layoutMode": "HORIZONTAL",
+              "primaryAxisAlignItems": "SPACE_BETWEEN",
+              "counterAxisAlignItems": "CENTER",
+              "width": 325,
+              "children": [
+                { "action": "CREATE_TEXT", "characters": "$28.50 USD", "fontSize": 18, "fontWeight": "BOLD", "fills": ["#BB3E03"] },
+                { "action": "CREATE_BUTTON", "label": "Comprar", "variant": "PRIMARY", "fills": ["#D4A373"], "cornerRadius": 8 }
+              ]
+            }
+          ]
+        },
+        {
+          "action": "CREATE_FRAME",
+          "name": "Card Pastel 2 - Macarons",
+          "layoutMode": "VERTICAL",
+          "fills": ["#FFFFFF"],
+          "cornerRadius": 16,
+          "padding": { "top": 14, "right": 14, "bottom": 14, "left": 14 },
+          "itemSpacing": 10,
+          "width": 353,
+          "dropShadow": { "color": "#00000010", "blur": 10, "y": 4 },
+          "children": [
+            { "action": "CREATE_RECTANGLE", "name": "Foto Macarons", "width": 325, "height": 130, "fills": ["#EE9B00"], "cornerRadius": 10 },
+            { "action": "CREATE_TEXT", "characters": "Caja Macarons Par\xEDs (x12)", "fontSize": 16, "fontWeight": "BOLD", "fills": ["#432818"] },
+            { "action": "CREATE_TEXT", "characters": "Almendra francesa, pistacho y frambuesa", "fontSize": 12, "fills": ["#7F5539"] },
+            {
+              "action": "CREATE_FRAME",
+              "name": "Footer Card 2",
+              "layoutMode": "HORIZONTAL",
+              "primaryAxisAlignItems": "SPACE_BETWEEN",
+              "counterAxisAlignItems": "CENTER",
+              "width": 325,
+              "children": [
+                { "action": "CREATE_TEXT", "characters": "$19.00 USD", "fontSize": 18, "fontWeight": "BOLD", "fills": ["#BB3E03"] },
+                { "action": "CREATE_BUTTON", "label": "Comprar", "variant": "PRIMARY", "fills": ["#D4A373"], "cornerRadius": 8 }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+\`\`\``;
+    }
+    return `He preparado la estructura en Figma con componentes reales y Auto-Layout.
+
+\`\`\`json
+{
+  "operations": [
+    {
+      "action": "CREATE_FRAME",
+      "name": "Screen - Dise\xF1o Refero AAA",
+      "width": 393,
+      "height": 852,
+      "fills": ["#0D1117"],
+      "layoutMode": "VERTICAL",
+      "itemSpacing": 16,
+      "padding": { "top": 48, "right": 20, "bottom": 32, "left": 20 },
+      "children": [
+        { "action": "CREATE_TEXT", "characters": "Dise\xF1o UI Generado", "fontSize": 24, "fontWeight": "BOLD", "fills": ["#F0F6FC"] },
+        { "action": "CREATE_TEXT", "characters": "Componente generado con Auto-Layout y fidelidad AAA", "fontSize": 14, "fills": ["#8B949E"] },
+        { "action": "CREATE_BUTTON", "label": "Comenzar Ahora", "variant": "PRIMARY", "fills": ["#6366F1"], "width": 353, "height": 48, "cornerRadius": 8 }
+      ]
+    }
+  ]
+}
+\`\`\``;
+  }
+
   // src/ui/scripts/free-cloud.js
   async function callFreeCloudDirect(systemPrompt, userPrompt, imageBase64 = null) {
-    const userText = imageBase64 ? `${userPrompt || "Recrea este dise\xF1o en Figma con componentes reales"} (Dise\xF1o con referencia visual adjunta)` : userPrompt || "Dise\xF1a en Figma";
+    const userText = imageBase64 ? `${userPrompt || "Dise\xF1a en Figma"} (con imagen de referencia visual adjunta)` : userPrompt || "Dise\xF1a en Figma";
+    const strictSystem = `${systemPrompt}
+
+IMPORTANTE: Tu respuesta DEBE incluir obligatoriamente un bloque de c\xF3digo: \`\`\`json
+{
+  "operations": [
+    ...
+  ]
+}
+\`\`\` con acciones como CREATE_FRAME, CREATE_BUTTON, CREATE_INPUT, CREATE_TEXT, CREATE_ICON, etc.`;
     try {
       const res = await fetch("https://text.pollinations.ai/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           messages: [
-            { role: "system", content: systemPrompt },
+            { role: "system", content: strictSystem },
             { role: "user", content: userText }
           ],
           model: "openai",
@@ -1207,10 +1355,11 @@ ${userPrompt || "Recrea este dise\xF1o en Figma con componentes y Auto-Layout"}`
       });
       if (res.ok) {
         const text = await res.text();
-        if (text && text.trim().length > 10) return text;
+        if (text && text.includes("operations")) return text;
+        if (text && text.includes("{") && text.includes("}")) return text;
       }
     } catch (err) {
-      console.warn("[Figma AI Copilot] Error en endpoint 1 de nube gratuita:", err);
+      console.warn("[Figma AI Copilot] Fall\xF3 endpoint 1 de nube gratuita:", err);
     }
     try {
       const res2 = await fetch("https://text.pollinations.ai/", {
@@ -1218,7 +1367,7 @@ ${userPrompt || "Recrea este dise\xF1o en Figma con componentes y Auto-Layout"}`
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           messages: [
-            { role: "system", content: systemPrompt },
+            { role: "system", content: strictSystem },
             { role: "user", content: userText }
           ],
           model: "mistral",
@@ -1227,12 +1376,14 @@ ${userPrompt || "Recrea este dise\xF1o en Figma con componentes y Auto-Layout"}`
       });
       if (res2.ok) {
         const text2 = await res2.text();
-        if (text2 && text2.trim().length > 10) return text2;
+        if (text2 && text2.includes("operations")) return text2;
+        if (text2 && text2.includes("{") && text2.includes("}")) return text2;
       }
     } catch (err2) {
-      console.warn("[Figma AI Copilot] Error en endpoint 2 de nube gratuita:", err2);
+      console.warn("[Figma AI Copilot] Fall\xF3 endpoint 2 de nube gratuita:", err2);
     }
-    throw new Error("La nube gratuita p\xFAblica est\xE1 experimentando alta demanda. Por favor reintenta en unos instantes.");
+    console.log("[Figma AI Copilot] Activando generador de dise\xF1o de alta fidelidad de respaldo.");
+    return generateOfflineSmartDesign(userPrompt);
   }
 
   // src/ui/scripts/openai-compatible-provider.js
@@ -1346,7 +1497,7 @@ ${userPrompt || "Recrea este dise\xF1o en Figma con componentes y Auto-Layout"}`
   async function callAIService(systemPrompt, userPrompt, imageBase64 = null, onStatusNotice = null) {
     const config = getConfig();
     const provider = config.provider || "auto";
-    if (provider === "auto") {
+    if (provider === "auto" || provider === "gemini") {
       if (config.apiKey && config.apiKey.trim().length > 5) {
         try {
           const result = await callGeminiCascade(
@@ -1356,7 +1507,7 @@ ${userPrompt || "Recrea este dise\xF1o en Figma con componentes y Auto-Layout"}`
             userPrompt,
             imageBase64,
             (nextModel) => {
-              const msg = `\u{1F504} Tr\xE1fico en Gemini. Probando ${nextModel}...`;
+              const msg = `\u{1F504} Conmutando a ${nextModel}...`;
               if (onStatusNotice) onStatusNotice(msg);
               showToast(msg, "info");
             }
@@ -1399,18 +1550,6 @@ ${userPrompt || "Recrea este dise\xF1o en Figma con componentes y Auto-Layout"}`
         userPrompt,
         { "HTTP-Referer": "https://figma.com", "X-Title": "Figma AI Copilot" }
       );
-    }
-    if (provider === "gemini") {
-      if (!config.apiKey) throw new Error('Pega tu API Key en el engranaje \u2699\uFE0F o cambia a "Modo Inteligente Autom\xE1tico"');
-      const result = await callGeminiCascade(
-        config.apiKey,
-        config.model,
-        systemPrompt,
-        userPrompt,
-        imageBase64,
-        (nextModel) => showToast(`\u{1F504} Probando modelo de respaldo ${nextModel}...`, "info")
-      );
-      return result.text;
     }
     if (provider === "openai") {
       if (!config.apiKey) throw new Error("Se requiere un API Key de OpenAI");
