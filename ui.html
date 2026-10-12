@@ -1013,10 +1013,40 @@
         rows="1"
       ></textarea>
       
-      <div class="input-controls">
-        <div class="input-meta-hint">
-          <span class="kbd">Enter</span> enviar &nbsp;•&nbsp; <span class="kbd">Shift+Enter</span> salto
+      <!-- Previsualización de imagen adjunta / capturada -->
+      <div id="imagePreviewContainer" style="display: none; padding: 6px 12px; align-items: center; justify-content: space-between; background: rgba(99, 102, 241, 0.12); border-top: 1px solid rgba(99, 102, 241, 0.25);">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <img id="imagePreviewThumb" src="" style="width: 28px; height: 28px; object-fit: cover; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2);">
+          <span id="imagePreviewText" style="font-size: 11px; color: #C7D2FE;">📸 Imagen lista para recrear</span>
         </div>
+        <button type="button" id="btnRemoveImage" style="background: none; border: none; color: #F87171; cursor: pointer; font-size: 14px; font-weight: bold;">✕</button>
+      </div>
+
+      <div class="input-controls">
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <!-- Botón de capturar selección de Figma como imagen -->
+          <button type="button" class="icon-btn" id="btnCaptureFigmaImage" title="Capturar la capa/imagen seleccionada en Figma y recrearla" style="width: 26px; height: 26px; padding: 4px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+              <circle cx="12" cy="13" r="4"></circle>
+            </svg>
+          </button>
+          
+          <!-- Botón de subir imagen desde archivo local -->
+          <label for="inputUploadImage" class="icon-btn" title="Subir imagen desde tu computadora" style="width: 26px; height: 26px; padding: 4px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; margin: 0;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+          </label>
+          <input type="file" id="inputUploadImage" accept="image/*" style="display: none;">
+
+          <div class="input-meta-hint" style="margin-left: 4px;">
+            <span class="kbd">Enter</span> enviar
+          </div>
+        </div>
+
         <button class="btn-send" id="btnSendPrompt" title="Enviar petición">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -1075,8 +1105,16 @@
         chatContainer: document.getElementById('chatContainer'),
         promptInput: document.getElementById('promptInput'),
         btnSendPrompt: document.getElementById('btnSendPrompt'),
-        toastContainer: document.getElementById('toastContainer')
+        toastContainer: document.getElementById('toastContainer'),
+        imagePreviewContainer: document.getElementById('imagePreviewContainer'),
+        imagePreviewThumb: document.getElementById('imagePreviewThumb'),
+        imagePreviewText: document.getElementById('imagePreviewText'),
+        btnRemoveImage: document.getElementById('btnRemoveImage'),
+        btnCaptureFigmaImage: document.getElementById('btnCaptureFigmaImage'),
+        inputUploadImage: document.getElementById('inputUploadImage')
       };
+
+      let activeImageBase64 = null;
 
       // ------------------------------------------------------------------------
       // PERSISTENCIA Y CARGA DE CONFIGURACIÓN
@@ -1168,6 +1206,14 @@
             handleSelectionUpdate(msg.selection || []);
             break;
 
+          case 'SELECTION_IMAGE_DATA':
+            handleSelectionImageReceived(msg);
+            break;
+
+          case 'SELECTION_IMAGE_ERROR':
+            showToast(msg.error, 'error');
+            break;
+
           case 'EXECUTION_SUCCESS':
             setStatusOnline('Completado');
             showToast(msg.message || `Operaciones ejecutadas con éxito (${msg.count || 0} nodos)`, 'success');
@@ -1189,8 +1235,43 @@
         }
       };
 
-      function handleSelectionUpdate(nodes) {
-        currentSelection = nodes;
+      function handleSelectionImageReceived(data) {
+        let b64 = data.base64;
+        if (!b64 && data.bytes) {
+          // Convertir array de bytes a base64
+          let binary = '';
+          const bytes = new Uint8Array(data.bytes);
+          for (let i = 0; i < bytes.byteLength; i++) {
+            binary += String.fromCharCode(bytes[i]);
+          }
+          b64 = btoa(binary);
+        }
+
+        if (b64) {
+          const fullDataUrl = `data:${data.mimeType || 'image/png'};base64,${b64}`;
+          setImagePreview(fullDataUrl, `📸 Capa: ${data.nodeName || 'Selección'}`);
+          showToast('Imagen capturada de Figma. Escribe tu instrucción o envía para recrearla.', 'success');
+        } else {
+          showToast('No se pudo convertir la imagen a formato Base64', 'error');
+        }
+      }
+
+      function setImagePreview(dataUrl, label = '📸 Imagen de referencia') {
+        activeImageBase64 = dataUrl;
+        dom.imagePreviewThumb.src = dataUrl;
+        dom.imagePreviewText.textContent = label;
+        dom.imagePreviewContainer.style.display = 'flex';
+        if (!dom.promptInput.value) {
+          dom.promptInput.value = 'Recrea este diseño en Figma con componentes reales y Auto-Layout';
+        }
+      }
+
+      function clearImagePreview() {
+        activeImageBase64 = null;
+        dom.imagePreviewThumb.src = '';
+        dom.imagePreviewContainer.style.display = 'none';
+        if (dom.inputUploadImage) dom.inputUploadImage.value = '';
+      }
         if (!nodes || nodes.length === 0) {
           dom.selectionContext.innerHTML = '✨ Lienzo libre';
           dom.selectionContext.title = 'No hay elementos seleccionados. Los nuevos elementos se crearán en la página activa.';
@@ -1224,11 +1305,19 @@
       }
 
       // ------------------------------------------------------------------------
-      // SYSTEM PROMPT DEL DSL DE FIGMA
+      // SYSTEM PROMPT DEL DSL DE FIGMA (CON SOPORTE MULTIMODAL DE VISIÓN)
       // ------------------------------------------------------------------------
-      function buildSystemPrompt() {
+      function buildSystemPrompt(isVisionMode = false) {
         return `Eres el motor experto de IA Figma AI Copilot, especializado en diseñar interfaces de usuario AAA según los estándares Refero, Linear, Arc, GitHub y Apple.
-Tu misión es recibir solicitudes en lenguaje natural y generar especificaciones completas para crear componentes de alta fidelidad, flujos y mockups en Figma mediante un DSL JSON estructurado.
+Tu misión es recibir solicitudes en lenguaje natural${isVisionMode ? ' y ANALIZAR LA IMAGEN ADJUNTA' : ''} para generar especificaciones completas para crear componentes de alta fidelidad, flujos y mockups en Figma mediante un DSL JSON estructurado.
+
+${isVisionMode ? `REGLAS DE RECREACIÓN DE IMAGEN A FIGMA (VISION-TO-DESIGN):
+- Analiza con extrema atención la imagen adjunta: su estructura de layout, paleta de colores, tipografía, botones, espaciados y elementos visuales.
+- Descompón la interfaz de la imagen en un Frame principal con Auto-Layout y crea cada componente (Navbar, Tarjetas, Inputs, Botones, Textos) usando colores idénticos o muy cercanos.
+- Si ves un botón en la imagen, usa "CREATE_BUTTON" con el texto y color exacto.
+- Si ves etiquetas, usa "CREATE_BADGE".
+- Si ves formularios, usa "CREATE_INPUT".
+- Recrea fielmente el diseño para que en Figma sea 100% editable.` : ''}
 
 REGLAS CRÍTICAS DE RESPUESTA:
 1. Explica brevemente en español qué creaste o modificaste (1 o 2 oraciones concisas).
@@ -1260,11 +1349,11 @@ ${JSON.stringify(currentSelection.map(n => ({ id: n.id, name: n.name, type: n.ty
       // ------------------------------------------------------------------------
       // SERVICIO CLIENTE DE IA (GEMINI PRO / ANTIGRAVITY / OPENAI / GROQ / OPENROUTER)
       // ------------------------------------------------------------------------
-      async function callAIService(userPrompt) {
-        const sysPrompt = buildSystemPrompt();
+      async function callAIService(userPrompt, imageBase64 = null) {
+        const sysPrompt = buildSystemPrompt(Boolean(imageBase64));
 
         if (appConfig.provider === 'gemini') {
-          return await callGeminiDirect(sysPrompt, userPrompt);
+          return await callGeminiDirect(sysPrompt, userPrompt, imageBase64);
         } else if (appConfig.provider === 'antigravity' || appConfig.provider === 'smart-router') {
           return await callSmartRouter(sysPrompt, userPrompt);
         } else if (appConfig.provider === 'openai') {
@@ -1278,7 +1367,7 @@ ${JSON.stringify(currentSelection.map(n => ({ id: n.id, name: n.name, type: n.ty
         }
       }
 
-      async function callGeminiDirect(systemPrompt, userPrompt) {
+      async function callGeminiDirect(systemPrompt, userPrompt, imageBase64 = null) {
         if (!appConfig.apiKey) {
           throw new Error('Por favor abre el engranaje ⚙️ y pega tu Gemini API Key de Google AI Studio');
         }
@@ -1298,6 +1387,19 @@ ${JSON.stringify(currentSelection.map(n => ({ id: n.id, name: n.name, type: n.ty
         const modelsToTry = [...new Set(candidateModels)];
         let lastError = null;
 
+        // Construcción del contenido multimodal
+        const parts = [{ text: `${systemPrompt}\n\nInstrucción del usuario:\n${userPrompt || 'Recrea este diseño en Figma con componentes reales'}` }];
+        if (imageBase64) {
+          // Extraer data pura si viene con prefijo data:image/...;base64,
+          const cleanBase64 = imageBase64.replace(/^data:image\/[a-z]+;base64,/, '');
+          parts.push({
+            inlineData: {
+              mimeType: 'image/png',
+              data: cleanBase64
+            }
+          });
+        }
+
         for (const model of modelsToTry) {
           try {
             const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(appConfig.apiKey)}`;
@@ -1305,12 +1407,7 @@ ${JSON.stringify(currentSelection.map(n => ({ id: n.id, name: n.name, type: n.ty
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
-                contents: [
-                  {
-                    role: 'user',
-                    parts: [{ text: `${systemPrompt}\n\nInstrucción del usuario:\n${userPrompt}` }]
-                  }
-                ]
+                contents: [{ role: 'user', parts }]
               })
             });
 
@@ -1663,18 +1760,20 @@ ${JSON.stringify(currentSelection.map(n => ({ id: n.id, name: n.name, type: n.ty
       // ------------------------------------------------------------------------
       async function handleSendPrompt(customText) {
         const text = (customText || dom.promptInput.value || '').trim();
+        const imageToSend = activeImageBase64;
         if (!text || isGenerating) return;
 
         isGenerating = true;
         dom.btnSendPrompt.disabled = true;
-        setStatusBusy('Pensando...');
-        appendUserMessage(text);
+        setStatusBusy(imageToSend ? 'Analizando imagen...' : 'Pensando...');
+        appendUserMessage(text + (imageToSend ? ' 📸 (con imagen de referencia)' : ''));
         dom.promptInput.value = '';
+        clearImagePreview();
         autoResizeTextarea();
         showTypingIndicator();
 
         try {
-          const rawResponse = await callAIService(text);
+          const rawResponse = await callAIService(text, imageToSend);
           removeTypingIndicator();
 
           const dslOperations = extractDSLFromResponse(rawResponse);
@@ -1791,6 +1890,37 @@ ${JSON.stringify(currentSelection.map(n => ({ id: n.id, name: n.name, type: n.ty
 
         // Botón enviar
         dom.btnSendPrompt.addEventListener('click', () => handleSendPrompt());
+
+        // Capturar selección de Figma como imagen de referencia
+        if (dom.btnCaptureFigmaImage) {
+          dom.btnCaptureFigmaImage.addEventListener('click', () => {
+            showToast('Capturando imagen de la capa seleccionada...', 'info');
+            postMessageToFigma({ type: 'EXPORT_SELECTION_IMAGE' });
+          });
+        }
+
+        // Subir imagen desde archivo local
+        if (dom.inputUploadImage) {
+          dom.inputUploadImage.addEventListener('change', (e) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+              setImagePreview(event.target.result, `📁 ${file.name}`);
+              showToast('Imagen cargada. Pulsa Enviar para recrearla en Figma.', 'success');
+            };
+            reader.readAsDataURL(file);
+          });
+        }
+
+        // Remover imagen adjunta
+        if (dom.btnRemoveImage) {
+          dom.btnRemoveImage.addEventListener('click', () => {
+            clearImagePreview();
+            showToast('Imagen de referencia descartada', 'info');
+          });
+        }
 
         // Quick pills
         document.querySelectorAll('.quick-pill').forEach(btn => {
