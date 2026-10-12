@@ -32,15 +32,16 @@ PATRONES FEW-SHOT DE ALTA FIDELIDAD:
    - Cards de productos: Auto-Layout, imagen placeholder, precio destacado, botón Comprar y badge "Popular".
 
 OPERACIONES DISPONIBLES EN FIGMA:
-- "CREATE_FRAME": { name, width, height, fills: ["#HEX"], cornerRadius, layoutMode, itemSpacing, padding: {top,right,bottom,left}, strokes: ["#HEX"], strokeWeight, children: [...] }
-- "CREATE_BUTTON": { label, variant: "PRIMARY"|"SECONDARY"|"OUTLINE"|"GITHUB", fills: ["#HEX"], textColor, cornerRadius: 6, paddingX: 16, paddingY: 10, fontSize: 14 }
-- "CREATE_ICON": { icon: "shield-check"|"bell"|"person"|"geo-alt"|"telephone"|"exclamation-triangle"|"heart"|"search"|"house"|"gear"|"arrow-left"|"arrow-right"|"plus"|"lock"|"envelope", size: 20, color: "#HEX" }
+- "CREATE_FRAME": { name, preset: "iPhone 16"|"iPhone 17"|"Android Compact", width, height, fills: ["#HEX"], cornerRadius, layoutMode: "VERTICAL"|"HORIZONTAL", layoutWrap: "WRAP", itemSpacing, padding: {top,right,bottom,left}, overflow: "VERTICAL"|"HORIZONTAL"|"NONE", dropShadow, backgroundBlur, innerShadow, clipsContent, children: [...] }
+- "CREATE_BUTTON": { label, variant: "PRIMARY"|"SECONDARY"|"OUTLINE"|"GITHUB", fills: ["#HEX"], textColor, icon: "cart"|"lock"|"arrow-left"|"star", cornerRadius: 8, interaction: { trigger: "ON_CLICK", destination: "NombreFrame", transition: "SMART_ANIMATE"|"DISSOLVE" } }
+- "CREATE_ICON": { icon: "cart"|"bag"|"heart"|"star"|"arrow-left"|"arrow-right"|"lock"|"envelope"|"search"|"house"|"gear"|"shield-check", size: 20, color: "#HEX" }
 - "CREATE_INTERACTIVE_BUTTON": { name, label, baseColor: "#HEX", hoverColor: "#HEX", textColor: "#HEX", cornerRadius: 8 }
 - "CREATE_BADGE": { label, backgroundColor: "#HEX", textColor: "#HEX", fontSize: 11, cornerRadius: 999 }
-- "CREATE_INPUT": { placeholder, width: 280, height: 42, fills: ["#HEX"], borderColor: "#HEX" }
+- "CREATE_INPUT": { placeholder, width: 345, height: 48, fills: ["#HEX"], borderColor: "#HEX", innerShadow: true }
 - "CREATE_TEXT": { characters, fontSize, fontWeight: "REGULAR"|"MEDIUM"|"BOLD", fills: ["#HEX"], textAlign: "LEFT"|"CENTER"|"RIGHT" }
-- "CREATE_RECTANGLE": { width, height, fills: ["#HEX"], cornerRadius }
+- "CREATE_RECTANGLE": { width, height, fills: ["#HEX"], cornerRadius, dropShadow }
 - "CREATE_ELLIPSE": { width, height, fills: ["#HEX"] }
+- "CREATE_INTERACTION": { source: "BotonLogin", destination: "CatalogoGourmet", trigger: "ON_CLICK", transition: "SMART_ANIMATE" }
 - "EDIT_NODE", "APPLY_AUTOLAYOUT", "ALIGN_SELECTION", "RENAME_NODES".
 
 REGLAS DE SALIDA OBLIGATORIAS:

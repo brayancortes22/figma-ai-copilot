@@ -9,7 +9,7 @@ export function generateOfflineSmartDesign(prompt) {
 
   // Caso A: Repostería / Pastelería / Bakery
   if (p.includes('reposter') || p.includes('pastel') || p.includes('bakery') || p.includes('dulce')) {
-    return `He diseñado un flujo completo de alta fidelidad para la repostería artesanal gourmet "Maison Sucrée", que incluye la pantalla de inicio de sesión (Login) y el catálogo principal con estética gourmet y botones de compra.
+    return `He diseñado un prototipo móvil completo e interactivo para "Maison Sucrée": pantalla de Login con inputs y navegación inteligente al Catálogo, cards con Auto-Layout, precios destacados y botones con variantes hover.
 
 \`\`\`json
 {
@@ -17,8 +17,7 @@ export function generateOfflineSmartDesign(prompt) {
     {
       "action": "CREATE_FRAME",
       "name": "1. Login - Maison Sucrée",
-      "width": 393,
-      "height": 852,
+      "preset": "iPhone 16",
       "fills": ["#FFFDF9"],
       "layoutMode": "VERTICAL",
       "itemSpacing": 20,
@@ -29,17 +28,32 @@ export function generateOfflineSmartDesign(prompt) {
         { "action": "CREATE_ICON", "icon": "heart", "size": 36, "color": "#D4A373" },
         { "action": "CREATE_TEXT", "characters": "Maison Sucrée", "fontSize": 28, "fontWeight": "BOLD", "fills": ["#5A3E2B"] },
         { "action": "CREATE_TEXT", "characters": "Repostería Artesanal Gourmet", "fontSize": 14, "fills": ["#8C6D58"] },
-        { "action": "CREATE_INPUT", "name": "Email Input", "placeholder": "correo@ejemplo.com", "width": 345, "height": 48 },
+        { "action": "CREATE_INPUT", "name": "Email Input", "placeholder": "chef@maisonsucree.com", "width": 345, "height": 48 },
         { "action": "CREATE_INPUT", "name": "Password Input", "placeholder": "••••••••", "width": 345, "height": 48 },
-        { "action": "CREATE_BUTTON", "label": "Iniciar Sesión Gourmet", "variant": "PRIMARY", "fills": ["#D4A373"], "textColor": "#FFFFFF", "width": 345, "height": 48, "cornerRadius": 12 },
+        {
+          "action": "CREATE_BUTTON",
+          "name": "Boton Iniciar Sesion",
+          "label": "Entrar al Catálogo 🥐",
+          "variant": "PRIMARY",
+          "fills": ["#D4A373"],
+          "textColor": "#FFFFFF",
+          "width": 345,
+          "height": 48,
+          "cornerRadius": 12,
+          "interaction": {
+            "trigger": "ON_CLICK",
+            "destination": "2. Catálogo - Maison Sucrée",
+            "transition": "SMART_ANIMATE"
+          }
+        },
         { "action": "CREATE_TEXT", "characters": "¿Olvidaste tu contraseña?", "fontSize": 12, "fills": ["#A98467"] }
       ]
     },
     {
       "action": "CREATE_FRAME",
       "name": "2. Catálogo - Maison Sucrée",
-      "width": 393,
-      "height": 852,
+      "preset": "iPhone 16",
+      "overflow": "VERTICAL",
       "fills": ["#FAF7F2"],
       "layoutMode": "VERTICAL",
       "itemSpacing": 16,
@@ -55,8 +69,21 @@ export function generateOfflineSmartDesign(prompt) {
           "height": 44,
           "fills": ["#00000000"],
           "children": [
-            { "action": "CREATE_TEXT", "characters": "Nuestros Pasteles 🥐", "fontSize": 22, "fontWeight": "BOLD", "fills": ["#432818"] },
-            { "action": "CREATE_ICON", "icon": "bag", "size": 24, "color": "#D4A373" }
+            {
+              "action": "CREATE_BUTTON",
+              "label": "Login",
+              "variant": "OUTLINE",
+              "icon": "arrow-left",
+              "textColor": "#5A3E2B",
+              "cornerRadius": 8,
+              "interaction": {
+                "trigger": "ON_CLICK",
+                "destination": "1. Login - Maison Sucrée",
+                "transition": "SMART_ANIMATE"
+              }
+            },
+            { "action": "CREATE_TEXT", "characters": "Nuestros Pasteles", "fontSize": 20, "fontWeight": "BOLD", "fills": ["#432818"] },
+            { "action": "CREATE_ICON", "icon": "bag", "size": 22, "color": "#D4A373" }
           ]
         },
         {
@@ -82,7 +109,7 @@ export function generateOfflineSmartDesign(prompt) {
               "width": 325,
               "children": [
                 { "action": "CREATE_TEXT", "characters": "$28.50 USD", "fontSize": 18, "fontWeight": "BOLD", "fills": ["#BB3E03"] },
-                { "action": "CREATE_BUTTON", "label": "Comprar", "variant": "PRIMARY", "fills": ["#D4A373"], "cornerRadius": 8 }
+                { "action": "CREATE_INTERACTIVE_BUTTON", "label": "Comprar", "baseColor": "#D4A373", "hoverColor": "#BC8A5A", "cornerRadius": 8 }
               ]
             }
           ]
@@ -110,7 +137,7 @@ export function generateOfflineSmartDesign(prompt) {
               "width": 325,
               "children": [
                 { "action": "CREATE_TEXT", "characters": "$19.00 USD", "fontSize": 18, "fontWeight": "BOLD", "fills": ["#BB3E03"] },
-                { "action": "CREATE_BUTTON", "label": "Comprar", "variant": "PRIMARY", "fills": ["#D4A373"], "cornerRadius": 8 }
+                { "action": "CREATE_INTERACTIVE_BUTTON", "label": "Comprar", "baseColor": "#D4A373", "hoverColor": "#BC8A5A", "cornerRadius": 8 }
               ]
             }
           ]
@@ -131,8 +158,7 @@ export function generateOfflineSmartDesign(prompt) {
     {
       "action": "CREATE_FRAME",
       "name": "Screen - Diseño Refero AAA",
-      "width": 393,
-      "height": 852,
+      "preset": "iPhone 16",
       "fills": ["#0D1117"],
       "layoutMode": "VERTICAL",
       "itemSpacing": 16,
@@ -140,7 +166,7 @@ export function generateOfflineSmartDesign(prompt) {
       "children": [
         { "action": "CREATE_TEXT", "characters": "Diseño UI Generado", "fontSize": 24, "fontWeight": "BOLD", "fills": ["#F0F6FC"] },
         { "action": "CREATE_TEXT", "characters": "Componente generado con Auto-Layout y fidelidad AAA", "fontSize": 14, "fills": ["#8B949E"] },
-        { "action": "CREATE_BUTTON", "label": "Comenzar Ahora", "variant": "PRIMARY", "fills": ["#6366F1"], "width": 353, "height": 48, "cornerRadius": 8 }
+        { "action": "CREATE_INTERACTIVE_BUTTON", "label": "Comenzar Ahora", "baseColor": "#6366F1", "hoverColor": "#4F46E5", "cornerRadius": 8 }
       ]
     }
   ]

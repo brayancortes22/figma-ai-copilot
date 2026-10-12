@@ -25,13 +25,15 @@ Un plugin de diseño asistido por Inteligencia Artificial para Figma. Diseñado 
 4. **Persistencia Nativa (`figma.clientStorage`)**:
    - Ajustes, preferencias y claves guardadas directamente en el almacenamiento interno de Figma, evitando los bloqueos de `DOMException: SecurityError` habituales de `localStorage` en iframes.
 
-5. **Componentes y Acciones Nativas en Figma**:
-   - `CREATE_FRAME`: Pantallas móviles (iPhone 393x852), tarjetas, modales y navbars con **Auto-Layout dinámico** (Horizontal/Vertical), padding y espaciados automáticos.
-   - `CREATE_BUTTON`: Botones reales con auto-layout, variantes oficiales (`PRIMARY`, `SECONDARY`, `OUTLINE`, `GITHUB`) e iconos vectoriales integrados.
+5. **Componentes, Prototipado y Acciones Nativas en Figma**:
+   - `CREATE_FRAME`: Pantallas con **Presets Oficiales de Dispositivos** (`iPhone 16`, `iPhone 17 / Pro`, `iPhone 16 Pro Max`, `Android Compact`, `iPad Pro`, etc.), soporte de **Flow Wrap** (`layoutWrap: 'WRAP'`), recorte de contenido y **Scroll Behavior** (`VERTICAL_SCROLLING`, `HORIZONTAL_SCROLLING`).
+   - `CREATE_INTERACTION`: Conecta pantallas y botones en la pestaña **Prototype** con disparadores reales (`ON_CLICK`, `WHILE_HOVERING`, `WHILE_PRESSING`, `ON_DRAG`) y transiciones fluidas (`SMART_ANIMATE`, `DISSOLVE`, `SLIDE_IN`). Permite navegación a otras pantallas o volver atrás (`BACK`).
+   - `CREATE_BUTTON`: Botones reales con auto-layout, variantes oficiales (`PRIMARY`, `SECONDARY`, `OUTLINE`, `GITHUB`), iconos vectoriales integrados y reacciones interactivas.
    - `CREATE_ICON`: Catálogo integrado de más de 20 iconos vectoriales limpios de **Bootstrap Icons** (`shield-check`, `search`, `house`, `bell`, `person`, `gear`, `star`, `code-slash`, `git`, `eye`, `cart`, `bag`, `lock`, `envelope`, etc.) renderizados vía `createNodeFromSvg`.
    - `CREATE_INTERACTIVE_BUTTON`: Genera **Component Sets con Variantes nativas de Figma** (`Default` y `Hover`) y configura automáticamente conexiones de prototipado (**Smart Animate While Hovering**). Se integra de forma segura sin romper layouts anidados.
    - `CREATE_BADGE`: Etiquetas tipo píldora (`Public`, `Beta`, `Nuevo`).
-   - `CREATE_INPUT`: Campos de texto con placeholder para formularios de Login y Registro.
+   - `CREATE_INPUT`: Campos de texto con placeholder para formularios de Login y Registro, con sombras interiores (`INNER_SHADOW`).
+   - **Efectos Refero AAA**: Soporte nativo para `DROP_SHADOW` suave, `INNER_SHADOW`, `BACKGROUND_BLUR` (efecto vidrio / glassmorphism) y `LAYER_BLUR`.
    - `CREATE_TEXT`: Textos y títulos con carga asíncrona de tipografías (`Inter`, `Roboto`, etc.) y pesos configurables.
    - `CREATE_RECTANGLE` / `CREATE_ELLIPSE`: Formas geométricas, placeholders de imagen y avatares.
    - `EDIT_NODE`: Modifica colores, dimensiones, radios de esquina o textos de capas existentes.
