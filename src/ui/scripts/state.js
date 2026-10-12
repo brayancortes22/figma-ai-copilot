@@ -6,10 +6,10 @@
 export const STORAGE_KEY = 'figma_ai_copilot_config_v1';
 
 export const defaultConfig = {
-  provider: 'gemini',
+  provider: 'auto', // 'auto' | 'free-cloud' | 'gemini' | 'groq' | 'openrouter' | 'openai' | 'antigravity'
   localUrl: 'http://localhost:3000',
   apiKey: '',
-  model: 'gemini-3.8-flash'
+  model: 'auto-smart'
 };
 
 let appConfig = loadInitialConfig();
@@ -42,9 +42,14 @@ export function requestFigmaStorage() {
 }
 
 export function applyStorageValue(key, value) {
-  if (key === STORAGE_KEY && value && typeof value === 'object') {
-    appConfig = { ...defaultConfig, ...value };
-    return true;
+  if (key === STORAGE_KEY && value) {
+    try {
+      const parsed = typeof value === 'string' ? JSON.parse(value) : value;
+      appConfig = { ...defaultConfig, ...parsed };
+      return true;
+    } catch (e) {
+      console.warn('[Figma AI Copilot] Error parseando storage value:', e);
+    }
   }
   return false;
 }

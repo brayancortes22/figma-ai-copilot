@@ -1,19 +1,32 @@
 # 🚀 Figma AI Copilot (bscl)
 
-Un plugin de diseño asistido por Inteligencia Artificial para Figma. Diseñado para funcionar de manera **completamente autónoma, modular y portable**: cualquiera puede abrirlo en Figma, colocar su clave de **Google Gemini Pro** (o OpenAI / Groq / OpenRouter) y empezar a crear, editar y organizar diseños directamente en el lienzo mediante chat en tiempo real.
+Un plugin de diseño asistido por Inteligencia Artificial para Figma. Diseñado para funcionar de manera **completamente autónoma, modular y sin fricción técnica**: cualquier persona puede abrirlo y empezar a diseñar de inmediato, sin necesidad de saber programar, sin servidores locales obligatorios y **sin bloqueos por límites de cuota**.
 
 ---
 
 ## 🌟 Características Principales
 
-1. **100% Autónomo (Plug & Play)**:
-   - Se conecta directamente con la API oficial de **Google Gemini** (modelo recomendado: `gemini-3.8-flash` con fallback automático en cascada).
-   - Compatible también con **OpenAI (GPT-4o)**, **Groq Cloud (Llama 3.3 / Qwen)**, **OpenRouter** y servidores locales (**Antigravity / Smart AI Router :3000**).
-   - **Persistencia Robusta (`figma.clientStorage`)**: Claves y ajustes guardados de forma nativa en Figma, blindados contra bloqueos de `localStorage` (`DOMException`) en entornos con sandbox.
+1. **🤖 Modo Inteligente Automático (Auto-Smart Cascade - Nunca se bloquea)**:
+   - **Gestión Inteligente de Cuota y Tráfico**: Si la API de Google Gemini llega a saturarse, devuelve error 429 (`Quota exceeded / limit: 0`) o alta demanda (503), el plugin **no se rompe**; salta en milisegundos al siguiente modelo de la lista (`gemini-3.8-flash` ➔ `3.6-flash` ➔ `3.5-flash` ➔ `2.5-flash` ➔ `2.5-flash-lite`).
+   - Si toda la cuota diaria gratuita de Gemini se agota por completo, o si el usuario no tiene una clave, el sistema **conmuta automáticamente a la Nube Gratuita Pública**, garantizando que el diseñador pueda seguir creando sin interrupción.
 
-2. **Componentes y Acciones Nativas en Figma**:
+2. **🌐 Nube Gratuita Pública (Sin API Key - 100% Libre)**:
+   - Diseñado especialmente para personas y diseñadores que no quieren registrarse en consolas de desarrolladores o pegar claves complejas.
+   - Funciona de forma instantánea usando modelos cloud de alta velocidad (OpenAI, Llama 3.3, Mistral, Qwen).
+
+3. **✨ Soporte Multimodelo y Multi-Proveedor (2026)**:
+   - **Google Gemini (2026)**: `gemini-3.8-flash`, `gemini-3.6-flash`, `gemini-3.5-flash`, `gemini-2.5-flash`, `gemini-2.5-flash-lite`.
+   - **Groq Cloud**: Inferencia ultra veloz a más de 500 tokens/segundo con `llama-3.3-70b-versatile` y `llama-3.1-8b-instant`.
+   - **OpenRouter**: Acceso a modelos comunitarios gratuitos (`:free`).
+   - **OpenAI**: Soporte directo para `gpt-4o` y `gpt-4o-mini`.
+   - **Antigravity / Smart Router**: Para desarrolladores que deseen conectar sus modelos locales en `localhost:3000`.
+
+4. **Persistencia Nativa (`figma.clientStorage`)**:
+   - Ajustes, preferencias y claves guardadas directamente en el almacenamiento interno de Figma, evitando los bloqueos de `DOMException: SecurityError` habituales de `localStorage` en iframes.
+
+5. **Componentes y Acciones Nativas en Figma**:
    - `CREATE_FRAME`: Pantallas móviles (iPhone 393x852), tarjetas, modales y navbars con **Auto-Layout dinámico** (Horizontal/Vertical), padding y espaciados automáticos.
-   - `CREATE_BUTTON`: Botones reales con auto-layout, variantes oficiales (`PRIMARY`, `SECONDARY`, `OUTLINE`, `GITHUB`) y soporte para iconos vectoriales.
+   - `CREATE_BUTTON`: Botones reales con auto-layout, variantes oficiales (`PRIMARY`, `SECONDARY`, `OUTLINE`, `GITHUB`) e iconos vectoriales integrados.
    - `CREATE_ICON`: Catálogo integrado de más de 20 iconos vectoriales limpios de **Bootstrap Icons** (`shield-check`, `search`, `house`, `bell`, `person`, `gear`, `star`, `code-slash`, `git`, `eye`, `cart`, `bag`, `lock`, `envelope`, etc.) renderizados vía `createNodeFromSvg`.
    - `CREATE_INTERACTIVE_BUTTON`: Genera **Component Sets con Variantes nativas de Figma** (`Default` y `Hover`) y configura automáticamente conexiones de prototipado (**Smart Animate While Hovering**). Se integra de forma segura sin romper layouts anidados.
    - `CREATE_BADGE`: Etiquetas tipo píldora (`Public`, `Beta`, `Nuevo`).
@@ -23,14 +36,13 @@ Un plugin de diseño asistido por Inteligencia Artificial para Figma. Diseñado 
    - `EDIT_NODE`: Modifica colores, dimensiones, radios de esquina o textos de capas existentes.
    - `APPLY_AUTOLAYOUT`: Convierte selecciones desordenadas en contenedores limpios y estructurados.
 
-3. **Visión Multimodal (Vision-to-Design)**:
+6. **Visión Multimodal (Vision-to-Design)**:
    - **Capturar desde Figma**: Botón de cámara para capturar la capa o imagen seleccionada y recrearla fielmente con componentes reales.
    - **Subir Imagen Local**: Permite cargar imágenes o capturas de pantalla desde tu computadora para clonar mockups.
 
-4. **Arquitectura Modular Senior (< 180 líneas por archivo)**:
-   - Código desacoplado siguiendo el principio de responsabilidad única (Regla 5 Anti God-Class):
-     - `src/plugin/`: Módulos de sandbox (`main.js`, `dispatcher.js`, `helpers.js`, `icons.js`, `operations/`).
-     - `src/ui/`: Módulos de interfaz (`state.js`, `ai-service.js`, `dsl-parser.js`, `ui-controller.js`, `chat-view.js`, `settings-view.js`, `image-handler.js`, `styles/copilot.css`).
+7. **Arquitectura Modular Senior (< 180 líneas por archivo - Regla 5)**:
+   - `src/plugin/`: Módulos de sandbox (`main.js`, `dispatcher.js`, `helpers.js`, `icons.js`, `operations/`).
+   - `src/ui/`: Módulos de interfaz (`state.js`, `ai-service.js`, `gemini-provider.js`, `free-cloud.js`, `dsl-parser.js`, `ui-controller.js`, `chat-view.js`, `settings-view.js`, `image-handler.js`, `styles/copilot.css`).
    - Empaquetador ultra rápido con `esbuild` (`npm run build`).
 
 ---
@@ -47,32 +59,24 @@ Un plugin de diseño asistido por Inteligencia Artificial para Figma. Diseñado 
 
 ---
 
-## 🔑 Configuración de Google Gemini
+## ⚙️ Configuración (Sencilla para Todos)
 
-1. Al abrir el plugin en Figma, haz clic en el ícono de **Engranaje (⚙️)** en la esquina superior derecha.
-2. Por defecto estará seleccionado **✨ Google Gemini Pro** con el modelo `gemini-3.8-flash`.
-3. Pega tu API Key de Gemini:
-   - Si no tienes una, puedes generarla gratis en [Google AI Studio](https://aistudio.google.com/app/apikey).
-4. Haz clic en **"Guardar Ajustes"**.
-5. ¡Listo! Tu plugin recordará la clave tanto en `figma.clientStorage` como en almacenamiento local.
+1. Al abrir el plugin, por defecto viene activado el **🤖 Modo Inteligente Automático**.
+2. **Si no tienes clave:** Puedes usarlo inmediatamente con la **Nube Gratuita**.
+3. **Si tienes clave de Google Gemini:** Abre el engranaje ⚙️, pégala y pulsa **Guardar Ajustes**. El plugin la usará y, si alguna vez tu cuota se agota, cambiará automáticamente a la nube de respaldo sin mostrarte errores técnicos.
 
 ---
 
 ## 💻 Desarrollo y Compilación Modular
 
-Si deseas modificar el código fuente modular:
-
 ```bash
-# Instalar dependencias (esbuild)
-npm install
-
-# Compilar código modular a los artefactos de Figma (code.js y ui.html)
+# Compilar código modular a los artefactos finales de Figma (code.js y ui.html)
 npm run build
 ```
 
 ---
 
-## 💡 Ejemplos de lo que puedes pedirle al Chat
+## 💡 Ejemplos de Prompts
 
 * *"Crea un mockup completo de la página de repositorio de GitHub: header oscuro con buscador y logo, barra de repositorio con nombre y badge Public, botones de Watch, Fork y Star con iconos, pestañas de navegación y botón verde <> Code."*
 * *"Crea un diseño completo mobile de alta fidelidad para una repostería artesanal gourmet: login con inputs y botón interactivo, y catálogo con cards de pasteles, precios destacados y botones de compra."*

@@ -50,11 +50,13 @@
           <span>Proveedor de Inteligencia</span>
         </label>
         <select class="form-select" id="providerSelect">
-          <option value="gemini" selected>✨ Google Gemini (Recomendado)</option>
-          <option value="antigravity">🪐 Antigravity / Smart Router (:3000)</option>
+          <option value="auto" selected>🤖 Modo Inteligente Automático (Recomendado - Sin bloqueos)</option>
+          <option value="free-cloud">🌐 Nube Gratuita Pública (Sin API Key - 100% Libre)</option>
+          <option value="gemini">✨ Google Gemini (Con tu propia API Key)</option>
+          <option value="groq">⚡ Groq Cloud (Ultra Rápido y Gratuito)</option>
+          <option value="openrouter">🌐 OpenRouter (Modelos Gratuitos)</option>
           <option value="openai">🟢 OpenAI (GPT-4o / mini)</option>
-          <option value="groq">⚡ Groq Cloud (Ultra Rápido)</option>
-          <option value="openrouter">🌐 OpenRouter API</option>
+          <option value="antigravity">🪐 Antigravity / Smart Router Local (:3000)</option>
         </select>
       </div>
 
@@ -67,7 +69,7 @@
 
       <div class="form-group" id="groupApiKey">
         <label class="form-label" for="inputApiKey">
-          <span id="apiKeyLabel">Google Gemini API Key</span>
+          <span id="apiKeyLabel">Google Gemini API Key (Opcional)</span>
         </label>
         <div class="password-wrap">
           <input type="password" class="form-input" id="inputApiKey" placeholder="Pega tu API Key de Gemini...">
@@ -78,8 +80,8 @@
             </svg>
           </button>
         </div>
-        <div style="margin-top: 4px; font-size: 10px; color: var(--text-muted);">
-          Obtén tu clave gratuita en <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: #818CF8; text-decoration: none;">Google AI Studio ↗</a>
+        <div id="apiKeyHint" style="margin-top: 4px; font-size: 10.5px; color: var(--text-muted); line-height: 1.4;">
+          💡 Si no tienes clave o se agota tu cuota, el plugin usará la <strong>Nube Gratuita</strong> automáticamente sin interrumpir tu diseño. Clave gratis en <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: #818CF8; text-decoration: none;">Google AI Studio ↗</a>
         </div>
       </div>
 
@@ -88,23 +90,37 @@
           <span>Modelo de IA</span>
         </label>
         <select class="form-select" id="selectModelPreset">
-          <optgroup label="Google Gemini">
-            <option value="gemini-3.8-flash" selected>⚡ Gemini 3.8 Flash (Predeterminado)</option>
-            <option value="gemini-3.1-pro-preview">🧠 Gemini 3.1 Pro Preview (Máxima Precisión)</option>
-            <option value="gemini-2.5-pro">💎 Gemini 2.5 Pro</option>
-            <option value="gemini-2.5-flash">🚀 Gemini 2.5 Flash</option>
+          <optgroup label="Selección Automática">
+            <option value="auto-smart" selected>🤖 Auto-Cascada (Usa el modelo óptimo con cuota libre)</option>
+          </optgroup>
+          <optgroup label="Google Gemini (2026)">
+            <option value="gemini-3.8-flash">⚡ Gemini 3.8 Flash (Última Generación)</option>
+            <option value="gemini-3.6-flash">⚡ Gemini 3.6 Flash (Alta Velocidad)</option>
+            <option value="gemini-3.5-flash">🚀 Gemini 3.5 Flash (Foundational)</option>
+            <option value="gemini-2.5-flash">💎 Gemini 2.5 Flash (Cuota Estable)</option>
+            <option value="gemini-2.5-flash-lite">🍃 Gemini 2.5 Flash-Lite (Bajo Tráfico)</option>
+          </optgroup>
+          <optgroup label="Nube Gratuita Pública (Sin Clave)">
+            <option value="free-cloud-auto">🌐 Nube Pública Multi-Modelo (Llama 3.3 / Qwen)</option>
+          </optgroup>
+          <optgroup label="Groq Cloud (Gratis)">
+            <option value="llama-3.3-70b-versatile">⚡ Llama 3.3 70B (Groq - 500 t/s)</option>
+            <option value="llama-3.1-8b-instant">⚡ Llama 3.1 8B Instant (Ultra Veloz)</option>
+            <option value="qwen/qwen3.8-27b">⚡ Qwen 3.8 27B (Groq)</option>
+          </optgroup>
+          <optgroup label="OpenRouter (Gratis :free)">
+            <option value="meta-llama/llama-3.3-70b-instruct:free">🌐 Llama 3.3 70B Free</option>
+            <option value="deepseek/deepseek-r1:free">🌐 DeepSeek R1 Free</option>
           </optgroup>
           <optgroup label="OpenAI">
             <option value="gpt-4o">🟢 GPT-4o</option>
             <option value="gpt-4o-mini">🟢 GPT-4o Mini</option>
           </optgroup>
-          <optgroup label="Groq / OpenRouter / Otros">
-            <option value="qwen/qwen3.8-27b">⚡ Qwen 3.8 27B (Groq)</option>
-            <option value="meta-llama/llama-3.3-70b-instruct:free">🌐 Llama 3.3 70B (OpenRouter Free)</option>
+          <optgroup label="Personalizado">
             <option value="custom">✏️ Personalizado (Escribir ID manual)...</option>
           </optgroup>
         </select>
-        <input type="text" class="form-input" id="inputModelName" style="display: none; margin-top: 6px;" placeholder="Ej: gemini-3.8-flash" value="gemini-3.8-flash">
+        <input type="text" class="form-input" id="inputModelName" style="display: none; margin-top: 6px;" placeholder="Ej: gemini-3.8-flash" value="auto-smart">
       </div>
 
       <div class="settings-footer">
