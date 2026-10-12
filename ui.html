@@ -1227,74 +1227,33 @@
       // SYSTEM PROMPT DEL DSL DE FIGMA
       // ------------------------------------------------------------------------
       function buildSystemPrompt() {
-        return `Eres el motor de IA Figma AI Copilot, especializado en diseñar interfaces de usuario AAA según los estándares Refero, Linear, Arc y Apple.
-Tu misión es recibir solicitudes en lenguaje natural y generar especificaciones precisas para crear o transformar nodos en el lienzo de Figma mediante un DSL JSON estructurado.
+        return `Eres el motor experto de IA Figma AI Copilot, especializado en diseñar interfaces de usuario AAA según los estándares Refero, Linear, Arc, GitHub y Apple.
+Tu misión es recibir solicitudes en lenguaje natural y generar especificaciones completas para crear componentes de alta fidelidad, flujos y mockups en Figma mediante un DSL JSON estructurado.
 
 REGLAS CRÍTICAS DE RESPUESTA:
 1. Explica brevemente en español qué creaste o modificaste (1 o 2 oraciones concisas).
 2. Proporciona OBLIGATORIAMENTE un bloque de código JSON cercado (\`\`\`json ... \`\`\`) con la clave "operations", que contiene un array de acciones ejecutables.
-3. Cero alucinaciones: utiliza únicamente acciones soportadas:
-   - "CREATE_FRAME": { name, width, height, x, y, fills: [{r, g, b, a}], cornerRadius, layoutMode: "VERTICAL"|"HORIZONTAL"|"NONE", itemSpacing, padding: {top, right, bottom, left}, children: [...] }
-   - "CREATE_TEXT": { text, fontSize, fontWeight: "REGULAR"|"MEDIUM"|"BOLD", fills: [{r, g, b, a}], x, y }
-   - "CREATE_RECTANGLE": { name, width, height, fills: [{r, g, b, a}], cornerRadius, x, y }
-   - "SET_AUTO_LAYOUT": { targetNodeId, layoutMode: "VERTICAL"|"HORIZONTAL", itemSpacing, padding: {top, right, bottom, left} }
-   - "SET_FILLS": { targetNodeId, fills: [{r, g, b, a}] }
+3. ACCIONES OFICIALES DISPONIBLES EN FIGMA:
+   - "CREATE_FRAME": Contenedor o pantalla. Parámetros: { name, width, height, fills: ["#HEX"], cornerRadius, layoutMode: "VERTICAL"|"HORIZONTAL", itemSpacing, padding: {top, right, bottom, left}, strokes: ["#HEX"], strokeWeight, dropShadow: {color, blur, y}, children: [...] }
+   - "CREATE_BUTTON": Botón nativo con auto-layout y texto. Parámetros: { label, variant: "PRIMARY"|"SECONDARY"|"OUTLINE"|"GITHUB", fills: ["#HEX"], textColor: "#HEX", cornerRadius: 6, paddingX: 16, paddingY: 10, fontSize: 14, fontWeight: "BOLD"|"MEDIUM", strokes: ["#HEX"] }
+   - "CREATE_BADGE": Píldora o etiqueta. Parámetros: { label, backgroundColor: "#HEX", textColor: "#HEX", fontSize: 11, cornerRadius: 999 }
+   - "CREATE_INPUT": Campo de formulario con placeholder. Parámetros: { placeholder, width: 280, height: 40, fills: ["#HEX"], borderColor: "#HEX" }
+   - "CREATE_TEXT": Bloque de texto. Parámetros: { characters, fontSize, fontWeight: "REGULAR"|"MEDIUM"|"BOLD", fills: ["#HEX"], textAlign: "LEFT"|"CENTER"|"RIGHT" }
+   - "CREATE_RECTANGLE": Formas o placeholders de imagen. Parámetros: { width, height, fills: ["#HEX"], cornerRadius }
+   - "CREATE_ELLIPSE": Avatares o círculos. Parámetros: { width, height, fills: ["#HEX"] }
 
-EJEMPLO DE FORMATO DE RESPUESTA:
-He diseñado una tarjeta de producto moderna con esquinas redondeadas, imagen y botón de compra.
+REGLAS DE DISEÑO DE ALTO IMPACTO (MOCKUPS PRO):
+- Si el usuario pide un MOCKUP DE GITHUB:
+  * Crea un Frame contenedor oscuro (#0D1117) de 1200x800 con Auto-Layout vertical.
+  * Header superior (#161B22, borde #30363D) con Logo, buscador (#0D1117), enlaces ("Pull requests", "Issues", "Marketplace") y avatar circular.
+  * Repo Header (#0D1117): "owner / repo-name", Badge "Public", y botones ("Watch", "Fork", "Star").
+  * Botón verde oficial de GitHub: variant: "GITHUB", fills: ["#238636"].
+  * Pestañas horizontales ("Code", "Issues", "Pull requests", "Actions", "Settings").
+  * Tabla de archivos con ramas ("main") y botón "Add file" y botón verde "<> Code".
+- Si el usuario pide REPOSTERÍA / E-COMMERCE / LOGIN:
+  * Genera el flujo completo: Pantalla de Login con inputs y botón principal + Catálogo con tarjetas de producto (Auto-Layout, precio destacado, botón de comprar, badge de "Popular" o "Oferta").
 
-\`\`\`json
-{
-  "description": "Product Card AAA",
-  "operations": [
-    {
-      "action": "CREATE_FRAME",
-      "params": {
-        "name": "Product Card",
-        "width": 320,
-        "height": 420,
-        "cornerRadius": 16,
-        "fills": [{"r": 0.07, "g": 0.08, "b": 0.12, "a": 1}],
-        "layoutMode": "VERTICAL",
-        "itemSpacing": 12,
-        "padding": {"top": 16, "right": 16, "bottom": 16, "left": 16}
-      },
-      "children": [
-        {
-          "action": "CREATE_RECTANGLE",
-          "params": {
-            "name": "Image Placeholder",
-            "width": 288,
-            "height": 180,
-            "cornerRadius": 10,
-            "fills": [{"r": 0.15, "g": 0.18, "b": 0.25, "a": 1}]
-          }
-        },
-        {
-          "action": "CREATE_TEXT",
-          "params": {
-            "text": "Auriculares Pro ANC Wireless",
-            "fontSize": 18,
-            "fontWeight": "BOLD",
-            "fills": [{"r": 0.97, "g": 0.98, "b": 1, "a": 1}]
-          }
-        },
-        {
-          "action": "CREATE_TEXT",
-          "params": {
-            "text": "$249.00 USD",
-            "fontSize": 15,
-            "fontWeight": "MEDIUM",
-            "fills": [{"r": 0.39, "g": 0.4, "b": 0.95, "a": 1}]
-          }
-        }
-      ]
-    }
-  ]
-}
-\`\`\`
-
-Contexto de la selección actual en Figma del usuario:
+Contexto de la selección actual en Figma:
 ${JSON.stringify(currentSelection.map(n => ({ id: n.id, name: n.name, type: n.type, width: n.width, height: n.height })))}`;
       }
 
@@ -1359,23 +1318,26 @@ ${JSON.stringify(currentSelection.map(n => ({ id: n.id, name: n.name, type: n.ty
               const data = await res.json();
               const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
               if (text) {
-                // Guardamos el modelo funcional para futuras llamadas
                 appConfig.model = model;
                 return text;
               }
             } else {
               const err = await res.json().catch(() => ({}));
               lastError = new Error(err.error?.message || `Error en Gemini (${res.status})`);
-              // Si el error no es de modelo no encontrado (404), no insistir con otros modelos (ej. cuota o clave inválida)
-              if (res.status !== 404 && !err.error?.message?.includes('not found')) {
+              console.warn(`[Figma AI Copilot] Error en modelo ${model} (${res.status}):`, err.error?.message);
+              // Si es 404 (no existe), 429 (cuota agotada temporal) o 503 (alta demanda), probamos el siguiente modelo
+              if (res.status === 404 || res.status === 429 || res.status === 503 || err.error?.status === 'RESOURCE_EXHAUSTED') {
+                continue;
+              } else {
                 throw lastError;
               }
             }
           } catch (err) {
             lastError = err;
-            if (!err.message?.includes('not found') && !err.message?.includes('404')) {
-              throw err;
+            if (err.message?.includes('exceeded') || err.message?.includes('demand') || err.message?.includes('quota') || err.message?.includes('404')) {
+              continue;
             }
+            throw err;
           }
         }
 

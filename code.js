@@ -139,6 +139,50 @@ function broadcastSelection() {
   });
 }
 
+/**
+ * Normaliza cualquier objeto de operación desempaquetando params y action/type.
+ */
+function normalizeOperation(rawOp) {
+  if (!rawOp || typeof rawOp !== 'object') return {};
+  const params = rawOp.params && typeof rawOp.params === 'object' ? rawOp.params : {};
+  const merged = { ...rawOp, ...params };
+  merged.action = (merged.action || merged.type || '').toUpperCase();
+  return merged;
+}
+
+/**
+ * Aplica trazos (bordes) y sombras (drop-shadow) a un nodo si están presentes en la operación.
+ */
+function applyStrokesAndEffects(node, op) {
+  // Bordes / Strokework
+  if (op.strokes || op.borderColor) {
+    node.strokes = parseFills(op.strokes || op.borderColor);
+    node.strokeWeight = Number(op.strokeWeight ?? op.borderWidth ?? 1);
+    if (op.strokeAlign) {
+      const align = String(op.strokeAlign).toUpperCase();
+      if (['INSIDE', 'OUTSIDE', 'CENTER'].includes(align)) {
+        node.strokeAlign = align;
+      }
+    }
+  }
+
+  // Efectos / Sombras
+  if (op.effects && Array.isArray(op.effects)) {
+    node.effects = op.effects;
+  } else if (op.dropShadow || op.shadow) {
+    const s = typeof op.dropShadow === 'object' ? op.dropShadow : {};
+    node.effects = [{
+      type: 'DROP_SHADOW',
+      color: s.color ? { ...parseColor(s.color), a: s.opacity ?? 0.15 } : { r: 0, g: 0, b: 0, a: 0.18 },
+      offset: { x: Number(s.x ?? 0), y: Number(s.y ?? 4) },
+      radius: Number(s.blur ?? s.radius ?? 12),
+      spread: Number(s.spread ?? 0),
+      visible: true,
+      blendMode: 'NORMAL'
+    }];
+  }
+}
+
 // ==========================================
 // 3. MANEJADORES DE OPERACIONES DSL
 // ==========================================
@@ -150,6 +194,8 @@ async function opCreateFrame(op, parent) {
 
   if (op.cornerRadius != null) frame.cornerRadius = Number(op.cornerRadius);
   if (op.fills !== undefined) frame.fills = parseFills(op.fills);
+
+  applyStrokesAndEffects(frame, op);
 
   const mode = (op.layoutMode || '').toUpperCase();
   if (mode === 'HORIZONTAL' || mode === 'VERTICAL') {
@@ -191,6 +237,141 @@ async function opCreateFrame(op, parent) {
   }
 
   return frame;
+}
+
+/**
+ * Crea un Botón nativo de Figma con Auto-Layout, texto y estilos modernos.
+ */
+async function opCreateButton(op, parent) {
+  const button = figma.createFrame();
+  button.name = op.name || 'Button';
+  button.layoutMode = 'HORIZONTAL';
+  button.primaryAxisAlignItems = 'CENTER';
+  button.counterAxisAlignItems = 'CENTER';
+  button.primaryAxisSizingMode = op.width ? 'FIXED' : 'AUTO';
+  button.counterAxisSizingMode = op.height ? 'FIXED' : 'AUTO';
+
+  if (op.width) button.resize(Math.max(1, op.width), button.height);
+  if (op.height) button.resize(button.width, Math.max(1, op.height));
+
+  const padH = Number(op.paddingX ?? op.paddingHorizontal ?? 16);
+  const padV = Number(op.paddingY ?? op.paddingVertical ?? 10);
+  button.paddingLeft = padH;
+  button.paddingRight = padH;
+  button.paddingTop = padV;
+  button.paddingBottom = padV;
+  button.itemSpacing = Number(op.itemSpacing ?? 8);
+  button.cornerRadius = Number(op.cornerRadius ?? 8);
+
+  // Color de fondo
+  const variant = (op.variant || 'PRIMARY').toUpperCase();
+  if (op.fills !== undefined) {
+    button.fills = parseFills(op.fills);
+  } else if (variant === 'SECONDARY') {
+    button.fills = parseFills('#21262D');
+  } else if (variant === 'OUTLINE') {
+    button.fills = [];
+  } else if (variant === 'GITHUB') {
+    button.fills = parseFills('#238636'); // Verde GitHub oficial
+  } else {
+    button.fills = parseFills(op.backgroundColor || '#6366F1'); // Indigo/Primary
+  }
+
+  applyStrokesAndEffects(button, op);
+
+  const targetParent = parent || figma.currentPage;
+  targetParent.appendChild(button);
+
+  // Crear texto hijo dentro del botón
+  const text = figma.createText();
+  text.name = 'Label';
+  const font = await ensureFontLoaded(op.fontFamily || 'Inter', op.fontWeight === 'BOLD' ? 'Bold' : 'Medium');
+  text.fontName = font;
+  text.characters = String(op.label ?? op.text ?? op.title ?? 'Button');
+  text.fontSize = Number(op.fontSize ?? 14);
+
+  const textFill = op.textColor || (variant === 'OUTLINE' ? '#FFFFFF' : '#FFFFFF');
+  text.fills = parseFills(textFill);
+  button.appendChild(text);
+
+  if (op.x != null && op.y != null) {
+    button.x = Number(op.x);
+    button.y = Number(op.y);
+  }
+
+  return button;
+}
+
+/**
+ * Crea una Badge / Etiqueta tipo píldora (ej: "Beta", "Public", "v1.0.0").
+ */
+async function opCreateBadge(op, parent) {
+  const badge = figma.createFrame();
+  badge.name = op.name || 'Badge';
+  badge.layoutMode = 'HORIZONTAL';
+  badge.primaryAxisAlignItems = 'CENTER';
+  badge.counterAxisAlignItems = 'CENTER';
+  badge.primaryAxisSizingMode = 'AUTO';
+  badge.counterAxisSizingMode = 'AUTO';
+  badge.paddingLeft = 8;
+  badge.paddingRight = 8;
+  badge.paddingTop = 3;
+  badge.paddingBottom = 3;
+  badge.cornerRadius = Number(op.cornerRadius ?? 999);
+  badge.fills = parseFills(op.fills || op.backgroundColor || 'rgba(99, 102, 241, 0.15)');
+
+  applyStrokesAndEffects(badge, op);
+
+  const targetParent = parent || figma.currentPage;
+  targetParent.appendChild(badge);
+
+  const text = figma.createText();
+  text.name = 'BadgeText';
+  const font = await ensureFontLoaded(op.fontFamily || 'Inter', 'Medium');
+  text.fontName = font;
+  text.characters = String(op.text ?? op.label ?? 'Badge');
+  text.fontSize = Number(op.fontSize ?? 11);
+  text.fills = parseFills(op.textColor || '#A5B4FC');
+  badge.appendChild(text);
+
+  return badge;
+}
+
+/**
+ * Crea un Input / Campo de texto para formularios con placeholder.
+ */
+async function opCreateInput(op, parent) {
+  const input = figma.createFrame();
+  input.name = op.name || 'InputField';
+  input.layoutMode = 'HORIZONTAL';
+  input.primaryAxisAlignItems = 'MIN';
+  input.counterAxisAlignItems = 'CENTER';
+  input.resize(Math.max(1, op.width || 280), Math.max(1, op.height || 42));
+  input.paddingLeft = 12;
+  input.paddingRight = 12;
+  input.cornerRadius = Number(op.cornerRadius ?? 6);
+  input.fills = parseFills(op.fills || op.backgroundColor || '#0D1117');
+  
+  if (!op.strokes && !op.borderColor) {
+    input.strokes = parseFills('#30363D');
+    input.strokeWeight = 1;
+  } else {
+    applyStrokesAndEffects(input, op);
+  }
+
+  const targetParent = parent || figma.currentPage;
+  targetParent.appendChild(input);
+
+  const text = figma.createText();
+  text.name = 'Placeholder';
+  const font = await ensureFontLoaded(op.fontFamily || 'Inter', 'Regular');
+  text.fontName = font;
+  text.characters = String(op.placeholder ?? op.text ?? 'Introduce un valor...');
+  text.fontSize = Number(op.fontSize ?? 13);
+  text.fills = parseFills('#8B949E');
+  input.appendChild(text);
+
+  return input;
 }
 
 async function opCreateText(op, parent) {
@@ -391,11 +572,19 @@ async function opRenameNodes(op) {
 // 4. DISPATCHER DE OPERACIONES DSL
 // ==========================================
 
-async function executeSingleOperation(op, parent = null) {
-  const action = (op.action || op.type || '').toUpperCase();
+async function executeSingleOperation(rawOp, parent = null) {
+  const op = normalizeOperation(rawOp);
+  const action = op.action;
+
   switch (action) {
     case 'CREATE_FRAME':
       return await opCreateFrame(op, parent);
+    case 'CREATE_BUTTON':
+      return await opCreateButton(op, parent);
+    case 'CREATE_BADGE':
+      return await opCreateBadge(op, parent);
+    case 'CREATE_INPUT':
+      return await opCreateInput(op, parent);
     case 'CREATE_TEXT':
       return await opCreateText(op, parent);
     case 'CREATE_RECTANGLE':
@@ -403,15 +592,18 @@ async function executeSingleOperation(op, parent = null) {
     case 'CREATE_ELLIPSE':
       return await opCreateEllipse(op, parent);
     case 'EDIT_NODE':
+    case 'MODIFY_NODE':
       return await opEditNode(op);
     case 'APPLY_AUTOLAYOUT':
+    case 'SET_AUTO_LAYOUT':
       return await opApplyAutoLayout(op);
     case 'ALIGN_SELECTION':
       return await opAlignSelection(op);
     case 'RENAME_NODES':
       return await opRenameNodes(op);
     default:
-      throw new Error(`Acción DSL no reconocida: "${action}"`);
+      console.warn(`[Figma AI Copilot] Acción desconocida o genérica: "${action}". Intentando como FRAME.`);
+      return await opCreateFrame(op, parent);
   }
 }
 
