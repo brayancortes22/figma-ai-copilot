@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Figma AI Copilot - por bscl</title>
+  <link rel="stylesheet" href="styles/copilot.css">
+</head>
+<body>
+
+  <!-- ========================================================================
+       HEADER PRINCIPAL
+       ======================================================================== -->
+  <header class="app-header">
+    <div class="brand-section">
+      <div class="brand-logo" title="Figma AI Copilot">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+        </svg>
+      </div>
+      <div class="brand-meta">
+        <div class="brand-title">
+          <span>Figma AI Copilot</span>
+          <span class="brand-badge-author">bscl</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <div class="status-badge" id="statusBadge" title="Estado de conexión">
+        <span class="status-dot"></span>
+        <span id="statusText">🟢 Listo</span>
+      </div>
+      <button class="icon-btn" id="btnToggleSettings" title="Configuración de Proveedor y API Keys">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       PANEL DE CONFIGURACIÓN COLAPSABLE
+       ======================================================================== -->
+  <section class="settings-drawer" id="settingsDrawer">
+    <div class="settings-grid">
+      <div class="form-group">
+        <label class="form-label" for="providerSelect">
+          <span>Proveedor de Inteligencia</span>
+        </label>
+        <select class="form-select" id="providerSelect">
+          <option value="gemini" selected>✨ Google Gemini (Recomendado)</option>
+          <option value="antigravity">🪐 Antigravity / Smart Router (:3000)</option>
+          <option value="openai">🟢 OpenAI (GPT-4o / mini)</option>
+          <option value="groq">⚡ Groq Cloud (Ultra Rápido)</option>
+          <option value="openrouter">🌐 OpenRouter API</option>
+        </select>
+      </div>
+
+      <div class="form-group" id="groupLocalUrl" style="display: none;">
+        <label class="form-label" for="inputLocalUrl">
+          <span>URL de Antigravity / Smart Router</span>
+        </label>
+        <input type="text" class="form-input" id="inputLocalUrl" placeholder="http://localhost:3000" value="http://localhost:3000">
+      </div>
+
+      <div class="form-group" id="groupApiKey">
+        <label class="form-label" for="inputApiKey">
+          <span id="apiKeyLabel">Google Gemini API Key</span>
+        </label>
+        <div class="password-wrap">
+          <input type="password" class="form-input" id="inputApiKey" placeholder="Pega tu API Key de Gemini...">
+          <button type="button" class="password-toggle" id="btnToggleApiKey" title="Mostrar/Ocultar">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+        <div style="margin-top: 4px; font-size: 10px; color: var(--text-muted);">
+          Obtén tu clave gratuita en <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: #818CF8; text-decoration: none;">Google AI Studio ↗</a>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="selectModelPreset">
+          <span>Modelo de IA</span>
+        </label>
+        <select class="form-select" id="selectModelPreset">
+          <optgroup label="Google Gemini">
+            <option value="gemini-3.8-flash" selected>⚡ Gemini 3.8 Flash (Predeterminado)</option>
+            <option value="gemini-3.1-pro-preview">🧠 Gemini 3.1 Pro Preview (Máxima Precisión)</option>
+            <option value="gemini-2.5-pro">💎 Gemini 2.5 Pro</option>
+            <option value="gemini-2.5-flash">🚀 Gemini 2.5 Flash</option>
+          </optgroup>
+          <optgroup label="OpenAI">
+            <option value="gpt-4o">🟢 GPT-4o</option>
+            <option value="gpt-4o-mini">🟢 GPT-4o Mini</option>
+          </optgroup>
+          <optgroup label="Groq / OpenRouter / Otros">
+            <option value="qwen/qwen3.8-27b">⚡ Qwen 3.8 27B (Groq)</option>
+            <option value="meta-llama/llama-3.3-70b-instruct:free">🌐 Llama 3.3 70B (OpenRouter Free)</option>
+            <option value="custom">✏️ Personalizado (Escribir ID manual)...</option>
+          </optgroup>
+        </select>
+        <input type="text" class="form-input" id="inputModelName" style="display: none; margin-top: 6px;" placeholder="Ej: gemini-3.8-flash" value="gemini-3.8-flash">
+      </div>
+
+      <div class="settings-footer">
+        <button type="button" class="btn-primary-mini" id="btnSaveSettings" style="width: 100%;">
+          Guardar Ajustes
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       BARRA DE CONTEXTO DINÁMICO (SELECCIÓN EN FIGMA)
+       ======================================================================== -->
+  <div class="context-bar">
+    <div class="context-info">
+      <span>Contexto:</span>
+      <span class="context-tag" id="selectionContext">✨ Lienzo libre</span>
+    </div>
+    <button class="context-refresh" id="btnRefreshSelection" title="Sincronizar selección actual de Figma">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+        <path d="M3 3v5h5"/>
+        <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/>
+        <path d="M16 21h5v-5"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- ========================================================================
+       ÁREA PRINCIPAL DE CHAT CON BURBUJAS REFERO AAA
+       ======================================================================== -->
+  <main class="chat-container" id="chatContainer">
+    <div class="message-row ai">
+      <div class="message-avatar ai">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+        </svg>
+      </div>
+      <div class="message-bubble">
+        <div class="message-header">
+          <span class="message-author">Figma AI Copilot</span>
+          <span class="message-time">Ahora</span>
+        </div>
+        <p>¡Hola! Soy tu asistente de diseño generativo en Figma. Puedo crear componentes, organizar auto-layouts, estructurar pantallas móviles o aplicar sistemas de color directamente en tu lienzo.</p>
+        <p style="color: var(--text-muted); font-size: 11.5px;">Escribe lo que imaginas o pulsa una acción rápida abajo.</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- ========================================================================
+       ACCIONES RÁPIDAS (QUICK PROMPTS PILLS)
+       ======================================================================== -->
+  <div class="quick-prompts-bar">
+    <button class="quick-pill" data-prompt="Crea un mockup completo de la página de repositorio de GitHub: header oscuro con buscador y logo, barra de repositorio con nombre y badge Public, botones de Watch, Fork y Star, pestañas de navegación y botón verde <> Code">
+      🐙 Mockup GitHub
+    </button>
+    <button class="quick-pill" data-prompt="Crea un diseño completo mobile de alta fidelidad para una repostería artesanal gourmet: login con inputs y botón, y catálogo con cards de pasteles, precios destacados y botones de compra">
+      🥐 App Repostería
+    </button>
+    <button class="quick-pill" data-prompt="Crea un botón moderno estilo Refero AAA con Auto-Layout, variante primaria, texto 'Comenzar Ahora' y esquinas redondeadas">
+      🔘 Botón Pro
+    </button>
+    <button class="quick-pill" data-prompt="Crea un Frame móvil iPhone 16 Pro (393x852) en modo oscuro con barra de estado y encabezado">
+      📱 Mobile Frame
+    </button>
+    <button class="quick-pill" data-prompt="Aplica Auto-Layout vertical con espaciado de 16px y padding de 20px a los elementos seleccionados">
+      📐 Auto-Layout
+    </button>
+  </div>
+
+  <!-- ========================================================================
+       SECCIÓN DE ENTRADA (TEXTAREA AUTOEXPANDIBLE Y ENVÍO)
+       ======================================================================== -->
+  <footer class="input-section">
+    <div class="input-container">
+      <textarea 
+        class="chat-textarea" 
+        id="promptInput" 
+        placeholder="Ej: Diseña un navbar minimalista con logo a la izquierda..." 
+        rows="1"
+      ></textarea>
+      
+      <!-- Previsualización de imagen adjunta / capturada -->
+      <div id="imagePreviewContainer" style="display: none; padding: 6px 12px; align-items: center; justify-content: space-between; background: rgba(99, 102, 241, 0.12); border-top: 1px solid rgba(99, 102, 241, 0.25);">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <img id="imagePreviewThumb" src="" style="width: 28px; height: 28px; object-fit: cover; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2);">
+          <span id="imagePreviewText" style="font-size: 11px; color: #C7D2FE;">📸 Imagen lista para recrear</span>
+        </div>
+        <button type="button" id="btnRemoveImage" style="background: none; border: none; color: #F87171; cursor: pointer; font-size: 14px; font-weight: bold;">✕</button>
+      </div>
+
+      <div class="input-controls">
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <button type="button" class="icon-btn" id="btnCaptureFigmaImage" title="Capturar la capa seleccionada en Figma y recrearla">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+              <circle cx="12" cy="13" r="4"></circle>
+            </svg>
+          </button>
+          
+          <label for="inputUploadImage" class="icon-btn" title="Subir imagen local" style="display: inline-flex; cursor: pointer; margin: 0;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+          </label>
+          <input type="file" id="inputUploadImage" accept="image/*" style="display: none;">
+
+          <div class="input-meta-hint" style="margin-left: 4px;">
+            <span class="kbd">Enter</span> enviar
+          </div>
+        </div>
+
+        <button class="btn-send" id="btnSendPrompt" title="Enviar petición">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script type="module" src="scripts/main.js"></script>
+</body>
+</html>
